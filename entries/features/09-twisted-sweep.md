@@ -226,3 +226,4 @@ the same facts in run 20260915-002812 (43 of 43 probes passed) and run
 - [equations/02 — Link a dimension to a global](../equations/02-link-a-dimension-to-a-global.md)
 - [features/04 — Read a feature's dimensions](04-read-a-features-dimensions.md) — finding `D4` by value
 - [GOTCHAS §45, §48](../../GOTCHAS.md)
+- [assemblies/11 — Change a mated gear train](../assemblies/11-change-a-mated-gear-train.md) — `ModifyDefinition` on a gear mate, and what it cost on 2024

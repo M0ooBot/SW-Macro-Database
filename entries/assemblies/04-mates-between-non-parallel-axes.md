@@ -388,3 +388,5 @@ gears" ([assemblies/03](03-interference-detection.md)).
 - [connect/02 — Attach from Python](../connect/02-attach-from-python.md) — `Invoke` for what late binding cannot spell
 - [equations/02 — Link a dimension to a global](../equations/02-link-a-dimension-to-a-global.md)
 - [GOTCHAS §10, §39, §41, §42](../../GOTCHAS.md)
+- [assemblies/10 — Mate a gear train that turns](10-mate-a-gear-train-that-turns.md) — placed gears unfixed and mated to shaft axes
+- [assemblies/11 — Change a mated gear train](11-change-a-mated-gear-train.md) — what a `Transform2` put does once gears are mated

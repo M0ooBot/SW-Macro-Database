@@ -156,3 +156,4 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
 - [features/06 — Reference plane normal to a line](../features/06-reference-plane-normal-to-a-line.md) — a plane that follows a linked line
 - [assemblies/04 — Mates between non-parallel axes](../assemblies/04-mates-between-non-parallel-axes.md) — shaft-angle and offset mates linked in the tool's builds
 - [features/09 — Twisted sweep](../features/09-twisted-sweep.md) — a twist linked in degrees; [features/08](../features/08-offset-reference-plane.md) a plane's offset
+- [assemblies/10 — Mate a gear train that turns](../assemblies/10-mate-a-gear-train-that-turns.md) — an angle mate linked to a global, and the global changed

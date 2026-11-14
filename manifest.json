@@ -1,11 +1,11 @@
 {
   "schema": 1,
   "description": "SolidWorks automation entries. Each answers one question. Check 'status' before trusting an entry: verified means it ran against the named version; unverified means it is well-formed against the documented API but was never executed.",
-  "count": 92,
+  "count": 96,
   "by_status": {
-    "partly-verified": 10,
+    "partly-verified": 11,
     "unverified": 3,
-    "verified": 79
+    "verified": 82
   },
   "entries": [
     {
@@ -70,7 +70,7 @@
       "path": "entries/assemblies/01-new-assembly-and-insert-components.md",
       "category": "assemblies",
       "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0); inserting a closed part, a fixed component's put, and the template's effect on fixing also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)",
       "language": [
         "python"
       ],
@@ -81,7 +81,9 @@
         "IComponent2.Transform2",
         "IComponent2.IsFixed",
         "IComponent2.Select4",
-        "IAssemblyDoc.FixComponent"
+        "IAssemblyDoc.FixComponent",
+        "IAssemblyDoc.GetComponentByName",
+        "ISldWorks.OpenDoc6"
       ],
       "keywords": [
         "assembly",
@@ -97,7 +99,14 @@
         "first component fixed",
         "asmdot",
         "assembly template",
-        "component position"
+        "component position",
+        "AddComponent5 returns None",
+        "insert a closed part",
+        "swFileWithSameTitleAlreadyOpen",
+        "65536",
+        "same file name",
+        "GetComponentByName",
+        "move a fixed component"
       ],
       "answers": "How do I make a new assembly and insert saved parts into it as components from code?"
     },
@@ -107,7 +116,7 @@
       "path": "entries/assemblies/02-mates-from-code.md",
       "category": "assemblies",
       "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1); failing mates, deleting and renaming also on SolidWorks 2024 SP5 (32.5.0)",
       "language": [
         "python"
       ],
@@ -118,7 +127,14 @@
         "IModelDocExtension.SelectByID2",
         "IFeature.GetFirstSubFeature",
         "IFeature.GetNextSubFeature",
-        "IEquationMgr.Add2"
+        "IEquationMgr.Add2",
+        "IFeature.GetErrorCode2",
+        "IComponent2.GetConstrainedStatus",
+        "IModelDocExtension.GetWhatsWrongCount",
+        "IModelDocExtension.GetWhatsWrong",
+        "IModelDoc2.EditDelete",
+        "IFeature.Name",
+        "IModelDoc2.FeatureByName"
       ],
       "keywords": [
         "AddMate5",
@@ -137,7 +153,23 @@
         "MatePlanarAngleDim",
         "FeatureByName",
         "selection mark 1",
-        "drive mate from global"
+        "drive mate from global",
+        "mate refused",
+        "AddMate5 status 0",
+        "AddMate5 status 5",
+        "over-defined assembly",
+        "swAddMateError_OverDefinedAssembly",
+        "GetErrorCode2 46",
+        "GetErrorCode2 47",
+        "GetErrorCode2 51",
+        "IsWarning",
+        "GetWhatsWrong",
+        "GetConstrainedStatus 4",
+        "delete a mate",
+        "EditDelete",
+        "DeleteSelection2",
+        "rename a mate",
+        "find a mate by name"
       ],
       "answers": "How do I add coincident, distance and angle mates between assembly components from code?"
     },
@@ -231,7 +263,7 @@
       "path": "entries/assemblies/05-test-motion-with-the-drag-operator.md",
       "category": "assemblies",
       "status": "partly-verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0); the gear-train drags also on SolidWorks 2026 (revisions 34.0.0 and 34.1.1)",
       "language": [
         "python"
       ],
@@ -246,7 +278,10 @@
         "IMateEntity2.EntityParams",
         "IFeature.SetSuppression2",
         "IFeature.GetErrorCode2",
-        "IComponent2.Transform2"
+        "IComponent2.Transform2",
+        "IDragOperator.DragAsUI",
+        "IDragOperator.DragMode",
+        "IComponent2.SetTransformAndSolve2"
       ],
       "keywords": [
         "gear mate does not propagate",
@@ -269,7 +304,10 @@
         "EntityParams",
         "error 51",
         "Transform2 put",
-        "EditRebuild3"
+        "EditRebuild3",
+        "DragMode 0 1 2 3",
+        "SetTransformAndSolve2",
+        "gear train will not turn from code"
       ],
       "answers": "How do I find out from code whether an assembly can move, and which mate is stopping it?"
     },
@@ -279,7 +317,7 @@
       "path": "entries/assemblies/06-read-every-mate.md",
       "category": "assemblies",
       "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates also SolidWorks 2026 (34.1.1)",
       "language": [
         "python"
       ],
@@ -479,6 +517,155 @@
         "read-only toolbox part"
       ],
       "answers": "I edited a Toolbox part (or a copy of one) and on reopening the assembly my edits are gone and the mates fail — why, and how do I make the edited copy stick?"
+    },
+    {
+      "id": "assemblies-10-mate-a-gear-train-that-turns",
+      "title": "Mate gears on their shafts into a train that turns, with gear mates and lock mates",
+      "path": "entries/assemblies/10-mate-a-gear-train-that-turns.md",
+      "category": "assemblies",
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1) and SolidWorks 2024 SP5 (32.5.0)",
+      "language": [
+        "python"
+      ],
+      "api": [
+        "IAssemblyDoc.AddMate5",
+        "IAssemblyDoc.UnfixComponent",
+        "IComponent2.Select4",
+        "ISelectionMgr.CreateSelectData",
+        "IComponent2.GetCorresponding",
+        "IComponent2.GetConstrainedStatus",
+        "IFeature.GetDefinition",
+        "IGearMateFeatureData.GearRatioNumerator",
+        "IGearMateFeatureData.GearRatioDenominator",
+        "IGearMateFeatureData.Reverse",
+        "IMate2.Alignment",
+        "IMate2.MateEntity",
+        "IMateEntity2.ReferenceComponent"
+      ],
+      "keywords": [
+        "gear train",
+        "gear mate",
+        "swMateGEAR",
+        "AddMate5 gear",
+        "gear ratio order",
+        "numerator first selection",
+        "Flip",
+        "mesh direction",
+        "ring gear",
+        "internal gear",
+        "lock mate",
+        "swMateLOCK 16",
+        "compound gear",
+        "two gears on one shaft",
+        "concentric axes refused",
+        "coincident axes",
+        "swAddMateError_ErrorUknown",
+        "status 0",
+        "closest alignment",
+        "anti-aligned",
+        "UnfixComponent",
+        "GetConstrainedStatus",
+        "one degree of freedom",
+        "drive mate",
+        "angle mate linked to a global",
+        "CreateSelectData Mark",
+        "Select4 component"
+      ],
+      "answers": "How do I mate gears to their shafts and to each other from code so the whole gear train turns together at the right ratio and in the right direction?"
+    },
+    {
+      "id": "assemblies-11-change-a-mated-gear-train",
+      "title": "Change a mated gear train in place — re-phase a gear, move a shaft, re-take a lock, change a gear mate's ratio",
+      "path": "entries/assemblies/11-change-a-mated-gear-train.md",
+      "category": "assemblies",
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1) for all of it; SolidWorks 2024 SP5 (32.5.0) for the phase, shaft-move and suppressed-lock changes in a clean session, and for the rest only in a session holding an assembly it could not close",
+      "language": [
+        "python"
+      ],
+      "api": [
+        "IComponent2.Transform2",
+        "IFeature.SetSuppression2",
+        "IFeature.IsSuppressed2",
+        "IFeature.GetDefinition",
+        "IFeature.ModifyDefinition",
+        "IGearMateFeatureData.GearRatioNumerator",
+        "IGearMateFeatureData.GearRatioDenominator",
+        "IModelDoc2.EditDelete",
+        "IAssemblyDoc.GetComponentByName",
+        "IAssemblyDoc.AddMate5",
+        "ISldWorks.CloseDoc"
+      ],
+      "keywords": [
+        "change gear ratio",
+        "gear mate ratio",
+        "ModifyDefinition gear mate",
+        "IGearMateFeatureData put",
+        "AccessSelections AttributeError",
+        "0x80010105",
+        "server threw an exception",
+        "CloseDoc cannot close",
+        "assembly will not close",
+        "remake gear mate",
+        "delete and re-add mate",
+        "lock mate re-take",
+        "suppress lock",
+        "re-phase gear",
+        "mesh phase",
+        "Transform2 put with gear mate",
+        "lock does not hold against put",
+        "shaft moved by globals",
+        "skeleton part",
+        "axial distance global"
+      ],
+      "answers": "My gear train is mated and turns; how do I change it from code afterwards — turn one gear to a new phase, move a shaft, change a compound gear's angle or position, or give a gear mate a new ratio — without breaking the mates?"
+    },
+    {
+      "id": "assemblies-12-rebuild-scope-and-the-save-flag",
+      "title": "Rebuild an assembly without marking every part modified, and what sets GetSaveFlag",
+      "path": "entries/assemblies/12-rebuild-scope-and-the-save-flag.md",
+      "category": "assemblies",
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0); the mated-train half on 2024 ran beside a stranded assembly, as noted",
+      "language": [
+        "python"
+      ],
+      "api": [
+        "IModelDoc2.ForceRebuild3",
+        "IModelDoc2.EditRebuild3",
+        "IModelDoc2.GetSaveFlag",
+        "IModelDocExtension.NeedsRebuild",
+        "IModelDocExtension.NeedsRebuild2",
+        "ISldWorks.OpenDoc6",
+        "ISldWorks.ActivateDoc3",
+        "IModelDocExtension.GetWhatsWrongCount",
+        "IComponent2.Transform2"
+      ],
+      "keywords": [
+        "ForceRebuild3 True",
+        "ForceRebuild3 False",
+        "top only",
+        "EditRebuild3",
+        "rebuild marks parts modified",
+        "save prompt for parts not changed",
+        "GetSaveFlag",
+        "unsaved changes",
+        "dirty flag",
+        "modified flag",
+        "NeedsRebuild",
+        "NeedsRebuild2",
+        "rebuild returns False",
+        "failed component",
+        "interference check marks modified",
+        "OpenDoc6 warning 128",
+        "swFileLoadWarning_AlreadyOpen",
+        "ActivateDoc3",
+        "skeleton part",
+        "layout part",
+        "opened from file reads unmodified"
+      ],
+      "answers": "Which rebuild should I call on an assembly after changing it from code, so that SolidWorks only asks to save the documents I actually changed — and what marks a document modified in the first place?"
     },
     {
       "id": "connect-01-attach-vbscript",
@@ -1270,7 +1457,7 @@
       "path": "entries/documents/02-save-as-and-close.md",
       "category": "documents",
       "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0); closing assemblies also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)",
       "language": [
         "python"
       ],
@@ -1280,7 +1467,8 @@
         "IModelDoc2.GetPathName",
         "IModelDoc2.GetTitle",
         "IModelDoc2.GetSaveFlag",
-        "ISldWorks.CloseDoc"
+        "ISldWorks.CloseDoc",
+        "ISldWorks.QuitDoc"
       ],
       "keywords": [
         "SaveAs3",
@@ -1295,7 +1483,14 @@
         "close without saving",
         "GetSaveFlag",
         "GetPathName",
-        "unsaved changes"
+        "unsaved changes",
+        "QuitDoc",
+        "Save Modified Documents dialog",
+        "modal dialog hangs",
+        "SOLIDWORKS CAM Warning",
+        "close an assembly",
+        "0x80010105",
+        "document will not close"
       ],
       "answers": "How do I save a new document to a path from code, and close a document without a prompt?"
     },
@@ -3055,6 +3250,39 @@
         "dimension table from geometry"
       ],
       "answers": "My part was derived or imported and has no dimensions of its own — how do I get its real sizes (lengths, slot widths, hole diameters, positions) from code?"
+    },
+    {
+      "id": "reading-16-measure-between-two-selections",
+      "title": "Measure the distance between two selected entities with IMeasure",
+      "path": "entries/reading/16-measure-between-two-selections.md",
+      "category": "reading",
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0)",
+      "language": [
+        "python"
+      ],
+      "api": [
+        "IModelDocExtension.CreateMeasure",
+        "IMeasure.Calculate",
+        "IMeasure.Distance",
+        "IMeasure.NormalDistance",
+        "IModelDocExtension.SelectByID2"
+      ],
+      "keywords": [
+        "IMeasure",
+        "CreateMeasure",
+        "Calculate",
+        "measure tool from code",
+        "distance between axis and plane",
+        "NormalDistance",
+        "DISPATCH_METHOD",
+        "Invoke",
+        "property get",
+        "bool object is not callable",
+        "late binding",
+        "measure in an assembly"
+      ],
+      "answers": "How do I measure the distance between two things I have selected (an axis and a plane, say) from code, the way the Measure tool does?"
     },
     {
       "id": "sketches-01-2d-sketch-as-vba",

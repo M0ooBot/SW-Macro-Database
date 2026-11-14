@@ -125,3 +125,4 @@ called ([GOTCHAS §5](../../GOTCHAS.md)); `call(f, "GetBox")` worked.
 - [drawings/04 — Centre marks and centre lines](../drawings/04-centre-marks-and-centre-lines.md) — the same curve and surface parameters in a view
 - [drawings/05 — Read and tidy dimensions](../drawings/05-read-and-tidy-dimensions.md)
 - [GOTCHAS §2, §5, §10](../../GOTCHAS.md)
+- [reading/16 — Measure between two selections](16-measure-between-two-selections.md) — measuring between two selected entities

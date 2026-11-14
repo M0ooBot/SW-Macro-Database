@@ -750,6 +750,14 @@ access had already run, where adding parentheses failed:
 `INote.GetBalloonStyle` (`'tuple'`/`'bool'`/`'int' object is not callable`). Reach them
 through `call`. See [drawings/02](entries/drawings/02-bom-table-and-balloons.md)
 and [drawings/09](entries/drawings/09-add-dimensions-and-tolerances.md).
+
+`IMeasure.Calculate` is the same case, on SolidWorks 2026 (34.1.1): reached by
+attribute access it answered a `bool`, and the call with its argument failed
+with `'bool' object is not callable`. Invoked by its dispid with
+`DISPATCH_METHOD` and a typed null dispatch it returned `True` and the measure
+read the right distance, on 2026 and 2024 SP5. The failing form is recorded in
+the probe's source, not in a kept result. See
+[reading/16](entries/reading/16-measure-between-two-selections.md).
 ## 56. Reloading a curve is charged for the whole tree below it
 
 `IFeature.ModifyDefinition` after `LoadPointsFromFile` cost **25 seconds per
@@ -1139,3 +1147,93 @@ SolidWorks 2024 SP5 (32.5.0). See
 not. `CreateBalloonOptions` is property-style through late binding (§55).
 SolidWorks 2024 SP5 (32.5.0). See
 [drawings/02](entries/drawings/02-bom-table-and-balloons.md#balloons-one-at-a-time-without-the-quantity).
+
+## 93. `ForceRebuild3(False)` on an assembly marks every component modified
+
+On an assembly, `ForceRebuild3(False)` marked every component document modified
+(`GetSaveFlag` `True`), including parts nothing had changed, so closing asked
+to save them all. `ForceRebuild3(True)` and `EditRebuild3` marked only the
+documents changed on purpose, still showed every change (a component put, a
+skeleton part's moved axis, a changed part), still re-solved mates driven by an
+assembly global, and returned `False` while a component failed to rebuild. A
+`Transform2` put alone marked nothing; an interference check marks the assembly,
+reading component frames does not. SolidWorks 2026 (34.1.1) and 2024 SP5
+(32.5.0). See
+[assemblies/12](entries/assemblies/12-rebuild-scope-and-the-save-flag.md).
+
+## 94. Two reference axes cannot be mated concentric
+
+`AddMate5` with `swMateCONCENTRIC` (1) between a component's reference axis and
+another's returned `None`, made nothing, and set the status to 0
+(`swAddMateError_ErrorUknown`), with no other message. `swMateCOINCIDENT` (0)
+between the same two axes held the component on the axis; a cylindrical face
+concentric with an axis also worked. SolidWorks 2026 (34.0.0, 34.1.1) and 2024
+SP5 (32.5.0). See
+[assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md).
+
+## 95. An over-defining mate is still made, and the rebuild still says True
+
+`AddMate5` set its status to 5 (`swAddMateError_OverDefinedAssembly`) and
+**made the mate anyway**; `ForceRebuild3` returned `True` afterwards. What
+shows it: the new mate's `GetErrorCode2` with the warning flag `False`, the
+mates it fights with the flag `True`, the component's `GetConstrainedStatus`
+4, and `GetWhatsWrongCount` rising. The codes differ by version for the same
+mates: 47 and 46 on SolidWorks 2026, 51 for all of them on 2024 SP5. Treat any
+non-zero code as a problem and never read meaning into the number. See
+[assemblies/02](entries/assemblies/02-mates-from-code.md#when-a-mate-is-refused-or-over-defines)
+(and §83 for 2024's error 5 earlier).
+
+## 96. A gear mate's ratio goes in first-selection-first and comes back reversed
+
+With `AddMate5(10, …, zFirst, zSecond, …)`, driving the first selected gear
+30° turned the second 30·zFirst/zSecond: the numerator argument is the first
+selection's tooth count. `IGearMateFeatureData` then read `GearRatioNumerator`
+= zSecond (§75's rule: the numerator belongs to `MateEntity(1)`), and a ratio
+put through the definition had to be given in `AddMate5`'s order again. `Flip`
+False gave every meshing pair its own sense, a ring and its pinion included;
+the alignment argument was ignored. SolidWorks 2026 and 2024 SP5. See
+[assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-gear-mate).
+
+## 97. On SolidWorks 2024, a gear mate changed by `ModifyDefinition` strands its assembly
+
+After `IFeature.ModifyDefinition` changed a gear mate's ratio (returning `True`,
+and the ratio right), `CloseDoc` on that assembly raised `0x80010105` ("The
+server threw an exception") on SolidWorks 2024 SP5, and later closes left it
+open without a word, with its parts, until SolidWorks was killed — saved first
+or not. SolidWorks 2026 closed it normally. Delete the gear mate and add it
+again instead, which closed on both (on 2024 so far only in a session that
+already held a stranded assembly; a clean rerun is pending). See
+[assemblies/11](entries/assemblies/11-change-a-mated-gear-train.md#the-ratio-change-that-strands-an-assembly-on-2024).
+
+## 98. A put on a locked or gear-mated gear moves that gear alone, silently
+
+A `Transform2` put on one gear of a mated train turned that gear only: its gear
+mate partners did not follow, its **lock** partner did not follow either, and no
+mate reported an error after the rebuild. `SetTransformAndSolve2` and
+`IDragOperator` (`Drag`, `DragAsUI`, several settings; every call `True`) did
+the same to the input gear. Suppress every lock of a train around a put; prove
+a train's ratio by driving a mate through a global, not by moving a gear.
+SolidWorks 2026 and 2024 SP5. See
+[assemblies/11](entries/assemblies/11-change-a-mated-gear-train.md) and
+[assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md#a-third-assembly-a-mated-gear-train-on-2026-and-2024)
+(and §73).
+
+## 99. `AddComponent5` of a part that is not open returns `None`
+
+A part saved and closed, inserted by path, gave `None`: no error, no component.
+Opened by `OpenDoc6` first, the same part went in. A part of the same file name
+from another folder cannot be opened beside it at all (`OpenDoc6` error 65536,
+`swFileWithSameTitleAlreadyOpen`). SolidWorks 2026 (34.0.0, 34.1.1) and 2024
+SP5. See
+[assemblies/01](entries/assemblies/01-new-assembly-and-insert-components.md#inserting-a-part-that-is-not-open-and-two-parts-of-one-file-name).
+
+## 100. Closing an assembly can raise a modal dialog that hangs the script
+
+On SolidWorks 2024 SP5, `CloseDoc` on an assembly whose saved parts had changed
+opened "Save Modified Documents" and the script hung; 2026 did not ask.
+`QuitDoc` (close without saving) closed modified documents with no dialog on
+both. But on SolidWorks 2026 (34.1.1), `QuitDoc` on an assembly **saved by
+2024** raised the SOLIDWORKS CAM add-in's "Save changes to <assembly>?",
+although `GetSaveFlag` had read `False` after the open (it was not read again
+before the close). See
+[documents/02](entries/documents/02-save-as-and-close.md#closing-an-assembly-closedoc-quitdoc-and-the-dialogs-they-raised).

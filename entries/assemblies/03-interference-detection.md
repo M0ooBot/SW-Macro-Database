@@ -196,3 +196,4 @@ facts in both. Excerpts:
 - [reading/10 — Mass properties as an oracle](../reading/10-mass-properties-as-an-oracle.md) — checking by a volume you can compute
 - [connect/11 — Probe an API member on a live session](../connect/11-probe-an-api-member-on-a-live-session.md) — the negative control
 - [GOTCHAS §31, §40](../../GOTCHAS.md)
+- [assemblies/12 — Rebuild an assembly without marking every part modified](12-rebuild-scope-and-the-save-flag.md) — running this check marks the assembly modified

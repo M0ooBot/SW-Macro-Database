@@ -2,7 +2,7 @@
 id: assemblies-06-read-every-mate
 title: Read every mate in an assembly, with its entities, gear ratio and folder
 status: verified
-verified_on: SolidWorks 2024 SP5 (32.5.0)
+verified_on: SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates also SolidWorks 2026 (34.1.1)
 language: [python]
 api: [IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IFeature.GetTypeName2, IFeature.GetSpecificFeature2, IFeature.GetDefinition, IFeature.IsSuppressed, IFeature.GetErrorCode2, IMate2.Type, IMate2.Alignment, IMate2.Flipped, IMate2.MaximumVariation, IMate2.MinimumVariation, IMate2.GetMateEntityCount, IMate2.MateEntity, IMateEntity2.ReferenceComponent, IMateEntity2.ReferenceType2, IMateEntity2.EntityParams, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IGearMateFeatureData.Reverse, IDistanceMateFeatureData.Distance, IDistanceMateFeatureData.MateAlignment]
 keywords: [read mates, list mates, dump mates, mate inventory, existing mates, MateGroup, MateGearDim, MateConcentric, MateCoincident, MateCoordinate, MateDistanceDim, MateLimitDistanceDim, gear mate ratio, GearRatioNumerator, GearRatioDenominator, which gear is the numerator, swMateType_e, swSelectType_e, ReferenceType2, EntityParams, mate folder, FtrFolder, ___EndTag___, limit mate range, MaximumVariation, suppressed mates, mechanism from mates]
@@ -188,6 +188,27 @@ sense.
 Whether `MateEntity` order is the order the mate was picked in the UI was
 **not checked**. Read the order from `MateEntity`, never from the mate's name.
 
+**For mates made from code, the order was measured** (Gear-Generator probe tier
+8, SolidWorks 2026 34.1.1 and 2024 SP5 32.5.0, see
+[assemblies/10](10-mate-a-gear-train-that-turns.md)). It follows the selection
+order for some mate types and not for others:
+
+- **Gear mates: `MateEntity(0)` was the first-selected entity** in all 22 made
+  by `AddMate5` (axes, faces, or one of each; a ring selected first or second),
+  and `GearRatioNumerator` read back the **second** selection's count. So the
+  rule above holds for code-made gear mates too, and the numerator passed to
+  `AddMate5` (the first selection's) comes back as the denominator.
+- **Point-to-plane distance mates:** `MateEntity(0)` was the first-selected
+  (the component's origin point, `ReferenceType2` 25), the plane second (4).
+- **Axis-to-axis coincident, face-to-axis concentric and point-to-plane
+  coincident mates:** `MateEntity(0)` was the **second**-selected entity (the
+  skeleton part's axis or plane, `ReferenceType2` 5 or 4), in every case, on
+  both versions.
+
+So do not assume selection order in general; read it per mate. A lock mate's
+two entities were whole components (`ReferenceType2` 0) and its type name is
+`MateLock`.
+
 ## The ratio is not the geometry
 
 **The ratio is what was typed, not the size of what was picked.** Read it from
@@ -267,7 +288,8 @@ run on mate folders**.
   names `DEFINITION_FIELDS` tries for them are untested.
 - **Open:** whether `MateEntity` order follows UI pick order. Settle it by
   making a two-gear mate by hand, picking the smaller gear first, and reading
-  it back.
+  it back. For mates made by `AddMate5` it is answered above: selection order
+  for gear and distance mates, not for coincident and concentric ones.
 
 ## Evidence
 
@@ -291,3 +313,4 @@ order, not live.
 - [connect/10 — Driving from outside Windows](../connect/10-driving-from-outside-windows.md)
 - [GOTCHAS §19, §74, §75, §76](../../GOTCHAS.md)
 - [assemblies/07 — Configurations that hold different positions](07-configurations-that-hold-different-positions.md) — `IsSuppressed2` across configurations, and `EntityParams` as a position check
+- [assemblies/10 — Mate a gear train that turns](10-mate-a-gear-train-that-turns.md) — making gear and lock mates; which way the ratio goes in and comes back
