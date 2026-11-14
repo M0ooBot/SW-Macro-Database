@@ -1336,5 +1336,10 @@ straight after `AddMate5`, after a top-only rebuild, after a remake, after a
 save and reopen, and under `CommandInProgress` (wrong-to-right remake under it
 shown on 2026 only). A train mated right on 2024 and opened in 2026 kept its
 stored `Reverse` and turned right (2024 to 2026 only; 2024 cannot open a 2026
-file). See
+file). Nor is the `Flip` stable for one ring on one version: on 2024 a ring
+mate made straight after its pinion was moved 2 mm along its shaft (a put with
+the other mates suppressed and a top-only rebuild) needed `Flip` True, where the
+same mate made after a reopen, pinion unmoved, needed False; the cause (the
+move, the put and rebuild, or the missing reopen) was not separated. Never
+carry a `Flip` from one make to the next. See
 [assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#checking-a-gear-mates-sense-after-making-it).

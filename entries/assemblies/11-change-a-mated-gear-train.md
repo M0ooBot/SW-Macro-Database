@@ -312,6 +312,17 @@ with `Flip` True, and then read right and turned right with no clash; on 2024
 it read right first time. The first "wrong" on 2026 was the read-back's word
 alone: the train was driven only after the second remake.
 
+The same check ran inside an application on a ring mesh after its pinion had
+been moved along its shaft and its tooth counts changed: the gear mate was
+deleted, made again at the new ratio, read back wrong, and made again with the
+other `Flip`. It ended right on SolidWorks 2024 and 2026: a drive through the
+ring at the new ratio turned it the right way, also after a save and reopen,
+with an interference control beside it. "Read back wrong" there is the
+application's own reading; what SolidWorks showed is the end state. Even on one
+version, the `Flip` a ring mate needs can change between makes
+([assemblies/10](10-mate-a-gear-train-that-turns.md#checking-a-gear-mates-sense-after-making-it)),
+so read back every remade mate, never reuse the `Flip` the old one had.
+
 ### The ratio change that strands an assembly on 2024
 
 On SolidWorks 2024, after `IFeature.ModifyDefinition` had changed a gear
@@ -386,6 +397,10 @@ Gear-Generator probe tier 8, Python over pywin32 late binding.
   mates: no save flag changed across the reads; the remade mate's read under
   `CommandInProgress` equalled its read after the rebuild; the ratio remake
   read and turned right on both after the steps above.
+- The read-back and remake after a pinion move and a tooth change: a
+  whole-application run of 2026-11-14 on SolidWorks 2024 SP5 (32.5.0) and 2026
+  34.1.1, fresh sessions; the end state shown by a drive through the ring at the
+  new ratio, before and after a save and reopen, and an interference control.
 - `gear_mate_ratio` (the remake), `gear_mate_update`, `lock_retake_offset`,
   `put_on_twice_meshed_gear`: SolidWorks 2026 34.1.1, full run 20261114-081921
   (85 of 85); SolidWorks 2024 SP5, run 20261114-071324 (47 of 47) in a session

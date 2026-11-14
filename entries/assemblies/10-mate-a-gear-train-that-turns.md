@@ -363,6 +363,17 @@ version, settled when the read can be taken and what it costs:
   tried: 2024 cannot open a 2026 file. Closing such an assembly in 2026 after
   changing it can raise the CAM add-in's box ([GOTCHAS §100](../../GOTCHAS.md)).
 
+**The `Flip` is not stable even for one ring on one version.** In a later
+whole-application run on SolidWorks 2024, a ring gear mate made straight after
+its pinion had been moved 2 mm along its shaft (by a transform put with the
+train's other mates suppressed, then a top-only rebuild) turned the ring the
+right way only with `Flip` True; the same mate, made after the build and a save
+and reopen with the pinion unmoved, had been right with `Flip` False, and that
+first mate went on turning the ring right after the move. Which of the move, the
+puts and rebuild, or the missing reopen changed it was not separated. So never
+carry a `Flip` from one make to the next: read each new gear mate back and remake
+a wrong one ([assemblies/11](11-change-a-mated-gear-train.md#correcting-a-gear-mate-that-turns-the-wrong-way)).
+
 ### A lock mate for a compound gear
 
 Two gears on one shaft that must turn together at a set angle to each other:
@@ -559,6 +570,9 @@ Readings, both versions unless said:
   read `GetSaveFlag` False on open and after the read-back and turned right.
   The two versions' runs came from different probe revisions, differing only in
   how the remake verdict is judged; the raw readings agree.
+- The `Flip` that changed for one ring after a pinion move: a whole-application
+  run of 2026-11-14 on SolidWorks 2024 SP5 (32.5.0), in a fresh session; the
+  ring's turn was read from a drive through it.
 
 - The listings themselves, on four plain cylinders and a skeleton: the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0), 25 of 25 steps each.
   Both versions: the concentric mate between two axes `{'returned': None, 'status': 0}`;
