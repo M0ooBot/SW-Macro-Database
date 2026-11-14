@@ -759,9 +759,10 @@ read the right distance, on 2026 and 2024 SP5. The failing form is recorded in
 the probe's source, not in a kept result. See
 [reading/16](entries/reading/16-measure-between-two-selections.md).
 
-`ISldWorks.ExitApp` is the plain case: it returns nothing, so `call(app, "ExitApp")`
-only fetched it and SolidWorks stayed open; `app.ExitApp()` ended it, on 2026
-(34.1.1) and 2024 SP5. See [`code/python/gear_train/`](code/python/gear_train/README.md).
+`ISldWorks.ExitApp` is the plain case, and a pywin32 late-binding point rather
+than a SolidWorks one: it returns nothing, so `call(app, "ExitApp")` only
+fetched it and SolidWorks stayed open (seen once, on 2026, in a run whose
+results were not kept); `app.ExitApp()` ended it, on 2026 (34.1.1) and 2024 SP5. See [`code/python/gear_train/`](code/python/gear_train/README.md).
 ## 56. Reloading a curve is charged for the whole tree below it
 
 `IFeature.ModifyDefinition` after `LoadPointsFromFile` cost **25 seconds per
@@ -1311,7 +1312,8 @@ and [assemblies/03](entries/assemblies/03-interference-detection.md).
 
 For a pinion inside a toothed internal ring gear, the `Flip` that `AddMate5`
 needed for the pair to turn as it meshes was **opposite on SolidWorks 2026 and
-2024**, and on 2026 it also differed between spur and helical rings. Plain
+2024**, and on each version, on opposite-sense shafts, it also differed
+between spur and helical rings. Plain
 annuli with no teeth, and external pairs, needed `Flip` False on both, so a test
 on annuli misses it. No rule from what is known before the mate is made is right
 on both versions. What does tell, in 52 of 52 cases on each version: read the
@@ -1319,5 +1321,8 @@ made mate back. It turns its gears as they mesh exactly when
 `(IGearMateFeatureData.Reverse == the two IMateEntity2.EntityParams directions
 point the same way) == internal`. Correct a wrong one by deleting it and adding
 it again with the other `Flip`. Driven off its built phase, a wrong sense
-interferes and a right one does not. See
+interferes and a right one does not. Limits as they stand: only spur rings, one
+20° helical ring geometry and a plain annulus were tried; the external pair was
+mated only on opposite-sense shafts; and every reading was taken straight after
+`AddMate5`, not after a rebuild or a save and reopen. See
 [assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#checking-a-gear-mates-sense-after-making-it).

@@ -268,10 +268,15 @@ one `MateGearDim` (status 1).
   round mated pinions inside real toothed ring gears (spur, and 20° helical) on
   every combination of shaft senses, either gear selected first. The `Flip` a
   pair needed to turn as it meshes was **opposite on SolidWorks 2026 and 2024**
-  for every toothed ring, and on 2026 it differed between the spur rings
-  (depending on the shaft senses) and the helical ones; which gear was selected
+  for every toothed ring, and on each version, on opposite-sense shafts, it
+  differed between the spur rings and the helical ones; which gear was selected
   first never changed it. The plain annulus and an external pair needed `Flip`
-  False on both versions, which is how the first round, on annuli, missed it. So
+  False on both versions, which is how the first round, on annuli, missed it.
+  The ring round tried only spur rings, one 20° helical ring geometry and a plain
+  annulus; its external pair was mated only on opposite-sense shafts (the
+  external result for every shaft sense is the first round's, read from a drive
+  without the read-back); and every reading was taken straight after
+  `AddMate5`, not after a rebuild or a save and reopen. So
   nothing known before the mate is made (inside or outside, both shaft senses,
   which gear first, spur or helical) gives the right `Flip` on both versions.
   **Read the made mate back instead** ([below](#checking-a-gear-mates-sense-after-making-it)).
@@ -317,15 +322,20 @@ def gear_mate_sense_read_back(asm, name, internal):
 the tool knows. `Reverse` is read through `IFeature.GetDefinition`
 (`IGearMateFeatureData`); the directions are items 3–5 of each
 `IMateEntity2.EntityParams` ([assemblies/06](06-read-every-mate.md)). In the
-probe round's 52 mates on each version (toothed spur and helical rings, plain
-annuli, external pairs, every shaft sense, either gear first, `Flip` False and
-True) this read-back agreed with the measured turn every time: the two versions
+probe round's 52 mates on each version (toothed spur rings, one 20° helical
+ring geometry, plain annuli, every shaft sense for the rings, an external pair
+on opposite-sense shafts only, either gear first, `Flip` False and True) this
+read-back agreed with the measured turn every time: the two versions
 store a different `Reverse` for the same toothed-ring call, and the read-back
 follows what each decided. Driven 10° off the built phase, every toothed pair
 whose sense was wrong clashed (3 interferences for a spur ring, 4 for a helical
 ring, 2 for an external pair) and every right one stayed clear. A wrong sense is
 corrected by deleting the mate and adding it again with the other `Flip`
-([assemblies/11](11-change-a-mated-gear-train.md)).
+([assemblies/11](11-change-a-mated-gear-train.md)). Every one of those readings
+was taken straight after `AddMate5`; whether the read-back still holds after a
+rebuild, after a save and reopen, or for a train saved by one version and opened
+in the other was not checked, nor other ring geometries or external pairs on
+same-sense shafts.
 
 ### A lock mate for a compound gear
 
@@ -440,9 +450,10 @@ on both versions ([assemblies/12](12-rebuild-scope-and-the-save-flag.md#what-eac
 
 ## What it does not do
 
-- Only cylinders and annuli were mated: no tooth geometry was involved in any
-  sense or ratio reading. Real gears were mated the same way by the tool
-  afterwards, but those runs are not the evidence here.
+- The first round mated only cylinders and annuli: no tooth geometry was
+  involved in its sense or ratio readings. The later ring round mated toothed
+  spur rings and one 20° helical ring geometry (see the `Flip` bullets above,
+  with their limits); no other tooth geometry was tried.
 - Mating was measured with every component fully resolved. With the
   components forced lightweight, the train's first drive read one gear far from
   where it should be (possibly a stale transform read while lightweight); read

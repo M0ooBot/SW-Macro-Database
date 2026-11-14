@@ -722,6 +722,9 @@ class Recorder:
         text = re.sub(separator.join(parts), "<scratch>", text, flags=re.IGNORECASE)
         text = re.sub(r"[A-Za-z]:" + separator + r"Users" + separator + r"[^\\/\"']+", "<home>", text,
                       flags=re.IGNORECASE)
+        # a path SolidWorks shortened for a dialog ("C:\\Fol...der\\sub\\Part.SLDPRT"):
+        # everything from the drive to the end of the segment holding the "..." goes
+        text = re.sub(r"[A-Za-z]:" + separator + r"[^\"'\n]*?\.\.\.[^\\/\"']*", "<scratch>…", text)
         user = os.environ.get("USERNAME") or ""
         if len(user) > 2:
             text = re.sub(re.escape(user), "<user>", text, flags=re.IGNORECASE)
@@ -1259,6 +1262,13 @@ def main(argv=None):
     time.sleep(20)                 # let it finish loading before the first call
     if documents(app):
         print("refused: the SolidWorks attached has documents open that this script did not make", file=sys.stderr)
+        app.ExitApp()              # the SolidWorks this script started; leave its documents to it
+        for _ in range(60):
+            if process.poll() is not None or not any(p == pid for p, _ in solidworks_in_rot()):
+                break
+            time.sleep(1)
+        else:
+            subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"], capture_output=True)
         return 2
     app.Visible = True
 

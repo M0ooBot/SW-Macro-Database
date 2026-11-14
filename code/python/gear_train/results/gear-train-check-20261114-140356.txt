@@ -210,7 +210,7 @@ PASS  close what is left and exit SolidWorks (0.01 s)
 
 DIALOG {'step': 'reopened: save flags, resolved state, gear mate definitions read', 'title': '', 'texts': ['Close', 'Opened 5\nComponents', 'Updating\nAssembly', 'Update\nGraphics', 'Elapsed time: 0s', 'This file was last opened in 1 seconds.', 'For more information, view: ', 'Performance Evaluation', 'Do not show again', 'Hide Details'], 'at': '14:04:34'}
 
-DIALOG {'step': 'mate folders after a reopen', 'title': '', 'texts': ['Close', 'Opening Component 2 of 5', 'Update\nAssembly', 'Update\nGraphics', 'Opening File: C:\\Use...1114-140329\\train\\GearB.SLDPRT', 'Elapsed time: 0s', 'This file was last opened in 1 seconds.', 'For more information, view: ', 'Performance Evaluation', 'Do not show again', 'Hide Details'], 'at': '14:04:54'}
+DIALOG {'step': 'mate folders after a reopen', 'title': '', 'texts': ['Close', 'Opening Component 2 of 5', 'Update\nAssembly', 'Update\nGraphics', 'Opening File: <scratch>…\\train\\GearB.SLDPRT', 'Elapsed time: 0s', 'This file was last opened in 1 seconds.', 'For more information, view: ', 'Performance Evaluation', 'Do not show again', 'Hide Details'], 'at': '14:04:54'}
 
 DIALOG {'step': 'rebuild route ForceRebuild3(True): what it marks', 'title': '', 'texts': ['Close', 'Open\nComponents', 'Update\nAssembly', 'Update\nGraphics', ' ', 'Elapsed time: 0s', 'This file was last opened in 1 seconds.', 'For more information, view: ', 'Performance Evaluation', 'Do not show again', 'Hide Details'], 'at': '14:04:56'}
 
@@ -218,10 +218,10 @@ DIALOG {'step': 'rebuild route ForceRebuild3(True): what it marks', 'title': '',
 
 DIALOG {'step': 'rebuild route EditRebuild3: what it marks', 'title': '', 'texts': ['Close', 'Opened 5\nComponents', 'Updating\nAssembly', 'Update\nGraphics', 'Post load updating', 'Elapsed time: 0s', 'This file was last opened in 1 seconds.', 'For more information, view: ', 'Performance Evaluation', 'Do not show again', 'Hide Details'], 'at': '14:05:00'}
 
-DIALOG {'step': 'rebuild route ForceRebuild3(False): what it marks', 'title': '', 'texts': ['Close', 'Opening Component 2 of 5', 'Update\nAssembly', 'Update\nGraphics', 'Opening File: C:\\Use...61114-140329\\full\\GearB.SLDPRT', 'Elapsed time: 0s', 'This file was last opened in 1 seconds.', 'For more information, view: ', 'Performance Evaluation', 'Do not show again', 'Hide Details'], 'at': '14:05:04'}
+DIALOG {'step': 'rebuild route ForceRebuild3(False): what it marks', 'title': '', 'texts': ['Close', 'Opening Component 2 of 5', 'Update\nAssembly', 'Update\nGraphics', 'Opening File: <scratch>…\\full\\GearB.SLDPRT', 'Elapsed time: 0s', 'This file was last opened in 1 seconds.', 'For more information, view: ', 'Performance Evaluation', 'Do not show again', 'Hide Details'], 'at': '14:05:04'}
 
 DIALOG {'step': 'unsaved close by CloseDoc, the changed part open in its own window', 'title': '', 'texts': ['Close', 'Opened 5\nComponents', 'Updating\nAssembly', 'Update\nGraphics', 'Post load updating', 'Elapsed time: 0s', 'This file was last opened in 1 seconds.', 'For more information, view: ', 'Performance Evaluation', 'Do not show again', 'Hide Details'], 'at': '14:05:09'}
 
-DIALOG {'step': 'unsaved close by QuitDoc, the changed part open in its own window', 'title': '', 'texts': ['Close', 'Opening Component 5 of 5', 'Update\nAssembly', 'Update\nGraphics', 'Opening File: C:\\Use...9\\unsaved-quitdoc\\GearD.SLDPRT', 'Elapsed time: 0s', 'This file was last opened in 1 seconds.', 'For more information, view: ', 'Performance Evaluation', 'Do not show again', 'Hide Details'], 'at': '14:05:14'}
+DIALOG {'step': 'unsaved close by QuitDoc, the changed part open in its own window', 'title': '', 'texts': ['Close', 'Opening Component 5 of 5', 'Update\nAssembly', 'Update\nGraphics', 'Opening File: <scratch>…\\unsaved-quitdoc\\GearD.SLDPRT', 'Elapsed time: 0s', 'This file was last opened in 1 seconds.', 'For more information, view: ', 'Performance Evaluation', 'Do not show again', 'Hide Details'], 'at': '14:05:14'}
 
 {'pass': 25}

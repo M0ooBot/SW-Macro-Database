@@ -70,7 +70,8 @@ cases of assemblies/05.
 ## Safety
 
 - It starts its own SolidWorks from the path given, and **refuses** if any SolidWorks is already
-  registered in the Running Object Table, or if the one it started has a document open.
+  registered in the Running Object Table, or if the one it started has a document open; in that
+  second case it exits the SolidWorks it started (killing it if it has not gone 60 s later).
 - It writes only under the scratch folder you give (which must be empty or new), and its two result
   files under `--out`.
 - It closes what it opened and calls `ISldWorks.ExitApp` at the end; if SolidWorks has not gone
@@ -78,7 +79,8 @@ cases of assemblies/05.
 - A dialog watch logs every dialog box SolidWorks puts up and never answers one. A watchdog kills
   the SolidWorks it started if one step runs past `--step-timeout` seconds (600 by default) and
   writes what it has.
-- The result files carry no scratch path (written as `<scratch>`), no home folder and no user name.
+- The result files carry no scratch path (written as `<scratch>`, and a path SolidWorks shortened
+  with `...` in a dialog as `<scratch>…`), no home folder and no user name.
 
 ## Running it
 
