@@ -3,9 +3,9 @@
   "description": "SolidWorks automation entries. Each answers one question. Check 'status' before trusting an entry: verified means it ran against the named version; unverified means it is well-formed against the documented API but was never executed.",
   "count": 96,
   "by_status": {
-    "partly-verified": 11,
+    "partly-verified": 10,
     "unverified": 3,
-    "verified": 82
+    "verified": 83
   },
   "entries": [
     {
@@ -169,7 +169,9 @@
         "EditDelete",
         "DeleteSelection2",
         "rename a mate",
-        "find a mate by name"
+        "find a mate by name",
+        "suppressed mate error code 0",
+        "unsuppress marks modified"
       ],
       "answers": "How do I add coincident, distance and angle mates between assembly components from code?"
     },
@@ -307,7 +309,10 @@
         "EditRebuild3",
         "DragMode 0 1 2 3",
         "SetTransformAndSolve2",
-        "gear train will not turn from code"
+        "gear train will not turn from code",
+        "drag does not carry through gear mate",
+        "lock mate drag",
+        "axis coincident"
       ],
       "answers": "How do I find out from code whether an assembly can move, and which mate is stopping it?"
     },
@@ -317,11 +322,12 @@
       "path": "entries/assemblies/06-read-every-mate.md",
       "category": "assemblies",
       "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates also SolidWorks 2026 (34.1.1)",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates and a code-made mate folder also SolidWorks 2026 (34.1.1)",
       "language": [
         "python"
       ],
       "api": [
+        "IFeatureManager.InsertFeatureTreeFolder2",
         "IFeature.GetFirstSubFeature",
         "IFeature.GetNextSubFeature",
         "IFeature.GetTypeName2",
@@ -579,8 +585,8 @@
       "title": "Change a mated gear train in place — re-phase a gear, move a shaft, re-take a lock, change a gear mate's ratio",
       "path": "entries/assemblies/11-change-a-mated-gear-train.md",
       "category": "assemblies",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1) for all of it; SolidWorks 2024 SP5 (32.5.0) for the phase, shaft-move and suppressed-lock changes in a clean session, and for the rest only in a session holding an assembly it could not close",
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1) and SolidWorks 2024 SP5 (32.5.0), each in a session started fresh for the run",
       "language": [
         "python"
       ],
@@ -595,7 +601,9 @@
         "IModelDoc2.EditDelete",
         "IAssemblyDoc.GetComponentByName",
         "IAssemblyDoc.AddMate5",
-        "ISldWorks.CloseDoc"
+        "ISldWorks.CloseDoc",
+        "ISldWorks.OpenDoc6",
+        "IComponent2.GetSuppression2"
       ],
       "keywords": [
         "change gear ratio",
@@ -617,7 +625,15 @@
         "lock does not hold against put",
         "shaft moved by globals",
         "skeleton part",
-        "axial distance global"
+        "axial distance global",
+        "tooth count change",
+        "idler gear",
+        "remade mate goes last",
+        "half pitch interference control",
+        "lightweight",
+        "LoadLightweight",
+        "OverrideDefaultLoadLightweight",
+        "SOLIDWORKS CAM Error"
       ],
       "answers": "My gear train is mated and turns; how do I change it from code afterwards — turn one gear to a new phase, move a shaft, change a compound gear's angle or position, or give a gear mate a new ratio — without breaking the mates?"
     },
@@ -627,7 +643,7 @@
       "path": "entries/assemblies/12-rebuild-scope-and-the-save-flag.md",
       "category": "assemblies",
       "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0); the mated-train half on 2024 ran beside a stranded assembly, as noted",
+      "verified_on": "SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0), each in a session started fresh for the run",
       "language": [
         "python"
       ],
@@ -635,6 +651,8 @@
         "IModelDoc2.ForceRebuild3",
         "IModelDoc2.EditRebuild3",
         "IModelDoc2.GetSaveFlag",
+        "ISldWorks.CommandInProgress",
+        "IFeature.GetDefinition",
         "IModelDocExtension.NeedsRebuild",
         "IModelDocExtension.NeedsRebuild2",
         "ISldWorks.OpenDoc6",
@@ -663,7 +681,11 @@
         "ActivateDoc3",
         "skeleton part",
         "layout part",
-        "opened from file reads unmodified"
+        "opened from file reads unmodified",
+        "CommandInProgress mates",
+        "origin noise",
+        "reading feature data marks nothing",
+        "unsuppress marks modified"
       ],
       "answers": "Which rebuild should I call on an assembly after changing it from code, so that SolidWorks only asks to save the documents I actually changed — and what marks a document modified in the first place?"
     },

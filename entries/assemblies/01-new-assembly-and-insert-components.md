@@ -226,6 +226,14 @@ Added from the Gear-Generator probe's tier 7 (`add_component_opened_part` and
   (`swFileWithSameTitleAlreadyOpen`, read from `swconst.tlb`), and
   `AddComponent5` of it returned `None`. No dialog.
 
+**A second new assembly beside an unsaved one.** With a new assembly left open
+and unsaved (titled `Assem1` by SolidWorks, say), holding a component of a saved
+part and one mate, a second new assembly made from the same part took the same
+component name (`<stem>-1`), took its mate (status 1) and saved to its own path
+under its file name. No dialog, no refusal and no name clash; both closed
+afterwards. SolidWorks 2026 (34.1.1) and 2024 SP5, probe
+`second_assembly_beside_unsaved` (runs 20261114-095421 and 20261114-102300).
+
 ## Finding and moving components after a reopen
 
 From the same tier (`layout_assembly_five`, `layout_assembly_reopen`), both

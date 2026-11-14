@@ -89,7 +89,7 @@ Every entry declares one:
 | `unverified` | Well-formed against the documented API. Nobody has watched it run. |
 | `superseded` | Do not use. The entry links to what replaced it. |
 
-Currently: **82 verified, 11 partly verified, 3 unverified.**
+Currently: **83 verified, 10 partly verified, 3 unverified.**
 
 This distinction is the most valuable thing here, so it is never blurred. An
 entry that guesses says so.

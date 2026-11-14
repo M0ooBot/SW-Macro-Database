@@ -310,6 +310,14 @@ That is also the first observation in this collection of an **angle** mate
 following its global; [assemblies/02](02-mates-from-code.md) had only seen the
 link accepted.
 
+### Mating under CommandInProgress
+
+The whole mate set of such a train (18 `AddMate5` calls, each mate renamed
+straight after it) was also made with `ISldWorks.CommandInProgress` set `True`
+and a single `ForceRebuild3(True)` at the end: every status 1, every mate code 0,
+no gear moved, and one drive then defined the train and turned it at its ratio,
+on both versions ([assemblies/12](12-rebuild-scope-and-the-save-flag.md#what-each-rebuild-marked)).
+
 ## Why it is not obvious
 
 - **Concentric is the obvious mate and it is refused** between two reference
@@ -338,7 +346,10 @@ link accepted.
 - Only cylinders and annuli were mated: no tooth geometry was involved in any
   sense or ratio reading. Real gears were mated the same way by the tool
   afterwards, but those runs are not the evidence here.
-- Lightweight components were not tried.
+- Mating was measured with every component fully resolved. A gear mate was
+  also remade with the components forced lightweight, which worked but needed
+  two `OpenDoc6` flags and raised an add-in dialog
+  ([assemblies/11](11-change-a-mated-gear-train.md#with-the-components-lightweight)).
 - The sense rule was fitted to placements a meshing pair can have. Of three
   placements no meshing pair has, recorded beside it, one did **not** fit: a
   pinion inside a ring's bore but moved along the axis clear of the ring's face
@@ -359,8 +370,8 @@ sense), Python over pywin32 late binding:
 - SolidWorks 2026 revision 34.0.0, full run 20261113-231301 (75 of 75 passed),
   and revision 34.1.1, full run 20261114-034458 (83 of 83).
 - SolidWorks 2024 SP5 (32.5.0), tier 8 in run 20261113-223412 (31 of 31) in a
-  freshly started session; `demonstration_drive` in run 20261114-040636 (see
-  [assemblies/11](11-change-a-mated-gear-train.md) for that run's caveat).
+  freshly started session; `demonstration_drive` in run 20261114-071324, also
+  a fresh session.
 - Every decision was the same on both versions; the only difference was the
   numbers `GetErrorCode2` gave for flagged mates (46/47 on 2026, 51 on 2024).
 

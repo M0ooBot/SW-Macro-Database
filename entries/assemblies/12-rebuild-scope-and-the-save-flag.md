@@ -2,10 +2,10 @@
 id: assemblies-12-rebuild-scope-and-the-save-flag
 title: Rebuild an assembly without marking every part modified, and what sets GetSaveFlag
 status: verified
-verified_on: SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0); the mated-train half on 2024 ran beside a stranded assembly, as noted
+verified_on: SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0), each in a session started fresh for the run
 language: [python]
-api: [IModelDoc2.ForceRebuild3, IModelDoc2.EditRebuild3, IModelDoc2.GetSaveFlag, IModelDocExtension.NeedsRebuild, IModelDocExtension.NeedsRebuild2, ISldWorks.OpenDoc6, ISldWorks.ActivateDoc3, IModelDocExtension.GetWhatsWrongCount, IComponent2.Transform2]
-keywords: [ForceRebuild3 True, ForceRebuild3 False, top only, EditRebuild3, rebuild marks parts modified, save prompt for parts not changed, GetSaveFlag, unsaved changes, dirty flag, modified flag, NeedsRebuild, NeedsRebuild2, rebuild returns False, failed component, interference check marks modified, OpenDoc6 warning 128, swFileLoadWarning_AlreadyOpen, ActivateDoc3, skeleton part, layout part, opened from file reads unmodified]
+api: [IModelDoc2.ForceRebuild3, IModelDoc2.EditRebuild3, IModelDoc2.GetSaveFlag, ISldWorks.CommandInProgress, IFeature.GetDefinition, IModelDocExtension.NeedsRebuild, IModelDocExtension.NeedsRebuild2, ISldWorks.OpenDoc6, ISldWorks.ActivateDoc3, IModelDocExtension.GetWhatsWrongCount, IComponent2.Transform2]
+keywords: [ForceRebuild3 True, ForceRebuild3 False, top only, EditRebuild3, rebuild marks parts modified, save prompt for parts not changed, GetSaveFlag, unsaved changes, dirty flag, modified flag, NeedsRebuild, NeedsRebuild2, rebuild returns False, failed component, interference check marks modified, OpenDoc6 warning 128, swFileLoadWarning_AlreadyOpen, ActivateDoc3, skeleton part, layout part, opened from file reads unmodified, CommandInProgress mates, origin noise, reading feature data marks nothing, unsuppress marks modified]
 answers: "Which rebuild should I call on an assembly after changing it from code, so that SolidWorks only asks to save the documents I actually changed — and what marks a document modified in the first place?"
 ---
 
@@ -145,6 +145,38 @@ own document; an angle mate added against the compound lock, then deleted.
 - With the conflicting mate, **no route returned `False`**: `AddMate5`'s status
   was 5 and the mate errors showed before and after the route; deleted, they
   cleared ([assemblies/02](02-mates-from-code.md#when-a-mate-is-refused-or-over-defines)).
+- Driven 30° after the put, after the skeleton move and after the part change,
+  under each route, both trains turned at their ratio, the put's lock angle was
+  kept and the output stayed on its moved axis; every frame matched the full
+  rebuild's train to about 1e-13 mm.
+
+**Building the train with the top-only rebuild alone.** Each route then also
+*built* its own train from its own skeleton and gear part, with that route as
+its only assembly rebuild (components placed by `Transform2` puts, the route,
+the mates, the axial distance on an assembly global, the drive). Every build
+passed the same check (18 `AddMate5` statuses 1, no mate error, every gear
+under-defined; one drive made every gear fully defined; both trains turned at
+their ratio), and its frames matched the full rebuild's build exactly. **The
+full rebuild's build left the skeleton and the gear part modified; the
+top-only and `EditRebuild3` builds left them unmodified**, before and after the
+assembly was saved.
+
+**Mates added under `CommandInProgress`.** With `ISldWorks.CommandInProgress`
+set `True` (it read back `True`, and `False` after being set back), every unfix
+and all 18 `AddMate5` calls of the train answered status 1, every mate code 0,
+no gear moved, one top-only rebuild still under it; then one drive defined the
+train and it turned at its ratio. A conflicting angle mate added under it
+answered status 5 with the usual error codes. So the flag that speeds up a
+batch of features ([curves/08](../curves/08-rebuild-once-at-the-end.md)) does not
+get in the way of mating.
+
+**Origin noise.** Every gear's origin, read at full precision before and after
+`ForceRebuild3(True)`, moved **0.0 mm** after nothing, after a part's teeth
+changed through its globals, and after another shaft moved 1 mm through the
+skeleton's global (that shaft's own gear had already moved its full 1 mm by the
+first read, once the assembly was active again). After a drive was added,
+driven, set back and deleted, the largest move from before it was 2.8e-14 mm.
+A "has it moved" tolerance of 1e-6 mm sits far above that.
 
 ## What sets GetSaveFlag
 
@@ -162,6 +194,16 @@ own document; an angle mate added against the compound lock, then deleted.
   the assembly. Six reopens on each version.
 - A rebuild marks as in the tables above; a change made in a part's or the
   skeleton's own document marks that document.
+- **Reading a gear mate's definition marks nothing.** On a reopened train
+  (every flag `False`), `IFeature.GetDefinition` on each gear mate, then its
+  `GearRatioNumerator` and `GearRatioDenominator`, then the object released (no
+  `ModifyDefinition`, no `AccessSelections`): every flag stayed `False` after
+  the get, after the reads and after the release, and the train then closed
+  with nothing left open.
+- **`SetSuppression2(1, 1, None)` (unsuppress) on a mate that was already on
+  marks the assembly modified.** It returned `True`, left the lock on and raised
+  no error, but the assembly read `GetSaveFlag` `True`. Check `IsSuppressed2`
+  before unsuppressing if the flag matters.
 
 ## NeedsRebuild, and a change made in another window
 
@@ -169,16 +211,17 @@ own document; an angle mate added against the compound lock, then deleted.
   changed (the axial global, the drive), and `False` / 0 after every route, the
   top-only one included, on both versions.
 - After a change made in the skeleton's or the part's **own document**, read
-  on the assembly before any rebuild: `False` / 0 on 2026, `True` / 1 on 2024.
-- On 2026 the moved shaft **already showed in the assembly once `ActivateDoc3`
+  on the assembly before any rebuild: `False` / 0, on both versions. So
+  `NeedsRebuild` does not tell you that a component changed elsewhere.
+- The moved shaft **already showed in the assembly once `ActivateDoc3`
   brought the assembly back to the front**, before any rebuild (0 mm before the
-  activate, 5 mm after); on 2024 it showed only after the route.
+  activate, 5 mm after), on both versions.
 
-Those last two differences are **open**: the 2024 run they come from shared its
-session with an assembly that could not be closed and that held the same
-skeleton and part open ([assemblies/11](11-change-a-mated-gear-train.md#the-ratio-change-that-strands-an-assembly-on-2024)),
-so they may be that assembly's doing rather than the version's. A clean rerun
-on 2024 is in flight.
+A first 2024 run had read `True` / 1 there and not shown the move before the
+route; it shared its session with an assembly SolidWorks could not close
+([assemblies/11](11-change-a-mated-gear-train.md#the-ratio-change-that-strands-an-assembly-on-2024)),
+which held the same skeleton and part open. In a fresh 2024 session neither
+difference recurred, so they were that assembly's doing.
 
 ## Changing a component in its own document
 
@@ -212,11 +255,8 @@ active, the way a tool edits a part that is already loaded as a component:
   gear-pair assembly with a centre-distance equation, point mates and angle
   mates between non-parallel axes
   ([assemblies/04](04-mates-between-non-parallel-axes.md)) was not measured.
-- **Not yet shown:** a train *built* under the top-only rebuild (the probe's
-  trains were built with the full one), a drive after a shaft move under it,
-  and a put plus top-only rebuild while `CommandInProgress` is set
-  ([curves/08](../curves/08-rebuild-once-at-the-end.md)). A probe round adding
-  the first two is in flight.
+- **Not shown:** a component put plus a top-only rebuild while
+  `CommandInProgress` is set; only mates were added under it.
 - The failed-rebuild case was a failing part only; a failing mate was the
   conflicting-mate case, where every route returned `True`.
 - Whether a static assembly still reports needing a rebuild after the top-only
@@ -234,13 +274,25 @@ active, the way a tool edits a part that is already loaded as a component:
   `ForceRebuild3(True) on the assembly, a failed part` returned `False`. With no
   rebuild, the put read `flags` all `False` and `flags_after_reads` the
   assembly `True`.
-- Mated train: SolidWorks 2026 34.1.1, run 20261114-034458; SolidWorks 2024
-  32.5.0, run 20261114-040636 (beside the stranded assembly).
+- Mated train: SolidWorks 2026 34.1.1, full run 20261114-081921 (85 of 85);
+  SolidWorks 2024 SP5 32.5.0, run 20261114-071324 (47 of 47), each in a session
+  started fresh (an earlier pair, 20261114-034458 and the 2024 run
+  20261114-040636 beside a stranded assembly, is superseded by these).
+  `mated_build_rebuild_route = 'ForceRebuild3(True)'`;
+  `mated_build_marked`: `ForceRebuild3(False)` `['layout', 'part']`, the other two
+  `[]`; `mated_frames_against_reference` at most 1.2e-13 mm;
   `mated_rebuild_keeps_components_unmodified = True`;
   `mated_rebuild_returned` all `True`; `rebuild_status_members = {'IModelDoc2': [], 'IModelDocExtension': ['NeedsRebuild', 'NeedsRebuild2']}`;
   for `ForceRebuild3(True)`, the axial step `status_before_route = {'NeedsRebuild': True, 'NeedsRebuild2': 1}`
   and `status = {False, 0}`; the skeleton step `before_activate_mm 0.0`,
-  `before_route_mm 5.0` on 2026 and `0.0` on 2024.
+  `before_route_mm 5.0` and `status_before_route = {False, 0}` on both.
+- `mates_under_command_in_progress`, `origin_noise`, `gear_mate_definition_read`:
+  SolidWorks 2026 34.1.1, run 20261114-095421, and SolidWorks 2024 SP5, run
+  20261114-102300 (49 of 49 each, fresh sessions).
+  `mates_under_command_in_progress_hold = True`;
+  `unsuppress_on_a_lock_already_on = {'returned': True, 'suppressed_after': False, 'marks_assembly': True, 'errors': {}}`;
+  `origin_noise_mm = {'nothing': 0.0, 'part_global': 0.0, 'layout_move': 0.0, 'drive': 0.0, 'drive_start_to_end': 2.85e-14}`;
+  `gear_mate_definition_read_marks = 'nothing'`.
 - Opened-from-file flags and what marks the assembly: the Gear-Generator's
   own end-to-end check on 2026 34.1.1 and 2024 32.5.0, 2026-11-14 (322 of 322
   checks each): `marked modified after the frame reads (component_frame): []`
@@ -263,4 +315,4 @@ The result files are kept in the Gear-Generator repository, not here.
 - [assemblies/11 — Change a mated gear train](11-change-a-mated-gear-train.md)
 - [reading/16 — Measure between two selections](../reading/16-measure-between-two-selections.md)
 - [connect/07 — Find the open document](../connect/07-find-the-open-document.md)
-- [GOTCHAS §58, §93, §100](../../GOTCHAS.md)
+- [GOTCHAS §58, §93, §100, §103](../../GOTCHAS.md)

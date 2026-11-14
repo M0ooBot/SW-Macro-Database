@@ -121,6 +121,9 @@ set in one read should use [manifest.json](manifest.json) instead.
 | Find out why `AddMate5` refused a mate, or whether a mate over-defined the assembly | [assemblies/02 — Mates from code](entries/assemblies/02-mates-from-code.md#when-a-mate-is-refused-or-over-defines) |
 | Delete, rename or find a mate from code | [assemblies/02 — Mates from code](entries/assemblies/02-mates-from-code.md#deleting-a-mate) |
 | Insert a part that is not open (`AddComponent5` returned `None`) | [assemblies/01 — New assembly and insert components](entries/assemblies/01-new-assembly-and-insert-components.md#inserting-a-part-that-is-not-open-and-two-parts-of-one-file-name) |
+| Change a gear train's tooth counts in place, and prove the interference check can see the mesh | [assemblies/11 — Change a mated gear train](entries/assemblies/11-change-a-mated-gear-train.md#a-whole-tooth-count-change-in-place) |
+| Open an assembly with its components lightweight (and the add-in box that blocks it) | [assemblies/11 — Change a mated gear train](entries/assemblies/11-change-a-mated-gear-train.md#with-the-components-lightweight) |
+| Put mates in a folder from code, and still find them | [assemblies/06 — Read every mate](entries/assemblies/06-read-every-mate.md#folders-are-markers-not-parents) |
 
 ## Make drawings
 

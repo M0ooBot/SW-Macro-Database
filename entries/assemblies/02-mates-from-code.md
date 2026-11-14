@@ -5,7 +5,7 @@ status: verified
 verified_on: SolidWorks 2026 (revisions 34.0.0 and 34.1.1); failing mates, deleting and renaming also on SolidWorks 2024 SP5 (32.5.0)
 language: [python]
 api: [IAssemblyDoc.AddMate5, IComponent2.FeatureByName, IFeature.Select2, IModelDocExtension.SelectByID2, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IEquationMgr.Add2, IFeature.GetErrorCode2, IComponent2.GetConstrainedStatus, IModelDocExtension.GetWhatsWrongCount, IModelDocExtension.GetWhatsWrong, IModelDoc2.EditDelete, IFeature.Name, IModelDoc2.FeatureByName]
-keywords: [AddMate5, mate, coincident mate, distance mate, angle mate, swMateType_e, swMateCOINCIDENT, swMateDISTANCE, swMateANGLE, swMateAlign_e, MateGroup, MateCoincident, MateDistanceDim, MatePlanarAngleDim, FeatureByName, selection mark 1, drive mate from global, mate refused, AddMate5 status 0, AddMate5 status 5, over-defined assembly, swAddMateError_OverDefinedAssembly, GetErrorCode2 46, GetErrorCode2 47, GetErrorCode2 51, IsWarning, GetWhatsWrong, GetConstrainedStatus 4, delete a mate, EditDelete, DeleteSelection2, rename a mate, find a mate by name]
+keywords: [AddMate5, mate, coincident mate, distance mate, angle mate, swMateType_e, swMateCOINCIDENT, swMateDISTANCE, swMateANGLE, swMateAlign_e, MateGroup, MateCoincident, MateDistanceDim, MatePlanarAngleDim, FeatureByName, selection mark 1, drive mate from global, mate refused, AddMate5 status 0, AddMate5 status 5, over-defined assembly, swAddMateError_OverDefinedAssembly, GetErrorCode2 46, GetErrorCode2 47, GetErrorCode2 51, IsWarning, GetWhatsWrong, GetConstrainedStatus 4, delete a mate, EditDelete, DeleteSelection2, rename a mate, find a mate by name, suppressed mate error code 0, unsuppress marks modified]
 answers: "How do I add coincident, distance and angle mates between assembly components from code?"
 ---
 
@@ -352,8 +352,26 @@ changed. Saved, closed and reopened, each was found by its new name both by the
 was still its kind (`IMate2.Type` 16, 10, 0, 5, 16; the lock's type name is
 `MateLock`), the suppressed lock still suppressed; and driven, the train turned
 as before ([assemblies/10](10-mate-a-gear-train-that-turns.md)). SolidWorks
-2026 (34.1.1) and 2024 (32.5.0), the 2024 run with the caveat in
-[assemblies/11](11-change-a-mated-gear-train.md#what-it-does-not-do).
+2026 (34.1.1) and 2024 (32.5.0), each in a session started fresh.
+
+**Renaming straight after `AddMate5` also works.** In a new, unsaved assembly,
+each of a train's 18 mates renamed by an `IFeature.Name` put right after its
+`AddMate5` (with `CommandInProgress` on) read its new name back at once and was
+found by it; saved and reopened, every mate was found by its new name and no
+first name was left. A mate that is deleted and made again goes to the end of
+the `MateGroup` ([assemblies/11](11-change-a-mated-gear-train.md#what-each-change-did)),
+so find mates by name, never by position.
+
+## Suppressed mates read clean
+
+A suppressed mate's `GetErrorCode2` read **0** with the warning flag `False`,
+whether it was a sound lock or the conflicting angle mate that over-defined the
+assembly when it was on. So a mate check that reads only error codes passes a
+suppressed conflict: read `IsSuppressed2` too. And `SetSuppression2(1, 1, None)`
+on a mate that is already on returned `True`, changed nothing, raised no error,
+and still **marked the assembly modified**
+([assemblies/12](12-rebuild-scope-and-the-save-flag.md#what-sets-getsaveflag)).
+SolidWorks 2026 (34.1.1) and 2024 SP5, fresh sessions.
 
 ## An angle mate following its global
 
@@ -413,11 +431,15 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
 - A later gear pair built by the tool on the same session: the angle-mate link
   accepted, and the centre distance moved 60 → 61 mm, as described above. That
   run's output is quoted in this entry; its log is not kept in this repo.
+- Renaming at once, suppressed mates: probe `mates_under_command_in_progress`,
+  SolidWorks 2026 34.1.1 (run 20261114-095421) and 2024 SP5 (run
+  20261114-102300): `mate_rename_at_once_holds = True`;
+  `suppressed_mate_error_codes = {'sound': {'type': 'MateLock', 'code': 0, 'warning': False, 'suppressed': True}, 'conflicting': {'type': 'MatePlanarAngleDim', 'code': 0, 'warning': False, 'suppressed': True}}`.
 - Failing mates, deleting and renaming: Gear-Generator probe tier 8, probes
   `shaft_axis_mates`, `gear_mate_sense`, `compound_lock` and `lock_mate_rename`,
   on SolidWorks 2026 34.0.0 (run 20261113-231301) and 34.1.1 (20261114-034458),
   and SolidWorks 2024 SP5 32.5.0 (20261113-223412; `lock_mate_rename` in
-  20261114-040636). `compound_lock`'s `over_defined`:
+  20261114-071324, a fresh session). `compound_lock`'s `over_defined`:
   `mate = {'returned': 'CDispatch', 'status': 5, 'status_name': 'swAddMateError_OverDefinedAssembly'}`,
   `rebuild = {'returned': True}`, `constrained = {'p': 3, 'q': 4}`,
   `whats_wrong.count` 8 (6 before), `deleted_by = 'Select2 then EditDelete()'`,
@@ -442,4 +464,4 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
 - [assemblies/07 — Configurations that hold different positions](07-configurations-that-hold-different-positions.md) — mates that pin one position per configuration
 - [assemblies/10 — Mate a gear train that turns](10-mate-a-gear-train-that-turns.md) — gear mates, lock mates, and the axis mate that is refused
 - [assemblies/11 — Change a mated gear train](11-change-a-mated-gear-train.md) — suppressing, deleting and remaking mates in a train
-- [GOTCHAS §31, §83, §94, §95](../../GOTCHAS.md)
+- [GOTCHAS §31, §83, §94, §95, §103](../../GOTCHAS.md)

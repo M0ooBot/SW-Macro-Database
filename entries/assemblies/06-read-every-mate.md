@@ -2,9 +2,9 @@
 id: assemblies-06-read-every-mate
 title: Read every mate in an assembly, with its entities, gear ratio and folder
 status: verified
-verified_on: SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates also SolidWorks 2026 (34.1.1)
+verified_on: SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates and a code-made mate folder also SolidWorks 2026 (34.1.1)
 language: [python]
-api: [IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IFeature.GetTypeName2, IFeature.GetSpecificFeature2, IFeature.GetDefinition, IFeature.IsSuppressed, IFeature.GetErrorCode2, IMate2.Type, IMate2.Alignment, IMate2.Flipped, IMate2.MaximumVariation, IMate2.MinimumVariation, IMate2.GetMateEntityCount, IMate2.MateEntity, IMateEntity2.ReferenceComponent, IMateEntity2.ReferenceType2, IMateEntity2.EntityParams, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IGearMateFeatureData.Reverse, IDistanceMateFeatureData.Distance, IDistanceMateFeatureData.MateAlignment]
+api: [IFeatureManager.InsertFeatureTreeFolder2, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IFeature.GetTypeName2, IFeature.GetSpecificFeature2, IFeature.GetDefinition, IFeature.IsSuppressed, IFeature.GetErrorCode2, IMate2.Type, IMate2.Alignment, IMate2.Flipped, IMate2.MaximumVariation, IMate2.MinimumVariation, IMate2.GetMateEntityCount, IMate2.MateEntity, IMateEntity2.ReferenceComponent, IMateEntity2.ReferenceType2, IMateEntity2.EntityParams, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IGearMateFeatureData.Reverse, IDistanceMateFeatureData.Distance, IDistanceMateFeatureData.MateAlignment]
 keywords: [read mates, list mates, dump mates, mate inventory, existing mates, MateGroup, MateGearDim, MateConcentric, MateCoincident, MateCoordinate, MateDistanceDim, MateLimitDistanceDim, gear mate ratio, GearRatioNumerator, GearRatioDenominator, which gear is the numerator, swMateType_e, swSelectType_e, ReferenceType2, EntityParams, mate folder, FtrFolder, ___EndTag___, limit mate range, MaximumVariation, suppressed mates, mechanism from mates]
 answers: "How do I read every mate in an existing assembly — its type, the components and faces it joins, a gear mate's ratio, and which folder it is in?"
 ---
@@ -275,6 +275,20 @@ Match by position, never by name. Testing the name for `___EndTag___` worked
 here, but §19 records a tag renamed `…___EndTag___0` on reopening and a
 sturdier test through `IFeatureFolder.GetFeatures`; that test has **not been
 run on mate folders**.
+
+**A mate folder made from code behaves the same** (Gear-Generator probe
+`mate_folders`, SolidWorks 2026 34.1.1 and 2024 SP5, fresh sessions). Two mates
+selected by `IFeature.Select2` (the second appended) and
+`IFeatureManager.InsertFeatureTreeFolder2(2)` (`swFeatureTreeFolder_Containing`,
+read from `swconst.tlb`; 1 is `EmptyBefore`, 3 `Mold`) made a folder in the
+`MateGroup` (`GetTypeName2` `FtrFolder`), which took a new name by an
+`IFeature.Name` put. The walk then listed the folder, the two mates as the
+**following siblings**, and an end marker `Folder1___EndTag___` (also
+`FtrFolder`; named after the folder's first automatic name, not its new one);
+the folder's own `GetFirstSubFeature` gave nothing. `IModelDoc2.FeatureByName`
+found both mates inside the folder, no mate reported an error, and a walk that
+keeps only type names starting with `Mate` skipped both folder entries and still
+saw every mate.
 
 ## What it does not do
 

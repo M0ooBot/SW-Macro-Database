@@ -170,6 +170,23 @@ assembly first, it closed every one with nothing left open and **no dialog**
 logged none there), on SolidWorks 2026 34.0.0 and 34.1.1 and on 2024 SP5. The
 files on disk were not changed.
 
+**Closing an assembly with unsaved changes while its changed parts are open in
+their own windows asked nothing — by `CloseDoc` or by `QuitDoc`, on 2026 and
+2024.** Two parts of a mated assembly were changed in their own documents
+(opened by path and activated) and the assembly updated, nothing saved: the
+assembly and both parts read `GetSaveFlag` `True`. `CloseDoc` on the assembly
+returned at once (0.3 s), and the probe's dialog watch saw **no window** open.
+The two parts stayed open, still modified; `CloseDoc` on each closed it
+silently. Afterwards no file on disk had been written (modification times
+unchanged) and the parts reopened with their saved values. `QuitDoc`, in the
+same order on a second copy, did exactly the same.
+
+That is not the 2024 "Save Modified Documents" case above. There, the parts had
+been modified while loaded **only as components** of the assembly; here they
+were open in their own windows. That this difference is what decides whether
+2024 asks is the likeliest reading of the two cases, not something a probe
+isolated.
+
 **But on 2026, `QuitDoc` on an assembly saved by SolidWorks 2024 raised a modal
 "SOLIDWORKS CAM Warning: Save changes to <assembly>?"**, from the SOLIDWORKS CAM
 add-in, once for each of two such assemblies. Every document of those
@@ -231,7 +248,14 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
   "every document … reads GetSaveFlag False straight after the open: marked []"
   and "closed without saving (QuitDoc): left []"; the dialog itself is not in
   those logs (the check has no dialog watcher) and is recorded in the check's
-  own notes. Those logs are kept in the Gear-Generator repository, not here.
+  own notes. The unsaved close with the parts open: probe
+  `unsaved_update_close`, SolidWorks 2026 34.1.1 (run 20261114-095421) and 2024
+  SP5 32.5.0 (run 20261114-102300), each in a session started fresh:
+  `unsaved_update_close_asks = {'CloseDoc': False, 'QuitDoc': False}`,
+  `unsaved_update_close_discards = {'CloseDoc': True, 'QuitDoc': True}`, the
+  assembly's close `{'dialog': False, 'windows': [], 'seconds': 0.3}` (0.36 on
+  2024), `written: []`. Those logs and results are kept in the Gear-Generator
+  repository, not here.
 
 ## See also
 

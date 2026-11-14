@@ -1200,16 +1200,19 @@ After `IFeature.ModifyDefinition` changed a gear mate's ratio (returning `True`,
 and the ratio right), `CloseDoc` on that assembly raised `0x80010105` ("The
 server threw an exception") on SolidWorks 2024 SP5, and later closes left it
 open without a word, with its parts, until SolidWorks was killed — saved first
-or not. SolidWorks 2026 closed it normally. Delete the gear mate and add it
-again instead, which closed on both (on 2024 so far only in a session that
-already held a stranded assembly; a clean rerun is pending). See
+or not, and with that probe alone in a fresh session. SolidWorks 2026 closed
+it normally. Delete the gear mate and add it again instead, which carried a new
+ratio through a save, a close and a reopen on both versions, each in a fresh
+session. See
 [assemblies/11](entries/assemblies/11-change-a-mated-gear-train.md#the-ratio-change-that-strands-an-assembly-on-2024).
 
 ## 98. A put on a locked or gear-mated gear moves that gear alone, silently
 
 A `Transform2` put on one gear of a mated train turned that gear only: its gear
 mate partners did not follow, its **lock** partner did not follow either, and no
-mate reported an error after the rebuild. `SetTransformAndSolve2` and
+mate reported an error after the rebuild; driven afterwards, the locked pair
+turned together **at the put's new relative angle**, so the lock silently adopts
+whatever relation it finds. `SetTransformAndSolve2` and
 `IDragOperator` (`Drag`, `DragAsUI`, several settings; every call `True`) did
 the same to the input gear. Suppress every lock of a train around a put; prove
 a train's ratio by driving a mate through a global, not by moving a gear.
@@ -1235,5 +1238,52 @@ opened "Save Modified Documents" and the script hung; 2026 did not ask.
 both. But on SolidWorks 2026 (34.1.1), `QuitDoc` on an assembly **saved by
 2024** raised the SOLIDWORKS CAM add-in's "Save changes to <assembly>?",
 although `GetSaveFlag` had read `False` after the open (it was not read again
-before the close). See
+before the close). An assembly with unsaved changes whose changed parts were
+open in their own windows closed with no question by either call, on both
+versions, and nothing was written. See
 [documents/02](entries/documents/02-save-as-and-close.md#closing-an-assembly-closedoc-quitdoc-and-the-dialogs-they-raised).
+
+## 101. The drag operator did not turn a gear train held by axis-coincident mates
+
+[assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md)'s
+recipe (`AddComponent(gear, False)`, `TransformType` 0, `UseAbsoluteTransform`
+`False`, `DragMode` as it came, relative `Drag` steps, `EndDrag`), repeated call
+for call on a mated gear train, turned **only the dragged gear**: the output in
+10 steps (that entry's successful case), in 1 and in 30; the input; and the
+second gear of a locked compound pair, whose lock partner stayed put too. Every
+`Drag` returned `True` and no mate reported an error. The train's gears were
+held by their axes **coincident** with shaft axes; in the entry's case where a
+drag did carry through a gear mate they were concentric to sketch points. The
+mate kind was not varied, so that entry's result stands for its own assembly but
+must not be relied on for a gear train without testing. Prove a train by
+driving a mate through a global instead. SolidWorks 2026 (34.1.1) and 2024 SP5.
+See [assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md#a-third-assembly-a-mated-gear-train-on-2026-and-2024).
+
+## 102. Forcing lightweight needs two flags, and the CAM add-in then blocks the open
+
+`OpenDoc6` with `swOpenDocOptions_LoadLightweight` (128) alone left every
+component fully resolved. With `swOpenDocOptions_OverrideDefaultLoadLightweight`
+(64) added, every component read lightweight (`GetSuppression2` 1), and the
+SOLIDWORKS CAM add-in put up a modal "SOLIDWORKS CAM Error" box ("…loading of
+lightweight parts has been detected") that blocked `OpenDoc6` until something
+closed it. SolidWorks 2026 (34.1.1) and 2024 SP5, with that add-in loaded. See
+[assemblies/11](entries/assemblies/11-change-a-mated-gear-train.md#with-the-components-lightweight).
+
+## 103. A suppressed mate reads error code 0, and unsuppressing an unsuppressed mate marks the assembly
+
+`GetErrorCode2` on a suppressed mate read 0 with the warning flag `False`, even
+for the mate that over-defined the assembly when it was on: a check that reads
+only codes passes it. `SetSuppression2(1, 1, None)` on a mate already on returned
+`True`, did nothing visible, and marked the assembly modified. SolidWorks 2026
+(34.1.1) and 2024 SP5. See
+[assemblies/02](entries/assemblies/02-mates-from-code.md#suppressed-mates-read-clean).
+
+## 104. "No interference" after a gear change proves nothing without a half-pitch control
+
+After a tooth-count change, gears left at their **old** phases clashed in one
+train (4 interferences) and happened to clear in another (0). Put half a tooth
+pitch off the new phase, both clashed (4 and 6). Run the check once at the
+intended phase and once half a pitch off; only the pair of readings shows that
+the check can see the mesh. SolidWorks 2026 (34.1.1) and 2024 SP5. See
+[assemblies/11](entries/assemblies/11-change-a-mated-gear-train.md#a-whole-tooth-count-change-in-place)
+and [assemblies/03](entries/assemblies/03-interference-detection.md).
