@@ -33,11 +33,10 @@ millimetres and degrees and converted at the call; the listings here take metres
 
 From the Gear-Generator probe's tier 8 (`p8_motion.py`), driven from Python
 over pywin32 late binding ([connect/02](../connect/02-attach-from-python.md)).
-The listings below are **condensed from the probe**: the same SolidWorks calls,
-arguments and order, with its logging, retries and record-keeping removed and
-its helpers written out, so that each stands on its own. They were not run as
-written; what ran is the probe, and its results are in the Evidence section.
-The first listing defines the small helpers the rest use. Mate type and alignment
+The listings below are copied from [`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py), a self-contained runner that
+builds plain-cylinder fixtures and repeats these calls, the same SolidWorks
+calls, arguments and order as the probe. It ran on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), each started fresh by the runner (results `gear-train-check-20261114-140356` and `gear-train-check-20261114-140631` beside it). The first listing defines the
+small helpers the rest use. Mate type and alignment
 numbers were read from `swconst.tlb` at run time: `swMateCOINCIDENT` 0,
 `swMateCONCENTRIC` 1, `swMateDISTANCE` 5, `swMateANGLE` 6, `swMateGEAR` 10,
 `swMateLOCK` 16; `swMateAlignALIGNED` 0, `swMateAlignANTI_ALIGNED` 1,
@@ -47,11 +46,11 @@ numbers were read from `swconst.tlb` at run time: `swMateCOINCIDENT` 0,
 **One `AddMate5` for every mate**, on **IAssemblyDoc**, with what is selected:
 
 ```python
-# Condensed from the probe (its add_mate and the scaffold helpers it uses): the
-# same calls, arguments and order, with its logging, retries and records left
-# out. This listing was not run as written. Python, pywin32 late binding.
 import pythoncom
 from win32com.client import VARIANT
+
+COINCIDENT, CONCENTRIC, DISTANCE, ANGLE, GEAR, LOCK = 0, 1, 5, 6, 10, 16
+CLOSEST = 2
 
 
 def call(obj, name, *args):
@@ -92,6 +91,10 @@ def mate_features(asm):
     return out
 
 
+def mate_feature(asm, name):
+    return next(f for f in mate_features(asm) if str(call(f, "Name")) == name)
+
+
 def add_mate(asm, kind, align, flip=False, distance_m=0.0, angle_rad=0.0, ratio=(1.0, 1.0)):
     """IAssemblyDoc.AddMate5 on what is selected at mark 1: type, align, flip, distance and its two
     limits, the gear ratio's numerator and denominator, angle and its two limits, for-positioning-only,
@@ -104,6 +107,12 @@ def add_mate(asm, kind, align, flip=False, distance_m=0.0, angle_rad=0.0, ratio=
     call(asm, "ClearSelection2", True)
     made = [str(call(f, "Name")) for f in mate_features(asm) if str(call(f, "Name")) not in before]
     return mate, status.value, made
+
+
+def rename(feature, name):
+    """An IFeature.Name put, read back: SolidWorks renames quietly on a collision."""
+    feature.Name = name
+    return str(call(feature, "Name"))
 ```
 
 `mate_features` is the `MateGroup` walk of
@@ -136,16 +145,20 @@ read `False` afterwards. Unfixing did not move the gear (0 mm, 0 rotation).
 ### Holding a gear on its shaft
 
 ```python
-COINCIDENT, DISTANCE, CLOSEST = 0, 5, 2      # swMateType_e and swMateAlign_e, read from swconst.tlb
-
-
 def select_feature_of(asm, component, name, append, mark=1):
-    """A component's plane or axis: IComponent2.FeatureByName, then IFeature.Select2(append, mark)."""
+    """A component's plane or axis: IComponent2.FeatureByName, then IFeature.Select2(append, mark);
+    else SelectByID2("<feature>@<component>@<assembly>")."""
     if not append:
         call(asm, "ClearSelection2", True)
     before = selected_count(asm)
     feature = call(component, "FeatureByName", name)
-    return feature is not None and bool(call(feature, "Select2", append, mark)) and selected_count(asm) > before
+    if feature is not None and call(feature, "Select2", append, mark) and selected_count(asm) > before:
+        return True
+    kind = "AXIS" if feature is not None and call(feature, "GetTypeName2") == "RefAxis" else "PLANE"
+    assembly = str(call(asm, "GetTitle")).rsplit(".", 1)[0]
+    full = f"{name}@{call(component, 'Name2')}@{assembly}"
+    return bool(call(call(asm, "Extension"), "SelectByID2", full, kind, 0.0, 0.0, 0.0, append, mark,
+                     null(), 0)) and selected_count(asm) > before
 
 
 def select_origin(asm, component, append, mark=1):
@@ -164,7 +177,7 @@ def select_origin(asm, component, append, mark=1):
 
 def hold_on_shaft(asm, gear, skeleton, shaft_axis, skeleton_front, z_front_m):
     """Unfix a gear, put its Gear Axis on the skeleton's shaft axis, and hold its origin
-    z_front_m (metres, signed) from the skeleton's Front plane."""
+    z_front_m (metres, signed) from the skeleton's Front plane. Returns each AddMate5's answer."""
     if not unfix(asm, gear):
         raise RuntimeError("the gear would not unfix")
     if not (select_feature_of(asm, gear, "Gear Axis", False) and
@@ -230,26 +243,38 @@ def select_by_corresponding(asm, component, feature_name, append, mark=1):
 With the first gear's `Gear Axis` selected, then the second's, both at mark 1:
 
 ```python
-GEAR = 10                                    # swMateType_e.swMateGEAR
-select_feature_of(asm, first_gear, "Gear Axis", False)
-select_feature_of(asm, second_gear, "Gear Axis", True)
-mate, status, made = add_mate(asm, GEAR, CLOSEST, flip=False, ratio=(z_first, z_second))
+select_feature_of(asm, gears[first], "Gear Axis", False)
+select_feature_of(asm, gears[second], "Gear Axis", True)
+mate, status, made = add_mate(asm, GEAR, CLOSEST, flip=False, ratio=(TEETH[first], TEETH[second]))
 ```
 
-that is `AddMate5(10, 2, flip, 0, 0, 0, zFirst, zSecond, 0, 0, 0, False, False, 0, out)`,
+(lines from the runner's train step: `gears` holds its components, `TEETH` each
+gear's illustrative tooth count), that is
+`AddMate5(10, 2, flip, 0, 0, 0, zFirst, zSecond, 0, 0, 0, False, False, 0, out)`,
 with the **first selection's** tooth count as the numerator argument (the probe
 also tried `Flip` True, faces in place of axes, and explicit alignments, below). It made
 one `MateGearDim` (status 1).
 
 - **The ratio goes first selection first.** With `(20, 40)` and the first gear
   driven 30°, the second turned 15°; with `(40, 20)`, 60°.
-- **`Flip` False is the mesh's own sense.** Every external pair turned opposite
-  ways with `Flip` False and the same way with `Flip` True: shafts +Z/+Z,
-  +Z/−Z, −Z/+Z and −Z/−Z; the bigger count first or second; the two axes
-  selected, the two outside faces, or one of each. A ring (an annulus round a
-  cylinder) turned the **same** way as its pinion with `Flip` False, ring
-  selected first or second, on +Z or −Z, axes or faces. So SolidWorks takes the
-  sense from where the gears sit; give every meshing pair `Flip` False.
+- **`Flip` False was right for every external pair and every plain annulus.**
+  Every external pair turned opposite ways with `Flip` False and the same way
+  with `Flip` True: shafts +Z/+Z, +Z/−Z, −Z/+Z and −Z/−Z; the bigger count first
+  or second; the two axes selected, the two outside faces, or one of each. A
+  pinion inside a plain annulus (no teeth) turned the **same** way as the
+  annulus with `Flip` False, annulus selected first or second, on +Z or −Z,
+  axes or faces. Both versions.
+- **But no static rule holds for a toothed internal ring gear.** A later probe
+  round mated pinions inside real toothed ring gears (spur, and 20° helical) on
+  every combination of shaft senses, either gear selected first. The `Flip` a
+  pair needed to turn as it meshes was **opposite on SolidWorks 2026 and 2024**
+  for every toothed ring, and on 2026 it differed between the spur rings
+  (depending on the shaft senses) and the helical ones; which gear was selected
+  first never changed it. The plain annulus and an external pair needed `Flip`
+  False on both versions, which is how the first round, on annuli, missed it. So
+  nothing known before the mate is made (inside or outside, both shaft senses,
+  which gear first, spur or helical) gives the right `Flip` on both versions.
+  **Read the made mate back instead** ([below](#checking-a-gear-mates-sense-after-making-it)).
 - **The alignment argument changed nothing.** Aligned, anti-aligned and
   closest gave the same turns, and `IMate2.Alignment` read 2 whatever was
   passed.
@@ -267,10 +292,40 @@ one `MateGearDim` (status 1).
   mated by their faces fitted the same rule. Three did **not**: the pair mated
   by one axis and one face, a pinion moved along its ring's axis clear of the
   ring, and a pinion placed outside its ring (each read `False` where the rule
-  gives `True`). Read `Reverse` as the mate's own bookkeeping, not as which way
-  the pair turns.
+  gives `True`). On its own `Reverse` does not say which way the pair turns;
+  together with the entities' directions it does (next section).
 - **Two of the skeleton's own axes were refused** as a gear mate's entities:
   `AddMate5` returned `None`, status 0.
+
+### Checking a gear mate's sense after making it
+
+What SolidWorks reports once the mate is made does tell which way it turns:
+
+```python
+def gear_mate_sense_read_back(asm, name, internal):
+    """Whether a made gear mate turns its gears as they mesh, read back: exactly when
+    (IGearMateFeatureData.Reverse == its two MateEntity directions point the same way) == internal."""
+    feature = mate_feature(asm, name)
+    reverse = bool(call(call(feature, "GetDefinition"), "Reverse"))
+    mate = call(feature, "GetSpecificFeature2")
+    d0, d1 = [list(call(call(mate, "MateEntity", i), "EntityParams"))[3:6] for i in (0, 1)]
+    parallel = sum(a * b for a, b in zip(d0, d1)) > 0
+    return (reverse == parallel) == internal, {"Reverse": reverse, "parallel": parallel}
+```
+
+`internal` is whether one gear is inside the other (a pinion in a ring), which
+the tool knows. `Reverse` is read through `IFeature.GetDefinition`
+(`IGearMateFeatureData`); the directions are items 3–5 of each
+`IMateEntity2.EntityParams` ([assemblies/06](06-read-every-mate.md)). In the
+probe round's 52 mates on each version (toothed spur and helical rings, plain
+annuli, external pairs, every shaft sense, either gear first, `Flip` False and
+True) this read-back agreed with the measured turn every time: the two versions
+store a different `Reverse` for the same toothed-ring call, and the read-back
+follows what each decided. Driven 10° off the built phase, every toothed pair
+whose sense was wrong clashed (3 interferences for a spur ring, 4 for a helical
+ring, 2 for an external pair) and every right one stayed clear. A wrong sense is
+corrected by deleting the mate and adding it again with the other `Flip`
+([assemblies/11](11-change-a-mated-gear-train.md)).
 
 ### A lock mate for a compound gear
 
@@ -280,9 +335,6 @@ the first (the anchor) is held on the shaft as above; the second is unfixed and
 components, selected like this:
 
 ```python
-LOCK = 16                                    # swMateType_e.swMateLOCK
-
-
 def select_components(asm, components):
     """Whole components at mark 1: IComponent2.Select4(append, data, False) with data.Mark = 1."""
     call(asm, "ClearSelection2", True)
@@ -298,11 +350,12 @@ def select_components(asm, components):
 then
 
 ```python
-if select_components(asm, (anchor, follower)):
-    mate, status, made = add_mate(asm, LOCK, CLOSEST)
+s.fact("lock selection", select_components(asm, (gears["GearB"], gears["GearC"])))
+mate, status, made = add_mate(asm, LOCK, CLOSEST)
 ```
 
-that is `AddMate5(16, 2, False, 0, 0, 0, 1, 1, 0, 0, 0, False, False, 0, out)`.
+(from the runner's step, where `s.fact` records a reading), that is
+`AddMate5(16, 2, False, 0, 0, 0, 1, 1, 0, 0, 0, False, False, 0, out)`.
 `IComponent2.Select4(append, data, False)` with an
 `ISelectionMgr.CreateSelectData` whose `Mark` was set to 1 selected both
 components every time; the probe's fallback (`Select4` with a null select data)
@@ -366,12 +419,14 @@ on both versions ([assemblies/12](12-rebuild-scope-and-the-save-flag.md#what-eac
   axes, with status 0 and no other message. Use coincident.
 - **The ratio is put first-selection-first and read back reversed.** A tool
   that writes the ratio it read back makes the inverse ratio.
-- **`Flip` is not "external versus internal".** It needs no special case for a
-  ring gear; a tool that flips for a ring makes the ring turn against its
-  pinion. A ring and pinion with real teeth built that way, `Flip` True, turned
-  at −3 : 1 instead of 3 : 1 and showed four interferences
-  ([assemblies/03](03-interference-detection.md)); SolidWorks 2026, a build
-  script's log rather than a probe.
+- **No fixed `Flip` is right for a toothed ring gear on both versions.**
+  Annuli without teeth, which is what a first test is likely to use, all take
+  `Flip` False, and so do external pairs; toothed rings took opposite values on
+  2026 and 2024. Make the mate, read it back, and remake it with the other
+  `Flip` if the read-back says the sense is wrong. A wrong sense looks like
+  this: a toothed ring and pinion on 2026 with the wrong `Flip` turned at
+  −3 : 1 instead of 3 : 1 and showed four interferences
+  ([assemblies/03](03-interference-detection.md); a build script's log).
 - **A locked gear is not also mated to its shaft.** It looks harmless and
   over-defines the assembly, with only warnings on 2026 (see
   [assemblies/02](02-mates-from-code.md#when-a-mate-is-refused-or-over-defines)
@@ -444,6 +499,23 @@ Readings, both versions unless said:
   fixed placement (0 mm, 0 rotation).
 - `demonstration_drive`: `demonstration_drive_sense = 1` on both trains; after
   deleting the drive, the worst frame error was 2.7e-12 mm.
+
+- The toothed ring gears and the read-back: probe `ring_mate_sense`,
+  SolidWorks 2026 34.1.1 (run 20261114-133014) and 2024 SP5 (run
+  20261114-135104), each in a fresh session, 52 mates each: the read-back agreed
+  with the measured turn in all 52 on both; `ring_sense_needed_flip_annulus` all
+  `False` on both; the needed `Flip` for toothed rings opposite between the two
+  files for every shaft combination where it was defined.
+
+- The listings themselves, on four plain cylinders and a skeleton: the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0), 25 of 25 steps each.
+  Both versions: the concentric mate between two axes `{'returned': None, 'status': 0}`;
+  every shaft, lock and gear mate status 1, every mate code 0, every gear
+  `GetConstrainedStatus` 2, then 3 with the drive; no gear moved when mated;
+  the ratio passed `(20, 40)` read back `[40.0, 20.0]` with `MateEntity(0)` the
+  first gear; driven 30°, turns `{'GearA': 30.0, 'GearB': -15.0, 'GearC': -15.0, 'GearD': 6.0}`;
+  the sense read-back `True` for both external mates; a pinion in a plain
+  annulus turned the same way with `Flip` False (read-back `True`) and the
+  opposite way with `Flip` True (read-back `False`).
 
 The result files are kept in the Gear-Generator repository, not here.
 

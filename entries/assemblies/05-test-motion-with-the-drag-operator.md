@@ -182,24 +182,25 @@ coincident with a skeleton part's shaft axis, a compound pair locked, two gear
 mates with `Flip` False, every gear under-defined, one degree of freedom. The
 input's drive mate was suppressed first, so nothing held the input but its
 shaft. Driving that mate through a global turned the whole train at its ratio,
-so the gear mates were solving. The drag, condensed from the probe (the same
-calls and order; its logging removed and its helpers written out; not run as
-written):
+so the gear mates were solving. This entry's recipe, as [`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py) runs it
+on its own cylinder train (it ran on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), results `gear-train-check-20261114-140356` and `gear-train-check-20261114-140631` beside it):
 
 ```python
 import math
+
 import pythoncom
 import win32com.client.dynamic as dynamic
 from win32com.client import VARIANT
 
 
 def call(obj, name, *args):
+    """Late-bound member: invoked when given arguments, read by attribute access otherwise."""
     member = getattr(obj, name)
     return member(*args) if args else member
 
 
 def read_member(obj, name):
-    """A zero-argument member, read, and called only if late binding handed back a method."""
+    """A zero-argument member: read, and called only if late binding handed back a method."""
     value = call(obj, name)
     return value() if type(value).__name__ in ("method", "function") else value
 
@@ -229,20 +230,32 @@ def turn_about_own_axis(component, degrees):
     return columns + [p[i] - rp[i] for i in range(3)] + [1.0, 0.0, 0.0, 0.0]
 
 
-def drag(app, asm, component, degrees, method="Drag", setting=None):
-    """IDragOperator, as a mouse drag would: one relative transform for the whole turn."""
+def drag_by_recipe(app, asm, component, degrees, steps):
+    """assemblies/05's recipe: AddComponent(component, False), TransformType 0, UseAbsoluteTransform
+    False, DragMode as it came, BeginDrag, one relative Drag per step about the component's own axis,
+    EndDrag. What each call answered."""
     op = read_member(asm, "GetDragOperator")
+    out = {"DragMode as it came": read_member(op, "DragMode")}
+    out["AddComponent"] = call(op, "AddComponent", component, False)
+    op.TransformType = 0
     op.UseAbsoluteTransform = False
-    if setting:                                  # e.g. ("TransformType", 1) or ("DragMode", 0)
-        setattr(op, setting[0], setting[1])
-    xform = create_transform(app, turn_about_own_axis(component, degrees))
-    answers = [call(op, "AddComponent", component, False), read_member(op, "BeginDrag"),
-               call(op, method, xform), read_member(op, "EndDrag")]
-    return answers                               # every one answered True
+    out["BeginDrag"] = read_member(op, "BeginDrag")
+    step = create_transform(app, turn_about_own_axis(component, degrees / steps))
+    try:
+        out["Drag"] = [call(op, "Drag", step) for _ in range(steps)]
+    finally:
+        out["EndDrag"] = read_member(op, "EndDrag")
+    return out
 ```
 
-One relative transform for the whole 20° turn about the gear's own axis (not
-steps), `UseAbsoluteTransform = False`. The routes tried, in turn, on a train
+On its own train (four cylinders, axis-coincident mates, gear mates with `Flip`
+False, a lock, the drive suppressed), the runner dragged the output gear 10° in
+10 steps: every call answered `True`, the dragged gear turned 10.0° and every
+other gear 0.0°, on both versions.
+
+The probe's own drag of the input gave one relative transform for the whole 20°
+turn about the gear's own axis (not steps), `UseAbsoluteTransform = False`. The
+routes it tried, in turn, on a train
 with every shaft +Z and on one with the middle shaft −Z: `DragAsUI` and `Drag`
 as the operator came (`TransformType` 0, `DragMode` 3, `IsDragSpecific`
 `False`); `DragAsUI` with `TransformType` 1 and 2, and with `DragMode` 0, 1 and

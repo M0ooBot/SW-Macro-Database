@@ -155,6 +155,9 @@ in [`code/python/gear_generator/`](code/python/gear_generator/probe/harness.py),
 with the reports of its full runs 20260915-002812 and 20260915-023929, and
 excerpts of its 2026-09-15 development runs, beside the results;
 its gear maths and interface are application logic and are not copied.
+The gear-train entries' listings are in
+[`code/python/gear_train/`](code/python/gear_train/README.md), a self-contained runner that builds
+its own plain-cylinder fixtures and ran on SolidWorks 2026 and 2024, with its results beside it.
 The Airfoil-Converter's COM module and its push and loft orchestration are in
 [`code/python/`](code/python/swcom.py) as of commit `ef16606` on its
 `offset-sections` branch, 2026-09-28, every part of which was run against

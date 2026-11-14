@@ -32,12 +32,11 @@ said ([assemblies/12](12-rebuild-scope-and-the-save-flag.md)).
 From the Gear-Generator probe's tier 8 (`p8_motion.py`), Python over pywin32
 late binding. A "put" below is the `Transform2` put of
 [assemblies/04](04-mates-between-non-parallel-axes.md) followed by a rebuild.
-The listings are **condensed from the probe**: the same SolidWorks calls,
-arguments and order, except that the definition-route listing leaves out the
-probe's `AccessSelections` call (it raised every time), with the probe's logging,
-retries and records removed and its helpers written out so the entry stands
-alone. They were not run as written; the probe was, and its results are in the
-Evidence section.
+The listings are copied from [`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py), a self-contained runner with the
+probe's calls, arguments and order. It ran on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), each started fresh by the runner (results `gear-train-check-20261114-140356` and `gear-train-check-20261114-140631` beside it). The definition route is the exception:
+its listing below is condensed from the probe and was not run as written (it
+leaves out the probe's `AccessSelections` call, which raised every time), since
+on SolidWorks 2024 that route leaves an assembly that cannot be closed.
 
 **Helpers**, the same as in [assemblies/10](10-mate-a-gear-train-that-turns.md#the-calls):
 
@@ -45,35 +44,45 @@ Evidence section.
 import pythoncom
 from win32com.client import VARIANT
 
-GEAR, CLOSEST = 10, 2                     # swMateType_e.swMateGEAR, swMateAlign_e.swMateAlignCLOSEST
+COINCIDENT, CONCENTRIC, DISTANCE, ANGLE, GEAR, LOCK = 0, 1, 5, 6, 10, 16
+CLOSEST = 2
 
 
 def call(obj, name, *args):
+    """Late-bound member: invoked when given arguments, read by attribute access otherwise."""
     member = getattr(obj, name)
     return member(*args) if args else member
 
 
 def null():
-    return VARIANT(pythoncom.VT_DISPATCH, None)
+    return VARIANT(pythoncom.VT_DISPATCH, None)              # a typed Nothing
 
 
 def out_long():
-    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)
+    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)  # a by-reference long
 
 
 def selected_count(doc):
     return int(call(call(doc, "SelectionManager"), "GetSelectedObjectCount2", -1) or 0)
 
 
-def mate_features(asm):
-    out, feature = [], call(asm, "FirstFeature")
+def top_features(doc):
+    out, feature = [], call(doc, "FirstFeature")
     while feature is not None:
+        out.append(feature)
+        feature = call(feature, "GetNextFeature")
+    return out
+
+
+def mate_features(asm):
+    """The sub-features of the MateGroup, in walk order."""
+    out = []
+    for feature in top_features(asm):
         if call(feature, "GetTypeName2") == "MateGroup":
             child = call(feature, "GetFirstSubFeature")
             while child is not None:
                 out.append(child)
                 child = call(child, "GetNextSubFeature")
-        feature = call(feature, "GetNextFeature")
     return out
 
 
@@ -82,16 +91,28 @@ def mate_feature(asm, name):
 
 
 def select_feature_of(asm, component, name, append, mark=1):
+    """A component's plane or axis: IComponent2.FeatureByName, then IFeature.Select2(append, mark);
+    else SelectByID2("<feature>@<component>@<assembly>")."""
     if not append:
         call(asm, "ClearSelection2", True)
     before = selected_count(asm)
     feature = call(component, "FeatureByName", name)
-    return feature is not None and bool(call(feature, "Select2", append, mark)) and selected_count(asm) > before
+    if feature is not None and call(feature, "Select2", append, mark) and selected_count(asm) > before:
+        return True
+    kind = "AXIS" if feature is not None and call(feature, "GetTypeName2") == "RefAxis" else "PLANE"
+    assembly = str(call(asm, "GetTitle")).rsplit(".", 1)[0]
+    full = f"{name}@{call(component, 'Name2')}@{assembly}"
+    return bool(call(call(asm, "Extension"), "SelectByID2", full, kind, 0.0, 0.0, 0.0, append, mark,
+                     null(), 0)) and selected_count(asm) > before
 
 
 def add_mate(asm, kind, align, flip=False, distance_m=0.0, angle_rad=0.0, ratio=(1.0, 1.0)):
+    """IAssemblyDoc.AddMate5 on what is selected at mark 1: type, align, flip, distance and its two
+    limits, the gear ratio's numerator and denominator, angle and its two limits, for-positioning-only,
+    lock rotation, width option, error status. Returns (mate, status, names of the new mates)."""
     before = {str(call(f, "Name")) for f in mate_features(asm)}
-    d, a, status = distance_m, angle_rad, out_long()
+    d, a = distance_m, angle_rad
+    status = out_long()
     mate = call(asm, "AddMate5", kind, align, flip, d, d, d, float(ratio[0]), float(ratio[1]),
                 a, a, a, False, False, 0, status)
     call(asm, "ClearSelection2", True)
@@ -102,7 +123,7 @@ def add_mate(asm, kind, align, flip=False, distance_m=0.0, angle_rad=0.0, ratio=
 **Suppressing and unsuppressing one mate**, judged by reading the state back:
 
 ```python
-SUPPRESS, UNSUPPRESS, THIS_CONFIGURATION = 0, 1, 1   # swFeatureSuppressionAction_e, swInConfigurationOpts_e
+SUPPRESS, UNSUPPRESS, THIS_CONFIGURATION = 0, 1, 1
 
 
 def is_suppressed(feature):
@@ -152,10 +173,13 @@ with the other field as read; both made the inverse ratio.
 
 ```python
 def delete_mate(asm, name):
-    """IFeature.Select2 on the mate, then IModelDoc2.EditDelete() with parentheses; judged by the tree."""
+    """Select the mate, then IModelDoc2.EditDelete() with parentheses; judged by the tree."""
+    feature = next((f for f in mate_features(asm) if str(call(f, "Name")) == name), None)
+    if feature is None:
+        return False
     call(asm, "ClearSelection2", True)
-    call(mate_feature(asm, name), "Select2", False, 0)
-    asm.EditDelete()
+    call(feature, "Select2", False, 0)
+    asm.EditDelete()               # attribute access alone would only fetch it
     call(asm, "ClearSelection2", True)
     return all(str(call(f, "Name")) != name for f in mate_features(asm))
 
@@ -260,6 +284,23 @@ and require 2 (`swComponentFullyResolved`) before reading transforms, driving
 or changing a mated train.** Only 2 was ever seen for a resolved component
 (`swComponentResolved`, 3, never came).
 
+### Correcting a gear mate that turns the wrong way
+
+A gear mate's sense can be wrong as made: for a pinion in a toothed ring gear no
+`Flip` known in advance is right on both versions
+([assemblies/10](10-mate-a-gear-train-that-turns.md#checking-a-gear-mates-sense-after-making-it)).
+The check and the fix, as a probe round ran them on a tool-built train with a
+toothed ring pair: read each gear mate back (or, as a fallback, add a temporary
+drive and judge each mesh by the sign of its driven gear's turn, then set the
+drive back and delete it, every frame returning to about 1e-10 mm); remake a
+wrong one by deletion and `AddMate5` with the other `Flip`, under its old name.
+On SolidWorks 2026 the ring pair's mate had turned the ring the wrong way and,
+driven 10° off its built phase, the pair clashed in 5 places; remade, it turned
+the right way and stayed clear. The remade train matched a right-first-time one
+to 2.3e-10 mm (1.1e-10 on 2024, where nothing needed remaking), with the same
+mates once the remade one was counted last, no mate error, and only the
+assembly marked modified.
+
 ### The ratio change that strands an assembly on 2024
 
 On SolidWorks 2024, after `IFeature.ModifyDefinition` had changed a gear
@@ -323,6 +364,11 @@ Gear-Generator probe tier 8, Python over pywin32 late binding.
   suppressed, after unsuppressing and after the drive);
   `axial_global_moves_gear = True` (the other seven gears moved 0.0 mm);
   suppression by `"SetSuppression2 this configuration, None"` every time.
+- The sense check and remake on a toothed ring pair: probe `ring_mate_sense`,
+  SolidWorks 2026 34.1.1 (run 20261114-133014) and 2024 SP5 (run
+  20261114-135104), fresh sessions: tooth clashes in the wrong-sense case were
+  5 with the mate as first made and 0 after the remake on 2026, and 0 and 0 on
+  2024; `ring_check_and_remake_holds = True` on both.
 - `gear_mate_ratio` (the remake), `gear_mate_update`, `lock_retake_offset`,
   `put_on_twice_meshed_gear`: SolidWorks 2026 34.1.1, full run 20261114-081921
   (85 of 85); SolidWorks 2024 SP5, run 20261114-071324 (47 of 47) in a session
@@ -357,6 +403,13 @@ Gear-Generator probe tier 8, Python over pywin32 late binding.
   Both versions: `definition_numerator_is_second_teeth = True`; `AccessSelections`
   raised `AttributeError`.
 
+- The listings (all but the definition route), on plain cylinders: the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0), 25 of 25 steps each. Both
+  versions: `set_suppressed` both ways `True`; the re-phasing put kept 7.0° with
+  the other gears at 0.0°, and a drive then turned the train at its ratio; the
+  put on a locked gear turned it 5.0° and its partner 0.0°; the remake kept its
+  name, moved from 9th of 10 to last, read back `[60.0, 20.0]`, and the train
+  then turned at the new ratio.
+
 The result files are kept in the Gear-Generator repository, not here.
 
 ## See also
@@ -369,5 +422,5 @@ The result files are kept in the Gear-Generator repository, not here.
 - [documents/02 — Save as, and close](../documents/02-save-as-and-close.md) — closing, and the closes that did not work
 - [features/09 — Twisted sweep](../features/09-twisted-sweep.md) — `ModifyDefinition` on other feature data
 - [reading/12 — Snapshot suppression before you suppress](../reading/12-snapshot-suppression-before-you-suppress.md)
-- [GOTCHAS §73, §96, §97, §98, §102, §104](../../GOTCHAS.md)
+- [GOTCHAS §73, §96, §97, §98, §102, §104, §105](../../GOTCHAS.md)
 - [assemblies/03 — Interference detection](03-interference-detection.md) — the check, and why it needs a half-pitch control

@@ -112,53 +112,36 @@ meets one hangs.
 scratch assembly whose saved component parts had been changed opened a modal
 "Save Modified Documents" dialog on 2024, and the probe hung (no answer in
 600 s); SolidWorks 2026 closed the same assembly without asking. The probe's
-fix was to save its own modified parts before closing an assembly (condensed
-from the probe: the same calls, its error handling and records removed; not run
-as written; `created` is the set of titles the script itself made):
+fix was to save its own modified parts before closing an assembly (copied from
+[`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py), which uses it the same way; `created` is the set of titles the
+script itself made):
 
 ```python
 import pythoncom
 from win32com.client import VARIANT
 
-SW_DOC_PART, SAVE_AS_CURRENT, SAVE_AS_SILENT = 1, 0, 1
+SW_DOC_PART, SW_DOC_ASSEMBLY = 1, 2
+SAVE_AS_CURRENT, SAVE_AS_SILENT = 0, 1
 
 
 def call(obj, name, *args):
+    """Late-bound member: invoked when given arguments, read by attribute access otherwise."""
     member = getattr(obj, name)
     return member(*args) if args else member
 
 
 def null():
-    return VARIANT(pythoncom.VT_DISPATCH, None)
+    return VARIANT(pythoncom.VT_DISPATCH, None)              # a typed Nothing
 
 
 def out_long():
-    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)
+    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)  # a by-reference long
 
 
-def save_created_parts(app, created):
-    """Save, in place, every modified part this script made and had already saved to a path."""
-    doc = call(app, "GetFirstDocument")
-    while doc is not None:
-        title = str(call(doc, "GetTitle"))
-        path = str(call(doc, "GetPathName") or "")
-        if title in created and path and int(call(doc, "GetType")) == SW_DOC_PART and call(doc, "GetSaveFlag"):
-            call(call(doc, "Extension"), "SaveAs3", path, SAVE_AS_CURRENT, SAVE_AS_SILENT,
-                 null(), null(), out_long(), out_long())
-        doc = call(doc, "GetNext")
-```
-
-Every 2024 run after that fix closed its assemblies. That is only right for
-files your own code made: saving is not an option for a user's documents.
-
-**`QuitDoc` closed modified documents without a dialog.** `QuitDoc(title)` on
-**ISldWorks** closes a document **without saving**, the way a person answering
-"Don't save" would (condensed from the check that ran it; not run as written):
-
-```python
-import os
-
-SW_DOC_ASSEMBLY = 2
+def save_as(doc, path):
+    """IModelDocExtension.SaveAs3, current version, silent; it overwrites without asking."""
+    return call(call(doc, "Extension"), "SaveAs3", path, SAVE_AS_CURRENT, SAVE_AS_SILENT,
+                null(), null(), out_long(), out_long())
 
 
 def documents(app):
@@ -167,6 +150,26 @@ def documents(app):
         out.append(doc)
         doc = call(doc, "GetNext")
     return out
+
+
+def save_created_parts(app, created):
+    """Save, in place, every modified part this script made and had already saved to a path."""
+    for doc in documents(app):
+        title = str(call(doc, "GetTitle"))
+        path = str(call(doc, "GetPathName") or "")
+        if title in created and path and int(call(doc, "GetType")) == SW_DOC_PART and call(doc, "GetSaveFlag"):
+            save_as(doc, path)
+```
+
+Every 2024 run after that fix closed its assemblies. That is only right for
+files your own code made: saving is not an option for a user's documents.
+
+**`QuitDoc` closed modified documents without a dialog.** `QuitDoc(title)` on
+**ISldWorks** closes a document **without saving**, the way a person answering
+"Don't save" would (copied from [`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py); it ran on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), results `gear-train-check-20261114-140356` and `gear-train-check-20261114-140631` beside it):
+
+```python
+import os
 
 
 def quit_in(app, folder):
@@ -279,6 +282,9 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
   assembly's close `{'dialog': False, 'windows': [], 'seconds': 0.3}` (0.36 on
   2024), `written: []`. Those logs and results are kept in the Gear-Generator
   repository, not here.
+- The unsaved close, again, by the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0): on both versions the assembly's close by
+  `CloseDoc`, and on another copy by `QuitDoc`, took 0.2 s with no dialog, the
+  changed part stayed open and then closed, and no file was written.
 
 ## See also
 

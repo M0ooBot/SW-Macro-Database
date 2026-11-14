@@ -22,9 +22,8 @@ method.
 
 ## The call
 
-Condensed from the Gear-Generator probe (`assembly_rebuild_scope`, tier 7): the
-same calls, arguments and order, with its logging removed and its helpers
-written out. `_invoke_method` is the probe's own, unchanged. Not run as written.
+The Gear-Generator probe's calls (`assembly_rebuild_scope`, tier 7), as copied
+from [`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py). It ran on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), each started fresh by the runner (results `gear-train-check-20261114-140356` and `gear-train-check-20261114-140631` beside it).
 
 ```python
 import pythoncom
@@ -32,32 +31,51 @@ from win32com.client import VARIANT
 
 
 def call(obj, name, *args):
+    """Late-bound member: invoked when given arguments, read by attribute access otherwise."""
     member = getattr(obj, name)
     return member(*args) if args else member
 
 
 def null():
-    return VARIANT(pythoncom.VT_DISPATCH, None)          # VBA's Nothing, typed
+    return VARIANT(pythoncom.VT_DISPATCH, None)              # a typed Nothing
 
 
 def selected_count(doc):
     return int(call(call(doc, "SelectionManager"), "GetSelectedObjectCount2", -1) or 0)
 
 
+def top_features(doc):
+    out, feature = [], call(doc, "FirstFeature")
+    while feature is not None:
+        out.append(feature)
+        feature = call(feature, "GetNextFeature")
+    return out
+
+
+def planes(doc):
+    """The reference planes in tree order: Front, Top, Right in an English template."""
+    return [f for f in top_features(doc) if call(f, "GetTypeName2") == "RefPlane"]
+
+
+def select_feature(doc, feature, append=False, mark=0):
+    """IFeature.Select2, judged by the selection count and retried briefly; then SelectByID2 by name."""
+    if not append:
+        call(doc, "ClearSelection2", True)
+    before = selected_count(doc)
+    for _ in range(4):
+        if call(feature, "Select2", append, mark) and selected_count(doc) > before:
+            return True
+        time.sleep(0.25)
+    kind = {"RefPlane": "PLANE", "RefAxis": "AXIS", "ProfileFeature": "SKETCH"}.get(
+        call(feature, "GetTypeName2"), "BODYFEATURE")
+    return bool(call(call(doc, "Extension"), "SelectByID2", str(call(feature, "Name")), kind, 0.0, 0.0, 0.0,
+                     append, mark, null(), 0)) and selected_count(doc) > before
+
+
 def _invoke_method(obj, name, *args):
     """Invoke a COM member as a method, where late binding would reach it as a property get."""
     oleobj = obj._oleobj_
     return oleobj.Invoke(oleobj.GetIDsOfNames(name), 0, pythoncom.DISPATCH_METHOD, True, *args)
-
-
-def third_plane(doc):
-    """The third reference plane in tree order (Right, in an English template); its name is read, not typed."""
-    planes, feature = [], call(doc, "FirstFeature")
-    while feature is not None:
-        if call(feature, "GetTypeName2") == "RefPlane":
-            planes.append(feature)
-        feature = call(feature, "GetNextFeature")
-    return planes[2]
 
 
 def axis_to_right_plane_m(asm, axis_ref):
@@ -68,11 +86,7 @@ def axis_to_right_plane_m(asm, axis_ref):
         if not (call(ext, "SelectByID2", axis_ref, "AXIS", 0.0, 0.0, 0.0, False, 0, null(), 0)
                 and selected_count(asm) == 1):
             return None
-        plane = third_plane(asm)
-        if not (call(plane, "Select2", True, 0) and selected_count(asm) == 2):
-            # the probe's fallback: the same plane by its own name
-            call(ext, "SelectByID2", str(call(plane, "Name")), "PLANE", 0.0, 0.0, 0.0, True, 0, null(), 0)
-        if selected_count(asm) != 2:
+        if not select_feature(asm, planes(asm)[2], append=True) or selected_count(asm) != 2:
             return None
         measure = call(ext, "CreateMeasure")
         if measure is None or not _invoke_method(measure, "Calculate", null()):

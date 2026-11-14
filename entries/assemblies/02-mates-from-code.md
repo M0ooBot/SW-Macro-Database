@@ -233,9 +233,7 @@ call itself still returned the mate alone):
   two planes. The status read **5** (`swAddMateError_OverDefinedAssembly`) **but
   the mate was made**, and `ForceRebuild3` still returned `True`.
 
-How the over-definition showed, read like this (condensed from the probe: the
-same calls, its logging and records removed, its helpers written out; not run
-as written):
+How the over-definition showed, read like this (copied from [`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py); it ran on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), results `gear-train-check-20261114-140356` and `gear-train-check-20261114-140631` beside it):
 
 ```python
 import pythoncom
@@ -243,6 +241,7 @@ from win32com.client import VARIANT
 
 
 def call(obj, name, *args):
+    """Late-bound member: invoked when given arguments, read by attribute access otherwise."""
     member = getattr(obj, name)
     return member(*args) if args else member
 
@@ -295,16 +294,23 @@ out parameters; called with none it raised "Parameter not optional".
 ## Deleting a mate
 
 ```python
+def top_features(doc):
+    out, feature = [], call(doc, "FirstFeature")
+    while feature is not None:
+        out.append(feature)
+        feature = call(feature, "GetNextFeature")
+    return out
+
+
 def mate_features(asm):
     """The sub-features of the MateGroup, in walk order."""
-    out, feature = [], call(asm, "FirstFeature")
-    while feature is not None:
+    out = []
+    for feature in top_features(asm):
         if call(feature, "GetTypeName2") == "MateGroup":
             child = call(feature, "GetFirstSubFeature")
             while child is not None:
                 out.append(child)
                 child = call(child, "GetNextSubFeature")
-        feature = call(feature, "GetNextFeature")
     return out
 
 
@@ -446,6 +452,11 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
   `mate_find_routes = {'FeatureByName': True, 'mate group': True}`,
   `moved_by_the_rename 0.0`. Those result files are kept in the Gear-Generator
   repository, not here.
+- The over-definition, deletion and renaming listings, again, by the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0): status 5
+  with the mate made; codes 47 / 46 on 2026 and 51 for each on 2024; the
+  over-defined component 4, then 3 after the deletion; the suppressed conflict
+  `[0, False]`; every mate renamed straight after its `AddMate5` and found by
+  the new name after a reopen.
 
 ## See also
 

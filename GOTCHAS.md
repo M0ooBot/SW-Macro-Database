@@ -758,6 +758,10 @@ with `'bool' object is not callable`. Invoked by its dispid with
 read the right distance, on 2026 and 2024 SP5. The failing form is recorded in
 the probe's source, not in a kept result. See
 [reading/16](entries/reading/16-measure-between-two-selections.md).
+
+`ISldWorks.ExitApp` is the plain case: it returns nothing, so `call(app, "ExitApp")`
+only fetched it and SolidWorks stayed open; `app.ExitApp()` ended it, on 2026
+(34.1.1) and 2024 SP5. See [`code/python/gear_train/`](code/python/gear_train/README.md).
 ## 56. Reloading a curve is charged for the whole tree below it
 
 `IFeature.ModifyDefinition` after `LoadPointsFromFile` cost **25 seconds per
@@ -1190,8 +1194,8 @@ With `AddMate5(10, …, zFirst, zSecond, …)`, driving the first selected gear
 selection's tooth count. `IGearMateFeatureData` then read `GearRatioNumerator`
 = zSecond (§75's rule: the numerator belongs to `MateEntity(1)`), and a ratio
 put through the definition had to be given in `AddMate5`'s order again. `Flip`
-False gave every meshing pair its own sense, a ring and its pinion included;
-the alignment argument was ignored. SolidWorks 2026 and 2024 SP5. See
+False gave every external pair and every pinion in a plain annulus its own
+sense, but not every toothed ring (§105); the alignment argument was ignored. SolidWorks 2026 and 2024 SP5. See
 [assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-gear-mate).
 
 ## 97. On SolidWorks 2024, a gear mate changed by `ModifyDefinition` strands its assembly
@@ -1302,3 +1306,18 @@ intended phase and once half a pitch off; only the pair of readings shows that
 the check can see the mesh. SolidWorks 2026 (34.1.1) and 2024 SP5. See
 [assemblies/11](entries/assemblies/11-change-a-mated-gear-train.md#a-whole-tooth-count-change-in-place)
 and [assemblies/03](entries/assemblies/03-interference-detection.md).
+
+## 105. The `Flip` a toothed ring gear's gear mate needs differs between versions; read the mate back
+
+For a pinion inside a toothed internal ring gear, the `Flip` that `AddMate5`
+needed for the pair to turn as it meshes was **opposite on SolidWorks 2026 and
+2024**, and on 2026 it also differed between spur and helical rings. Plain
+annuli with no teeth, and external pairs, needed `Flip` False on both, so a test
+on annuli misses it. No rule from what is known before the mate is made is right
+on both versions. What does tell, in 52 of 52 cases on each version: read the
+made mate back. It turns its gears as they mesh exactly when
+`(IGearMateFeatureData.Reverse == the two IMateEntity2.EntityParams directions
+point the same way) == internal`. Correct a wrong one by deleting it and adding
+it again with the other `Flip`. Driven off its built phase, a wrong sense
+interferes and a right one does not. See
+[assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#checking-a-gear-mates-sense-after-making-it).

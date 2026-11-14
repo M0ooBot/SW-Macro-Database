@@ -16,8 +16,13 @@ runs, as written, the listings that these entries quote, and records what every 
 Those entries were first written from the Gear-Generator's probe runs. This script exists so that
 the code they quote is code that ran, with nothing project-specific in it.
 
-**Status: not yet run.** Until a result file sits in `results/`, the entries keep their
-"condensed from the probe, not run as written" marks.
+**Status: ran, 25 of 25 steps passing, on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0),**
+each started fresh by the script on 2026-11-14: `results/gear-train-check-20261114-140356`
+(2026, 2 min 12 s including the start and exit) and `results/gear-train-check-20261114-140631`
+(2024, 2 min 46 s). `ExitApp` ended SolidWorks both times. An earlier 2026 run stopped two steps
+on the script's own fault (it read the modification time of SolidWorks's transient `~$` lock
+files) and reached `ExitApp` by attribute access, which only fetched it (GOTCHAS §55), so the
+script had to kill SolidWorks; both were fixed and that run's result files were not kept.
 
 ## What it does
 
@@ -52,7 +57,9 @@ shaft axes `S1 Axis` to `S3 Axis` on +Z. A gear mate needs no teeth. The assembl
 12. an assembly with unsaved changes closed by `CloseDoc`, and on another copy by `QuitDoc`, while
     the changed part is open in its own window: the time, any dialog, what stayed open, and whether
     any file was written;
-13. `AddComponent5` of a closed part, then a second new assembly beside an unsaved one.
+13. `AddComponent5` of a closed part, then a second new assembly beside an unsaved one;
+14. a pinion inside a plain annulus: the gear mate's sense read back (`Reverse` against the two
+    entities' directions) and the measured turn, with `Flip` False and then `Flip` True.
 
 **Left out on purpose**, and kept as prose with their probe evidence in the entries: interference
 and its half-pitch control (they need real teeth); `ModifyDefinition` on a gear mate (it left
@@ -83,8 +90,8 @@ python code\python\gear_train\gear_train_check.py --sldworks "C:\path\to\SLDWORK
 
 From WSL, call the Windows Python (`python.exe`) with Windows paths for both arguments; the result
 files land in `code/python/gear_train/results/` unless `--out` says otherwise. Run it once per
-SolidWorks version, each with a new scratch folder. It took no measurement yet of its own length;
-expect about a quarter of an hour per version.
+SolidWorks version, each with a new scratch folder. It takes two to three minutes per
+version.
 
 Results: `results/gear-train-check-<stamp>.json` and `.txt`, one record per step with what each
 call returned, the dialogs seen, and a summary. Exit code 0 when every step passed.

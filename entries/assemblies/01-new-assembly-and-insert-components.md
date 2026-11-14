@@ -196,23 +196,25 @@ established; setting every frame is the fix. See
 
 Added from the Gear-Generator probe's tier 7 (`add_component_opened_part` and
 `add_component_same_name_elsewhere`), SolidWorks 2026
-(34.0.0, 34.1.1) and 2024 SP5 (32.5.0). Condensed from the probe (the same
-calls; its checks and records removed; not run as written):
+(34.0.0, 34.1.1) and 2024 SP5 (32.5.0). The calls, as copied from [`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py)
+(the last two lines are from its step; it ran on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), results `gear-train-check-20261114-140356` and `gear-train-check-20261114-140631` beside it):
 
 ```python
 import pythoncom
 from win32com.client import VARIANT
 
-SW_DOC_PART, OPEN_SILENT = 1, 1          # swDocumentTypes_e, swOpenDocOptions_e.swOpenDocOptions_Silent
+SW_DOC_PART, SW_DOC_ASSEMBLY = 1, 2
+OPEN_SILENT = 1                       # swOpenDocOptions_Silent
 
 
 def call(obj, name, *args):
+    """Late-bound member: invoked when given arguments, read by attribute access otherwise."""
     member = getattr(obj, name)
     return member(*args) if args else member
 
 
 def out_long():
-    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)
+    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)  # a by-reference long
 
 
 def insert(asm, path, x_m=0.0, y_m=0.0, z_m=0.0):
@@ -220,16 +222,15 @@ def insert(asm, path, x_m=0.0, y_m=0.0, z_m=0.0):
     return call(asm, "AddComponent5", path, 0, "", False, "", x_m, y_m, z_m)
 
 
-def open_part(app, path):
+def open_doc(app, path, doc_type):
     """ISldWorks.OpenDoc6; returns (document, errors, warnings)."""
     errors, warnings = out_long(), out_long()
-    doc = call(app, "OpenDoc6", path, SW_DOC_PART, OPEN_SILENT, "", errors, warnings)
+    doc = call(app, "OpenDoc6", path, doc_type, OPEN_SILENT, "", errors, warnings)
     return doc, errors.value, warnings.value
 
 
-closed = insert(asm, closed_path)        # saved and closed on disk: returned None
-part, errors, warnings = open_part(app, opened_path)
-opened = insert(asm, opened_path)        # opened first (the part now active): a component
+s.fact("insert closed part", insert(first, part_path) is None)
+part, errors, warnings = open_doc(app, part_path, SW_DOC_PART)
 ```
 
 `OpenDoc6` returned the document itself, not a tuple; the errors and warnings
@@ -319,6 +320,9 @@ and 34.1.1 (run 20261114-034458), SolidWorks 2024 SP5 32.5.0 (run
 `suppression_after_reopen` 2 for all five; `first_component_fixed_on_insert`
 `False` on 2026 and `True` on 2024. Those result files are kept in the
 Gear-Generator repository, not here.
+- Again by the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0): on both versions `AddComponent5` of the closed part returned
+  `None`; opened first, it went in; a second new assembly beside an unsaved one
+  took the same component name, its mate (status 1), and saved.
 
 ## See also
 

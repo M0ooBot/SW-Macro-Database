@@ -25,8 +25,8 @@ is which rebuild marks what, what each returns when a component fails, what
 
 From the Gear-Generator probe (`assembly_rebuild_scope` in its tier 7,
 `mated_rebuild_scope` in `p8_motion.py`), Python over pywin32 late binding. The
-listings are **condensed from the probe**: the same calls, with its logging and
-records removed and its helpers written out. Not run as written.
+listings are copied from [`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py), which repeats them on its own fixtures.
+It ran on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), each started fresh by the runner (results `gear-train-check-20261114-140356` and `gear-train-check-20261114-140631` beside it).
 
 **The routes compared**, each on its own copy of an assembly:
 
@@ -319,6 +319,14 @@ active, the way a tool edits a part that is already loaded as a component:
 - `OpenDoc6` / `ActivateDoc3`: probes `open_and_activate_part` and
   `open_part_from_assembly`, 2026 34.1.1 (20261114-034458) and 2024 32.5.0
   (20261113-184353): `open … warnings 128`, `open_doc_on_open_part = {'made_active': False, 'same_title': True}`.
+
+- The listings, on a mated cylinder train: the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0), 25 of 25 steps each. Both versions: every flag
+  `False` on open and after reading both gear mates' definitions; unsuppressing
+  the lock that was on turned the assembly's flag alone `True`; after a global
+  change, `NeedsRebuild` `True` / 1 before each route and `False` / 0 after; the
+  top-only and `EditRebuild3` routes marked only the assembly, then the skeleton
+  after its own change, and `ForceRebuild3(False)` every document; the moved
+  shaft's gear already at its new place after `ActivateDoc3`, before the route.
 
 The result files are kept in the Gear-Generator repository, not here.
 

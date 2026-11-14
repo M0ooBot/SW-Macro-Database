@@ -1,0 +1,1245 @@
+{
+ "dialogs": [
+  {
+   "at": "14:04:34",
+   "step": "reopened: save flags, resolved state, gear mate definitions read",
+   "texts": [
+    "Close",
+    "Opened 5\nComponents",
+    "Updating\nAssembly",
+    "Update\nGraphics",
+    "Elapsed time: 0s",
+    "This file was last opened in 1 seconds.",
+    "For more information, view: ",
+    "Performance Evaluation",
+    "Do not show again",
+    "Hide Details"
+   ],
+   "title": ""
+  },
+  {
+   "at": "14:04:54",
+   "step": "mate folders after a reopen",
+   "texts": [
+    "Close",
+    "Opening Component 2 of 5",
+    "Update\nAssembly",
+    "Update\nGraphics",
+    "Opening File: C:\\Use...1114-140329\\train\\GearB.SLDPRT",
+    "Elapsed time: 0s",
+    "This file was last opened in 1 seconds.",
+    "For more information, view: ",
+    "Performance Evaluation",
+    "Do not show again",
+    "Hide Details"
+   ],
+   "title": ""
+  },
+  {
+   "at": "14:04:56",
+   "step": "rebuild route ForceRebuild3(True): what it marks",
+   "texts": [
+    "Close",
+    "Open\nComponents",
+    "Update\nAssembly",
+    "Update\nGraphics",
+    " ",
+    "Elapsed time: 0s",
+    "This file was last opened in 1 seconds.",
+    "For more information, view: ",
+    "Performance Evaluation",
+    "Do not show again",
+    "Hide Details"
+   ],
+   "title": ""
+  },
+  {
+   "at": "14:04:56",
+   "step": "rebuild route ForceRebuild3(True): what it marks",
+   "texts": [
+    "Close",
+    "Opened 5\nComponents",
+    "Updating\nAssembly",
+    "Update\nGraphics",
+    "Post load updating",
+    "Elapsed time: 0s",
+    "This file was last opened in 1 seconds.",
+    "For more information, view: ",
+    "Performance Evaluation",
+    "Do not show again",
+    "Hide Details"
+   ],
+   "title": ""
+  },
+  {
+   "at": "14:05:00",
+   "step": "rebuild route EditRebuild3: what it marks",
+   "texts": [
+    "Close",
+    "Opened 5\nComponents",
+    "Updating\nAssembly",
+    "Update\nGraphics",
+    "Post load updating",
+    "Elapsed time: 0s",
+    "This file was last opened in 1 seconds.",
+    "For more information, view: ",
+    "Performance Evaluation",
+    "Do not show again",
+    "Hide Details"
+   ],
+   "title": ""
+  },
+  {
+   "at": "14:05:04",
+   "step": "rebuild route ForceRebuild3(False): what it marks",
+   "texts": [
+    "Close",
+    "Opening Component 2 of 5",
+    "Update\nAssembly",
+    "Update\nGraphics",
+    "Opening File: C:\\Use...61114-140329\\full\\GearB.SLDPRT",
+    "Elapsed time: 0s",
+    "This file was last opened in 1 seconds.",
+    "For more information, view: ",
+    "Performance Evaluation",
+    "Do not show again",
+    "Hide Details"
+   ],
+   "title": ""
+  },
+  {
+   "at": "14:05:09",
+   "step": "unsaved close by CloseDoc, the changed part open in its own window",
+   "texts": [
+    "Close",
+    "Opened 5\nComponents",
+    "Updating\nAssembly",
+    "Update\nGraphics",
+    "Post load updating",
+    "Elapsed time: 0s",
+    "This file was last opened in 1 seconds.",
+    "For more information, view: ",
+    "Performance Evaluation",
+    "Do not show again",
+    "Hide Details"
+   ],
+   "title": ""
+  },
+  {
+   "at": "14:05:14",
+   "step": "unsaved close by QuitDoc, the changed part open in its own window",
+   "texts": [
+    "Close",
+    "Opening Component 5 of 5",
+    "Update\nAssembly",
+    "Update\nGraphics",
+    "Opening File: C:\\Use...9\\unsaved-quitdoc\\GearD.SLDPRT",
+    "Elapsed time: 0s",
+    "This file was last opened in 1 seconds.",
+    "For more information, view: ",
+    "Performance Evaluation",
+    "Do not show again",
+    "Hide Details"
+   ],
+   "title": ""
+  }
+ ],
+ "meta": {
+  "exit": "ExitApp ended SolidWorks",
+  "python": "3.13.14",
+  "revision": "34.1.1",
+  "runner": "code/python/gear_train/gear_train_check.py",
+  "stamp": "20261114-140356",
+  "version": "SolidWorks revision 34.1.1"
+ },
+ "steps": [
+  {
+   "facts": {
+    "checks": [
+     [
+      true,
+      "every part saved"
+     ]
+    ],
+    "files": [
+     "GearA.SLDPRT",
+     "GearB.SLDPRT",
+     "GearC.SLDPRT",
+     "GearD.SLDPRT",
+     "Layout.SLDPRT",
+     "Pinion.SLDPRT",
+     "Ring.SLDPRT",
+     "~$GearA.SLDPRT",
+     "~$GearB.SLDPRT",
+     "~$GearC.SLDPRT",
+     "~$GearD.SLDPRT",
+     "~$Layout.SLDPRT",
+     "~$Pinion.SLDPRT",
+     "~$Ring.SLDPRT"
+    ]
+   },
+   "name": "fixtures: four cylinders and a skeleton, saved",
+   "seconds": 22.2,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "checks": [
+     [
+      true,
+      "the skeleton is fixed"
+     ],
+     [
+      true,
+      "GearA is inserted"
+     ],
+     [
+      true,
+      "GearB is inserted"
+     ],
+     [
+      true,
+      "GearC is inserted"
+     ],
+     [
+      true,
+      "GearD is inserted"
+     ]
+    ],
+    "components": {
+     "GearA": "GearA-1",
+     "GearB": "GearB-1",
+     "GearC": "GearC-1",
+     "GearD": "GearD-1"
+    }
+   },
+   "name": "train: inserted, placed and fixed",
+   "seconds": 1.97,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "checks": [
+     [
+      true,
+      "GearD floats"
+     ],
+     [
+      true,
+      "every shaft mate solved (status 1)"
+     ]
+    ],
+    "concentric between two axes": {
+     "made": [],
+     "returned": null,
+     "status": 0
+    },
+    "held": {
+     "GearA": {
+      "renamed": [
+       "GearA on S1 Axis",
+       "GearA along S1"
+      ],
+      "statuses": [
+       1,
+       1
+      ]
+     },
+     "GearB": {
+      "renamed": [
+       "GearB on S2 Axis",
+       "GearB along S2"
+      ],
+      "statuses": [
+       1,
+       1
+      ]
+     },
+     "GearD": {
+      "renamed": [
+       "GearD on S3 Axis",
+       "GearD along S3"
+      ],
+      "statuses": [
+       1,
+       1
+      ]
+     }
+    },
+    "select_by_corresponding Gear Axis": true,
+    "selected after it": 1
+   },
+   "name": "shaft mates: concentric refused, coincident held, corresponding selection",
+   "seconds": 3.28,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "GearA meshes GearB": {
+     "ratio_passed": [
+      20,
+      40
+     ],
+     "renamed": "GearA meshes GearB",
+     "status": 1
+    },
+    "GearA meshes GearB read back": {
+     "MateEntity(0)": "GearA-1",
+     "Reverse": false,
+     "ratio": [
+      40.0,
+      20.0
+     ]
+    },
+    "GearA meshes GearB sense read back": [
+     true,
+     {
+      "Reverse": false,
+      "parallel": true
+     }
+    ],
+    "GearC meshes GearD": {
+     "ratio_passed": [
+      20,
+      50
+     ],
+     "renamed": "GearC meshes GearD",
+     "status": 1
+    },
+    "GearC meshes GearD read back": {
+     "MateEntity(0)": "GearC-1",
+     "Reverse": false,
+     "ratio": [
+      50.0,
+      20.0
+     ]
+    },
+    "GearC meshes GearD sense read back": [
+     true,
+     {
+      "Reverse": false,
+      "parallel": true
+     }
+    ],
+    "checks": [
+     [
+      true,
+      "GearC floats"
+     ],
+     [
+      true,
+      "no gear moved when mated"
+     ]
+    ],
+    "constrained": {
+     "GearA": 2,
+     "GearB": 2,
+     "GearC": 2,
+     "GearD": 2
+    },
+    "errors": {
+     "GearA along S1": [
+      0,
+      false
+     ],
+     "GearA meshes GearB": [
+      0,
+      false
+     ],
+     "GearA on S1 Axis": [
+      0,
+      false
+     ],
+     "GearB along S2": [
+      0,
+      false
+     ],
+     "GearB on S2 Axis": [
+      0,
+      false
+     ],
+     "GearC locked to GearB": [
+      0,
+      false
+     ],
+     "GearC meshes GearD": [
+      0,
+      false
+     ],
+     "GearD along S3": [
+      0,
+      false
+     ],
+     "GearD on S3 Axis": [
+      0,
+      false
+     ]
+    },
+    "lock": {
+     "renamed": "GearC locked to GearB",
+     "status": 1
+    },
+    "lock selection": true,
+    "moved_mm_by_mating": {
+     "GearA": 0.0,
+     "GearB": 0.0,
+     "GearC": 0.0,
+     "GearD": 0.0
+    },
+    "rebuild": true
+   },
+   "name": "lock and gear mates, each renamed straight after AddMate5",
+   "seconds": 5.66,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "checks": [
+     [
+      true,
+      "turns as the ratios say: {'GearA': 30.0, 'GearB': -15.0, 'GearC': -15.0, 'GearD': 6.0}"
+     ]
+    ],
+    "constrained driven": {
+     "GearA": 3,
+     "GearB": 3,
+     "GearC": 3,
+     "GearD": 3
+    },
+    "drive mate": {
+     "dimensions": [
+      "D1"
+     ],
+     "name": "Drive Angle",
+     "status": 1
+    },
+    "global added": 0,
+    "link": 1,
+    "rebuild": true,
+    "rebuild after": true,
+    "set": "\"Drive\"= 40",
+    "turns": {
+     "GearA": 30.0,
+     "GearB": -15.0,
+     "GearC": -15.0,
+     "GearD": 6.0
+    }
+   },
+   "name": "drive: an angle mate on a global, and the turns",
+   "seconds": 2.01,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "checks": [
+     [
+      true,
+      "the measure reads S2's X"
+     ]
+    ],
+    "distance_normal_m": [
+     0.1,
+     0.1
+    ]
+   },
+   "name": "measure: a skeleton axis to the assembly's Right plane",
+   "seconds": 0.38,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "left open": [],
+    "saved": true
+   },
+   "name": "save the train and close everything",
+   "seconds": 1.59,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "GetSuppression2": {
+     "GearA": 2,
+     "GearB": 2,
+     "GearC": 2,
+     "GearD": 2
+    },
+    "flags after the reads": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": false,
+     "Layout": false,
+     "Pinion": null,
+     "Ring": null,
+     "Train": false
+    },
+    "flags on open": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": false,
+     "Layout": false,
+     "Pinion": null,
+     "Ring": null,
+     "Train": false
+    },
+    "open": {
+     "errors": 0,
+     "warnings": 0
+    },
+    "ratios read": {
+     "GearA meshes GearB": [
+      40.0,
+      20.0
+     ],
+     "GearC meshes GearD": [
+      50.0,
+      20.0
+     ]
+    },
+    "walk": [
+     [
+      "GearA on S1 Axis",
+      "MateCoincident"
+     ],
+     [
+      "GearA along S1",
+      "MateCoincident"
+     ],
+     [
+      "GearB on S2 Axis",
+      "MateCoincident"
+     ],
+     [
+      "GearB along S2",
+      "MateCoincident"
+     ],
+     [
+      "GearD on S3 Axis",
+      "MateCoincident"
+     ],
+     [
+      "GearD along S3",
+      "MateDistanceDim"
+     ],
+     [
+      "GearC locked to GearB",
+      "MateLock"
+     ],
+     [
+      "GearA meshes GearB",
+      "MateGearDim"
+     ],
+     [
+      "GearC meshes GearD",
+      "MateGearDim"
+     ],
+     [
+      "Drive Angle",
+      "MatePlanarAngleDim"
+     ]
+    ]
+   },
+   "name": "reopened: save flags, resolved state, gear mate definitions read",
+   "seconds": 2.97,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "flags after": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": false,
+     "Layout": false,
+     "Pinion": null,
+     "Ring": null,
+     "Train": true
+    },
+    "flags before": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": false,
+     "Layout": false,
+     "Pinion": null,
+     "Ring": null,
+     "Train": false
+    },
+    "returned": true,
+    "suppressed after": false
+   },
+   "name": "unsuppress a lock that is already on: the save flags straight around the call",
+   "seconds": 1.2,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "GearD kept": 7.0,
+    "drive +10": {
+     "GearA": 10.0,
+     "GearB": -5.0,
+     "GearC": -5.0,
+     "GearD": 2.0
+    },
+    "others turned": {
+     "GearA": 0.0,
+     "GearB": 0.0,
+     "GearC": 0.0
+    },
+    "put rebuild": true
+   },
+   "name": "re-phase: a put on GearD with its gear mate on, then a drive",
+   "seconds": 0.44,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "GearB turned": 0.0,
+    "GearC turned": 5.0,
+    "drive +10": {
+     "GearA": 10.0,
+     "GearB": -5.0,
+     "GearC": -5.0,
+     "GearD": 2.0
+    },
+    "errors": {}
+   },
+   "name": "a put on GearC with its lock on, then a drive",
+   "seconds": 0.73,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "conflicting angle": {
+     "made": [
+      "Angle1"
+     ],
+     "relative_deg": 42.0,
+     "status": 5
+    },
+    "constrained": {
+     "GearB": 3,
+     "GearC": 4
+    },
+    "constrained after": {
+     "GearB": 3,
+     "GearC": 3
+    },
+    "deleted": true,
+    "errors": {
+     "Angle1": [
+      47,
+      false
+     ],
+     "GearB on S2 Axis": [
+      46,
+      true
+     ],
+     "GearC locked to GearB": [
+      46,
+      true
+     ]
+    },
+    "errors after": {},
+    "rebuild": true,
+    "suppressed": true,
+    "suppressed conflict's code": [
+     0,
+     false
+    ],
+    "whats_wrong": {
+     "codes": [
+      1,
+      46,
+      46,
+      47
+     ],
+     "count": 4,
+     "features": [
+      "Mates",
+      "GearB on S2 Axis",
+      "GearC locked to GearB",
+      "Angle1"
+     ],
+     "returned": true,
+     "warnings": [
+      true,
+      true,
+      true,
+      false
+     ]
+    }
+   },
+   "name": "over-define, error codes, What's Wrong, suppressed reads 0, delete",
+   "seconds": 3.8,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "its code while suppressed": [
+     0,
+     false
+    ],
+    "suppressed": true,
+    "unsuppressed": true
+   },
+   "name": "suppress and unsuppress the lock",
+   "seconds": 1.26,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "checks": [
+     [
+      true,
+      "GearD at the new ratio"
+     ]
+    ],
+    "drive +10": {
+     "GearA": 10.0,
+     "GearB": -5.0,
+     "GearC": -5.0,
+     "GearD": 1.666666667
+    },
+    "position": {
+     "after": 9,
+     "before": 8,
+     "count": 10
+    },
+    "read back": [
+     60.0,
+     20.0
+    ],
+    "remade": "GearC meshes GearD"
+   },
+   "name": "remake GearC meshes GearD at a new ratio",
+   "seconds": 3.16,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "calls": {
+     "AddComponent": true,
+     "BeginDrag": true,
+     "Drag": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+     ],
+     "DragMode as it came": 3,
+     "EndDrag": true
+    },
+    "drive suppressed": true,
+    "drive unsuppressed": true,
+    "turns": {
+     "GearA": 0.0,
+     "GearB": 0.0,
+     "GearC": 0.0,
+     "GearD": 10.0
+    }
+   },
+   "name": "drag GearD by assemblies/05's recipe, the drive suppressed",
+   "seconds": 1.39,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "FeatureByName": {
+     "GearC locked to GearB": true,
+     "GearC meshes GearD": true
+    },
+    "folder suppressed": true,
+    "folder unsuppressed": true,
+    "inner": "Folder B",
+    "left open": [],
+    "mates after": {
+     "GearC locked to GearB": false,
+     "GearC meshes GearD": false
+    },
+    "mates then suppressed": {
+     "GearC locked to GearB": true,
+     "GearC meshes GearD": true
+    },
+    "outer": "Folder A",
+    "saved": true,
+    "walk": [
+     [
+      "GearA on S1 Axis",
+      "MateCoincident"
+     ],
+     [
+      "GearA along S1",
+      "MateCoincident"
+     ],
+     [
+      "GearB on S2 Axis",
+      "MateCoincident"
+     ],
+     [
+      "GearB along S2",
+      "MateCoincident"
+     ],
+     [
+      "GearD on S3 Axis",
+      "MateCoincident"
+     ],
+     [
+      "GearD along S3",
+      "MateDistanceDim"
+     ],
+     [
+      "Folder A",
+      "FtrFolder"
+     ],
+     [
+      "GearC locked to GearB",
+      "MateLock"
+     ],
+     [
+      "Folder B",
+      "FtrFolder"
+     ],
+     [
+      "GearC meshes GearD",
+      "MateGearDim"
+     ],
+     [
+      "Folder2___EndTag___",
+      "FtrFolder"
+     ],
+     [
+      "Folder1___EndTag___",
+      "FtrFolder"
+     ],
+     [
+      "GearA meshes GearB",
+      "MateGearDim"
+     ],
+     [
+      "Drive Angle",
+      "MatePlanarAngleDim"
+     ]
+    ]
+   },
+   "name": "mate folders: one, nested, suppressed",
+   "seconds": 4.36,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "FeatureByName": {
+     "GearC locked to GearB": true,
+     "GearC meshes GearD": true
+    },
+    "left open": [],
+    "walk": [
+     [
+      "GearA on S1 Axis",
+      "MateCoincident"
+     ],
+     [
+      "GearA along S1",
+      "MateCoincident"
+     ],
+     [
+      "GearB on S2 Axis",
+      "MateCoincident"
+     ],
+     [
+      "GearB along S2",
+      "MateCoincident"
+     ],
+     [
+      "GearD on S3 Axis",
+      "MateCoincident"
+     ],
+     [
+      "GearD along S3",
+      "MateDistanceDim"
+     ],
+     [
+      "Folder A",
+      "FtrFolder"
+     ],
+     [
+      "GearC locked to GearB",
+      "MateLock"
+     ],
+     [
+      "Folder B",
+      "FtrFolder"
+     ],
+     [
+      "GearC meshes GearD",
+      "MateGearDim"
+     ],
+     [
+      "Folder2___EndTag___",
+      "FtrFolder"
+     ],
+     [
+      "Folder1___EndTag___",
+      "FtrFolder"
+     ],
+     [
+      "GearA meshes GearB",
+      "MateGearDim"
+     ],
+     [
+      "Drive Angle",
+      "MatePlanarAngleDim"
+     ]
+    ]
+   },
+   "name": "mate folders after a reopen",
+   "seconds": 2.29,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "GearD x after": 105.0,
+    "GearD x before the route": 105.0,
+    "flags after a global and the route": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": false,
+     "Layout": false,
+     "Pinion": null,
+     "Ring": null,
+     "Train": true
+    },
+    "flags after the skeleton change and the route": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": false,
+     "Layout": true,
+     "Pinion": null,
+     "Ring": null,
+     "Train": true
+    },
+    "flags on open": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": false,
+     "Layout": false,
+     "Pinion": null,
+     "Ring": null,
+     "Train": false
+    },
+    "left open": [],
+    "returned": true,
+    "returned after the skeleton change": true,
+    "skeleton open": {
+     "errors": 0,
+     "warnings": 128
+    },
+    "skeleton rebuild": true,
+    "status after the route": {
+     "NeedsRebuild": false,
+     "NeedsRebuild2": 0
+    },
+    "status before the route, after a global": {
+     "NeedsRebuild": true,
+     "NeedsRebuild2": 1
+    },
+    "status before the route, after the skeleton change": {
+     "NeedsRebuild": false,
+     "NeedsRebuild2": 0
+    }
+   },
+   "name": "rebuild route ForceRebuild3(True): what it marks",
+   "seconds": 4.25,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "GearD x after": 105.0,
+    "GearD x before the route": 105.0,
+    "flags after a global and the route": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": false,
+     "Layout": false,
+     "Pinion": null,
+     "Ring": null,
+     "Train": true
+    },
+    "flags after the skeleton change and the route": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": false,
+     "Layout": true,
+     "Pinion": null,
+     "Ring": null,
+     "Train": true
+    },
+    "flags on open": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": false,
+     "Layout": false,
+     "Pinion": null,
+     "Ring": null,
+     "Train": false
+    },
+    "left open": [],
+    "returned": true,
+    "returned after the skeleton change": true,
+    "skeleton open": {
+     "errors": 0,
+     "warnings": 128
+    },
+    "skeleton rebuild": true,
+    "status after the route": {
+     "NeedsRebuild": false,
+     "NeedsRebuild2": 0
+    },
+    "status before the route, after a global": {
+     "NeedsRebuild": true,
+     "NeedsRebuild2": 1
+    },
+    "status before the route, after the skeleton change": {
+     "NeedsRebuild": false,
+     "NeedsRebuild2": 0
+    }
+   },
+   "name": "rebuild route EditRebuild3: what it marks",
+   "seconds": 4.29,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "GearD x after": 105.0,
+    "GearD x before the route": 105.0,
+    "flags after a global and the route": {
+     "GearA": true,
+     "GearB": true,
+     "GearC": true,
+     "GearD": true,
+     "Layout": true,
+     "Pinion": null,
+     "Ring": null,
+     "Train": true
+    },
+    "flags after the skeleton change and the route": {
+     "GearA": true,
+     "GearB": true,
+     "GearC": true,
+     "GearD": true,
+     "Layout": true,
+     "Pinion": null,
+     "Ring": null,
+     "Train": true
+    },
+    "flags on open": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": false,
+     "Layout": false,
+     "Pinion": null,
+     "Ring": null,
+     "Train": false
+    },
+    "left open": [],
+    "returned": true,
+    "returned after the skeleton change": true,
+    "skeleton open": {
+     "errors": 0,
+     "warnings": 128
+    },
+    "skeleton rebuild": true,
+    "status after the route": {
+     "NeedsRebuild": false,
+     "NeedsRebuild2": 0
+    },
+    "status before the route, after a global": {
+     "NeedsRebuild": true,
+     "NeedsRebuild2": 1
+    },
+    "status before the route, after the skeleton change": {
+     "NeedsRebuild": false,
+     "NeedsRebuild2": 0
+    }
+   },
+   "name": "rebuild route ForceRebuild3(False): what it marks",
+   "seconds": 4.87,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "assembly rebuild": true,
+    "dialogs during it": [],
+    "files written": [],
+    "flags before the close": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": true,
+     "Layout": false,
+     "Pinion": null,
+     "Ring": null,
+     "Train": true
+    },
+    "flags then": {
+     "GearA": null,
+     "GearB": null,
+     "GearC": null,
+     "GearD": true,
+     "Layout": null,
+     "Pinion": null,
+     "Ring": null,
+     "Train": null
+    },
+    "left open": [],
+    "part open": {
+     "errors": 0,
+     "warnings": 128
+    },
+    "part rebuild": true,
+    "seconds for the assembly's close": 0.19,
+    "still open after the assembly": [
+     "GearD.SLDPRT"
+    ]
+   },
+   "name": "unsaved close by CloseDoc, the changed part open in its own window",
+   "seconds": 4.3,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "assembly rebuild": true,
+    "dialogs during it": [],
+    "files written": [],
+    "flags before the close": {
+     "GearA": false,
+     "GearB": false,
+     "GearC": false,
+     "GearD": true,
+     "Layout": false,
+     "Pinion": null,
+     "Ring": null,
+     "Train": true
+    },
+    "flags then": {
+     "GearA": null,
+     "GearB": null,
+     "GearC": null,
+     "GearD": true,
+     "Layout": null,
+     "Pinion": null,
+     "Ring": null,
+     "Train": null
+    },
+    "left open": [],
+    "part open": {
+     "errors": 0,
+     "warnings": 128
+    },
+    "part rebuild": true,
+    "seconds for the assembly's close": 0.21,
+    "still open after the assembly": [
+     "GearD.SLDPRT"
+    ]
+   },
+   "name": "unsaved close by QuitDoc, the changed part open in its own window",
+   "seconds": 4.35,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "assemblies": {
+     "second": {
+      "component": "GearA-1",
+      "mate": [
+       "Coincident1"
+      ],
+      "status": 1,
+      "title": "Assem3"
+     },
+     "unsaved": {
+      "component": "GearA-1",
+      "mate": [
+       "Coincident1"
+      ],
+      "status": 1,
+      "title": "Assem2"
+     }
+    },
+    "insert closed part": true,
+    "left open": [],
+    "second saved": true,
+    "second title after save": "Second.SLDASM"
+   },
+   "name": "insert a closed part; a second new assembly beside an unsaved one",
+   "seconds": 4.48,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "Flip False": {
+     "Reverse": true,
+     "parallel": true,
+     "read_back_says_right": true,
+     "status": 1,
+     "turned_as_it_meshes": true,
+     "turns": {
+      "Pinion": 30.0,
+      "Ring": 10.0
+     }
+    },
+    "Flip True": {
+     "Reverse": false,
+     "parallel": true,
+     "read_back_says_right": false,
+     "status": 1,
+     "turned_as_it_meshes": false,
+     "turns": {
+      "Pinion": 30.0,
+      "Ring": -10.0
+     }
+    },
+    "checks": [
+     [
+      true,
+      "Flip False: the read-back agrees with the turn"
+     ],
+     [
+      true,
+      "Flip True: the read-back agrees with the turn"
+     ]
+    ],
+    "left open": []
+   },
+   "name": "a pinion inside a plain annulus: the turn and the read-back, Flip False then True",
+   "seconds": 12.16,
+   "status": "pass"
+  },
+  {
+   "facts": {
+    "left after": [],
+    "left before": []
+   },
+   "name": "close what is left and exit SolidWorks",
+   "seconds": 0.01,
+   "status": "pass"
+  }
+ ],
+ "summary": {
+  "pass": 25
+ }
+}

@@ -57,7 +57,9 @@ BLANK_R, BLANK_W = 0.020, 0.010       # metres
 MM = 1000.0
 
 # The train: four cylinders standing in for gears on three shafts, every shaft +Z.
-SHAFTS = (("S1", 0.040, 0.040), ("S2", 0.100, 0.040), ("S3", 0.100, 0.110))
+SHAFTS = (("S1", 0.040, 0.040), ("S2", 0.100, 0.040), ("S3", 0.100, 0.110),
+          ("S4", 0.300, 0.040), ("S5", 0.315, 0.040))   # S4, S5: a pinion inside a plain annulus
+RING_OUTER, RING_INNER = 0.050, 0.040   # metres: an annulus with no teeth, round a pinion of BLANK_R
 GEARS = (  # name, shaft, z of its front face (m), placed turned (degrees)
     ("GearA", "S1", 0.000, 10.0),
     ("GearB", "S2", 0.000, 0.0),
@@ -331,6 +333,17 @@ def remake_gear_mate(asm, name, first_component, second_component, z_first, z_se
     return str(call(feature, "Name"))
 
 
+def gear_mate_sense_read_back(asm, name, internal):
+    """Whether a made gear mate turns its gears as they mesh, read back: exactly when
+    (IGearMateFeatureData.Reverse == its two MateEntity directions point the same way) == internal."""
+    feature = mate_feature(asm, name)
+    reverse = bool(call(call(feature, "GetDefinition"), "Reverse"))
+    mate = call(feature, "GetSpecificFeature2")
+    d0, d1 = [list(call(call(mate, "MateEntity", i), "EntityParams"))[3:6] for i in (0, 1)]
+    parallel = sum(a * b for a, b in zip(d0, d1)) > 0
+    return (reverse == parallel) == internal, {"Reverse": reverse, "parallel": parallel}
+
+
 def read_gear_ratio(asm, name):
     """IFeature.GetDefinition of a gear mate, its two ratio fields read; nothing modified."""
     data = call(mate_feature(asm, name), "GetDefinition")    # an IGearMateFeatureData
@@ -599,8 +612,9 @@ def last_feature(doc):
     return call(doc, "FeatureByPositionReverse", 0)
 
 
-def cylinder_part(app, path):
-    """A saved r 20 x 10 mm cylinder extruded from the Front plane, with "Gear Axis" from Top then Right."""
+def cylinder_part(app, path, radii=(BLANK_R,)):
+    """A saved cylinder r 20 x 10 mm (or, given two radii, an annulus) extruded from the Front plane,
+    with "Gear Axis" made from Top then Right."""
     doc = new_document(app, SW_DOC_PART)
     front, top, right = planes(doc)[:3]
     if not select_feature(doc, front):
@@ -609,7 +623,8 @@ def cylinder_part(app, path):
     manager.AddToDB = True
     call(manager, "InsertSketch", True)
     call(doc, "ClearSelection2", True)
-    call(manager, "CreateCircleByRadius", 0.0, 0.0, 0.0, BLANK_R)
+    for radius in radii:
+        call(manager, "CreateCircleByRadius", 0.0, 0.0, 0.0, radius)
     call(manager, "InsertSketch", True)
     manager.AddToDB = False
     sketch = last_feature(doc)
@@ -700,13 +715,13 @@ class Recorder:
         self.lock = threading.Lock()
 
     def scrub(self, value):
+        """No scratch path, home folder or user name in what is written, however many times escaped."""
         text = json.dumps(value, default=repr)
-        for root in {self.scratch, os.path.normcase(self.scratch), self.scratch.replace("\\", "/")}:
-            for form in (root, root.replace("\\", "\\\\")):
-                text = text.replace(form, "<scratch>")
-        home = os.path.expanduser("~")
-        for form in (home, home.replace("\\", "\\\\")):
-            text = text.replace(form, "<home>")
+        separator = r"(?:\\+|/)"
+        parts = [re.escape(part) for part in re.split(r"[\\/]+", self.scratch) if part]
+        text = re.sub(separator.join(parts), "<scratch>", text, flags=re.IGNORECASE)
+        text = re.sub(r"[A-Za-z]:" + separator + r"Users" + separator + r"[^\\/\"']+", "<home>", text,
+                      flags=re.IGNORECASE)
         user = os.environ.get("USERNAME") or ""
         if len(user) > 2:
             text = re.sub(re.escape(user), "<user>", text, flags=re.IGNORECASE)
@@ -827,12 +842,16 @@ def run(app, scratch, rec):
     os.makedirs(base)
     paths = {name: os.path.join(base, f"{name}.SLDPRT") for name, *_ in GEARS}
     paths["Layout"] = os.path.join(base, "Layout.SLDPRT")
+    paths["Pinion"] = os.path.join(base, "Pinion.SLDPRT")
+    paths["Ring"] = os.path.join(base, "Ring.SLDPRT")
     paths["Train"] = os.path.join(base, "Train.SLDASM")
     state = {}
 
     with rec.step("fixtures: four cylinders and a skeleton, saved") as s:
         for name, *_ in GEARS:
             cylinder_part(app, paths[name])
+        cylinder_part(app, paths["Pinion"])
+        cylinder_part(app, paths["Ring"], (RING_OUTER, RING_INNER))
         layout_part(app, paths["Layout"])
         s.fact("files", sorted(os.path.basename(p) for p in os.listdir(base)))
         s.check(all(os.path.isfile(paths[k]) for k in paths if k != "Train"), "every part saved")
@@ -904,6 +923,7 @@ def run(app, scratch, rec):
             entity = call(call(mate_feature(asm, name), "GetSpecificFeature2"), "MateEntity", 0)
             s.fact(f"{name} read back", {"ratio": list(ratio), "Reverse": reverse,
                                          "MateEntity(0)": str(call(call(entity, "ReferenceComponent"), "Name2"))})
+            s.fact(f"{name} sense read back", gear_mate_sense_read_back(asm, name, internal=False))
 
     with rec.step("drive: an angle mate on a global, and the turns") as s:
         eqm = call(asm, "GetEquationMgr")
@@ -1116,7 +1136,8 @@ def run(app, scratch, rec):
             activate(app, str(call(asm, "GetTitle")))
             s.fact("assembly rebuild", call(asm, "ForceRebuild3", True))
             s.fact("flags before the close", save_flags(app, local))
-            stamps = {name: os.path.getmtime(os.path.join(folder, name)) for name in os.listdir(folder)}
+            stamps = {name: os.path.getmtime(os.path.join(folder, name)) for name in os.listdir(folder)
+                      if not name.startswith("~$")}        # SolidWorks's own lock files come and go
             dialogs_before = len(rec.dialogs)
             started = time.time()
             if closer == "CloseDoc":
@@ -1130,7 +1151,8 @@ def run(app, scratch, rec):
             s.fact("flags then", save_flags(app, local))
             s.fact("left open", (close_in if closer == "CloseDoc" else quit_in)(app, folder))
             s.fact("files written", sorted(n for n, t in stamps.items()
-                                           if os.path.getmtime(os.path.join(folder, n)) != t))
+                                           if not os.path.isfile(os.path.join(folder, n)) or
+                                           os.path.getmtime(os.path.join(folder, n)) != t))
 
     with rec.step("insert a closed part; a second new assembly beside an unsaved one") as s:
         other = os.path.join(scratch, "second")
@@ -1159,6 +1181,51 @@ def run(app, scratch, rec):
         call(app, "CloseDoc", str(call(made["second"]["doc"], "GetTitle")))
         call(app, "CloseDoc", made["unsaved"]["title"])
         s.fact("left open", close_in(app, other) + [str(call(d, "GetTitle")) for d in documents(app)])
+
+    with rec.step("a pinion inside a plain annulus: the turn and the read-back, Flip False then True") as s:
+        for key in ("Layout", "Ring", "Pinion"):
+            open_doc(app, paths[key], SW_DOC_PART)
+        pair = new_document(app, SW_DOC_ASSEMBLY)
+        skeleton = insert(pair, paths["Layout"])
+        put_frame(app, pair, skeleton, rot_z(0.0), (0.0, 0.0, 0.0))
+        fix(pair, skeleton)
+        shafts = {shaft: (x, y) for shaft, x, y in SHAFTS}
+        parts = {}
+        for key, shaft, turned in (("Ring", "S4", 0.0), ("Pinion", "S5", DRIVE_FROM)):
+            x, y = shafts[shaft]
+            parts[key] = insert(pair, paths[key], x, y, 0.0)
+            put_frame(app, pair, parts[key], rot_z(turned), (x, y, 0.0))
+            fix(pair, parts[key])
+            hold_on_shaft(pair, parts[key], skeleton, f"{shaft} Axis", plane_names(skeleton)[0], 0.0)
+        eqm = call(pair, "GetEquationMgr")
+        call(eqm, "Add2", -1, f'"Drive"= {DRIVE_FROM:g}', True)
+        select_feature_of(pair, parts["Pinion"], plane_names(parts["Pinion"])[1], False)
+        select_feature_of(pair, skeleton, plane_names(skeleton)[1], True)
+        mate, status, made = add_mate(pair, ANGLE, CLOSEST, angle_rad=math.radians(DRIVE_FROM))
+        drive = rename(mate_feature(pair, made[0]), "Drive Angle")
+        dims = [str(call(d, "Name")) for d in dimensions_of(mate_feature(pair, drive))]
+        call(eqm, "Add2", -1, f'"{dims[0]}@{drive}"= "Drive"', True)
+        call(pair, "ForceRebuild3", True)
+        for flip in (False, True):
+            if flip:
+                delete_mate(pair, "Pinion meshes Ring")
+            select_feature_of(pair, parts["Pinion"], "Gear Axis", False)
+            select_feature_of(pair, parts["Ring"], "Gear Axis", True)
+            mate, status, made = add_mate(pair, GEAR, CLOSEST, flip=flip, ratio=(20.0, 60.0))
+            rename(mate_feature(pair, made[0]), "Pinion meshes Ring")
+            call(pair, "ForceRebuild3", True)
+            right, read = gear_mate_sense_read_back(pair, "Pinion meshes Ring", internal=True)
+            before = {k: frame_of(c)[0] for k, c in parts.items()}
+            value = float(call(eqm, "Value", global_index(eqm, "Drive")))
+            set_global(eqm, "Drive", value + 30.0)
+            call(pair, "ForceRebuild3", True)
+            turns = {k: round(turn_about_z(before[k], frame_of(c)[0]), 9) for k, c in parts.items()}
+            same_way = turns["Pinion"] * turns["Ring"] > 0
+            s.fact(f"Flip {flip}", {"status": status, "read_back_says_right": right, **read, "turns": turns,
+                                    "turned_as_it_meshes": same_way})
+            s.check(right == same_way, f"Flip {flip}: the read-back agrees with the turn")
+        call(app, "QuitDoc", str(call(pair, "GetTitle")))
+        s.fact("left open", close_in(app, base))
 
 
 def main(argv=None):
@@ -1214,7 +1281,7 @@ def main(argv=None):
                     call(app, "QuitDoc", str(call(doc, "GetTitle")))
             s.fact("left before", left)
             s.fact("left after", [str(call(d, "GetTitle")) for d in documents(app)])
-            call(app, "ExitApp")
+            app.ExitApp()          # returns nothing: attribute access alone would only fetch it
         stop.set()
         rec.write()
         for _ in range(60):
@@ -1224,6 +1291,9 @@ def main(argv=None):
         else:
             subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"], capture_output=True)
             rec.meta["exit"] = "ExitApp did not end SolidWorks within 60 s; it was killed"
+            rec.write()
+        if "exit" not in rec.meta:
+            rec.meta["exit"] = "ExitApp ended SolidWorks"
             rec.write()
     failed = [s["name"] for s in rec.steps if s["status"] != "pass"]
     print(f"done  {rec.summary()}; not passing: {failed}")

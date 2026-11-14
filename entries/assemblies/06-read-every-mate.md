@@ -339,6 +339,11 @@ every gear mate in it and against the drag result recorded in assemblies/05
 were read by reflection from the `SolidWorks.Interop.sldworks.dll` and
 `swconst.dll` installed beside SolidWorks. `folder_paths` ran on the recorded
 order, not live.
+- Mate folders made by code, again, by the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0): on both versions the walk read
+  `Folder A`, its mate, `Folder B`, its mate, `Folder2___EndTag___`,
+  `Folder1___EndTag___`, the same after a reopen; `FeatureByName` found both
+  mates; suppressing `Folder A` suppressed both and unsuppressing it brought
+  them back.
 
 ## See also
 

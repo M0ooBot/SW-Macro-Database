@@ -88,7 +88,7 @@ result files stay in the Gear-Generator repository.
 | `GetFirstDocument` | First of the open documents, walked with `GetNext` | Verified |
 | `Visible` | Show or hide a launched instance | Verified |
 | `CommandInProgress` | Set `True` to suppress rebuilds during a batch. Features made under it came out right after one rebuild | Verified, SW 2026 |
-| `ExitApp` | Close an instance you launched | Unverified |
+| `ExitApp` | Close an instance you launched. **Call it with parentheses** (`app.ExitApp()`): reached by attribute access it came back as an uncalled method and SolidWorks stayed open (GOTCHAS §55). Called, it ended a SolidWorks started by the script within 60 s | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), gear-train runner 2026-11-14 |
 | `GetDocumentDependencies2` | References of a **closed** file, without opening it | Verified |
 | `ReplaceReferencedDocument` | Repoint a reference after a move | Unverified |
 | `GetOpenDocumentByName` | Check whether a file is open before touching it | Unverified |
@@ -511,7 +511,7 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `AddMate5(0, 2, False, 0, …)` / `AddMate5(5, 2, False, d, d, d, …)` on 2024 | Coincident and distance mates. The out code read **1** when the mate solved and **5** when the assembly came out over-defined, with mates then at `GetErrorCode2` 51 (GOTCHAS §83) | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
 | `GetExplodedViewNames2(config)` | The exploded views in a configuration, e.g. `Exploded View1` | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
 | `ShowExploded2(True, name)` | Show that exploded view; returned `True` | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
-| `AddMate5(10, 2, flip, 0, 0, 0, zFirst, zSecond, 0, 0, 0, False, False, 0, out)` | Gear mate between the two selected axes (or faces). The ratio's **numerator argument goes with the first selection**; `IGearMateFeatureData` reads it back reversed. `Flip` False = the mesh's own sense for every pair, a ring included; the alignment argument is ignored (GOTCHAS §96) | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
+| `AddMate5(10, 2, flip, 0, 0, 0, zFirst, zSecond, 0, 0, 0, False, False, 0, out)` | Gear mate between the two selected axes (or faces). The ratio's **numerator argument goes with the first selection**; `IGearMateFeatureData` reads it back reversed. `Flip` False was right for external pairs and a pinion in a plain annulus on both versions; for a toothed ring gear the `Flip` needed was opposite on 2026 and 2024 (GOTCHAS §105): read the mate back. The alignment argument is ignored (GOTCHAS §96) | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `AddMate5(16, 2, False, 0, 0, 0, 1, 1, 0, 0, 0, False, False, 0, out)` | Lock mate between two whole components selected with `IComponent2.Select4(append, data, False)`, `data.Mark = 1`. Held a compound gear's angle through drives | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `AddMate5(1, …)` between two reference axes | **Refused**: returned `None`, status 0 `swAddMateError_ErrorUknown` (GOTCHAS §94). `AddMate5(0, 2, …)` (coincident) between the same axes held | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `AddMate5` status on 2026 | 1 solved; 0 refused; **5 over-defined, the mate made anyway** (as on 2024) | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
@@ -569,6 +569,7 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `GearRatioNumerator` / `GearRatioDenominator` on a code-made mate | Read the **second** selection's count as numerator. Put through `GetDefinition` + `ModifyDefinition`, they had to be given in `AddMate5`'s order (first selection's count as numerator) for the new ratio to come out right | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `AccessSelections` | Not there: raised `AttributeError` (`<unknown>.AccessSelections`); `ModifyDefinition` worked without it | Verified absent, Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `Reverse` (what it read) | In the 15 meshing pairs mated by their axes, `Flip` inverted once when the shafts pointed opposite ways and once for a ring; the 3 face-mated pairs fitted too. Not the pair mated by one axis and one face, nor a pinion moved clear of its ring along the axis, nor one placed outside its ring | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
+| `Reverse` with the two `IMateEntity2.EntityParams` directions (items 3–5) | The made gear mate turns its gears as they mesh exactly when `(Reverse == the directions point the same way) == internal`; agreed with the measured turn in 52 of 52 mates on each version, toothed rings included (GOTCHAS §105) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), runs 20261114-133014 and 20261114-135104 |
 
 ## IDistanceMateFeatureData (from `IFeature.GetDefinition` on a distance mate)
 
