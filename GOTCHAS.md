@@ -1232,15 +1232,19 @@ SP5. See
 
 ## 100. Closing an assembly can raise a modal dialog that hangs the script
 
-On SolidWorks 2024 SP5, `CloseDoc` on an assembly whose saved parts had changed
+On SolidWorks 2024 SP5, `CloseDoc` on an assembly whose saved parts had been
+changed through the assembly (its full rebuild marks every component, §93)
 opened "Save Modified Documents" and the script hung; 2026 did not ask.
+Observed once, not reproduced since.
 `QuitDoc` (close without saving) closed modified documents with no dialog on
 both. But on SolidWorks 2026 (34.1.1), `QuitDoc` on an assembly **saved by
 2024** raised the SOLIDWORKS CAM add-in's "Save changes to <assembly>?",
 although `GetSaveFlag` had read `False` after the open (it was not read again
 before the close). An assembly with unsaved changes whose changed parts were
 open in their own windows closed with no question by either call, on both
-versions, and nothing was written. See
+versions, and nothing was written. Why one case asked and the other did not is
+not known: the cause is a reading of the two cases, not isolated (see
+documents/02). See
 [documents/02](entries/documents/02-save-as-and-close.md#closing-an-assembly-closedoc-quitdoc-and-the-dialogs-they-raised).
 
 ## 101. The drag operator did not turn a gear train held by axis-coincident mates
@@ -1248,14 +1252,17 @@ versions, and nothing was written. See
 [assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md)'s
 recipe (`AddComponent(gear, False)`, `TransformType` 0, `UseAbsoluteTransform`
 `False`, `DragMode` as it came, relative `Drag` steps, `EndDrag`), repeated call
-for call on a mated gear train, turned **only the dragged gear**: the output in
-10 steps (that entry's successful case), in 1 and in 30; the input; and the
-second gear of a locked compound pair, whose lock partner stayed put too. Every
-`Drag` returned `True` and no mate reported an error. The train's gears were
-held by their axes **coincident** with shaft axes; in the entry's case where a
-drag did carry through a gear mate they were concentric to sketch points. The
-mate kind was not varied, so that entry's result stands for its own assembly but
-must not be relied on for a gear train without testing. Prove a train by
+for call on a mated gear train with its driving mates suppressed, turned **only
+the dragged gear**, each case asking 10°: the output in 1, 10 and 30 steps; the
+input; and the second gear of a locked compound pair, whose lock partner stayed
+put too. Every `Drag` returned `True` and no mate reported an error. That
+entry's case where a drag did carry through a gear mate differed in three ways
+none of which was varied: its gears were concentric to sketch points (here
+their axes were **coincident** with shaft axes), its mesh was a ring (internal)
+gear (here external meshes only), and it dragged 30° (here 10°). Its own second
+assembly, gears concentric to faces, showed no carry either. So that result
+stands for its own assembly but must not be relied on for a gear train without
+testing. Prove a train by
 driving a mate through a global instead. SolidWorks 2026 (34.1.1) and 2024 SP5.
 See [assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md#a-third-assembly-a-mated-gear-train-on-2026-and-2024).
 
@@ -1266,7 +1273,13 @@ component fully resolved. With `swOpenDocOptions_OverrideDefaultLoadLightweight`
 (64) added, every component read lightweight (`GetSuppression2` 1), and the
 SOLIDWORKS CAM add-in put up a modal "SOLIDWORKS CAM Error" box ("…loading of
 lightweight parts has been detected") that blocked `OpenDoc6` until something
-closed it. SolidWorks 2026 (34.1.1) and 2024 SP5, with that add-in loaded. See
+closed it. Worse, lightweight, a mated gear train's first drive (transforms
+read, a global set, a top-only rebuild, transforms read again) read one gear at
+−24.17° where 2.5° was right; after that step every component read 2 (fully
+resolved), and which call resolved them was not separated. The wrong reading
+may be a stale transform read while lightweight. Read `GetSuppression2` on every
+component and require 2 before reading transforms, driving or changing a train.
+SolidWorks 2026 (34.1.1) and 2024 SP5, with that add-in loaded. See
 [assemblies/11](entries/assemblies/11-change-a-mated-gear-train.md#with-the-components-lightweight).
 
 ## 103. A suppressed mate reads error code 0, and unsuppressing an unsuppressed mate marks the assembly
@@ -1274,8 +1287,10 @@ closed it. SolidWorks 2026 (34.1.1) and 2024 SP5, with that add-in loaded. See
 `GetErrorCode2` on a suppressed mate read 0 with the warning flag `False`, even
 for the mate that over-defined the assembly when it was on: a check that reads
 only codes passes it. `SetSuppression2(1, 1, None)` on a mate already on returned
-`True`, did nothing visible, and marked the assembly modified. SolidWorks 2026
-(34.1.1) and 2024 SP5. See
+`True` and did nothing visible, yet `GetSaveFlag` read straight before and
+straight after it, nothing in between, went from `False` to `True` for the
+assembly alone: the call itself marks it. SolidWorks 2026 (34.1.1) and 2024
+SP5. See
 [assemblies/02](entries/assemblies/02-mates-from-code.md#suppressed-mates-read-clean).
 
 ## 104. "No interference" after a gear change proves nothing without a half-pitch control

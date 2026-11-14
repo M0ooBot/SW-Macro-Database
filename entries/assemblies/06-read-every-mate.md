@@ -2,7 +2,7 @@
 id: assemblies-06-read-every-mate
 title: Read every mate in an assembly, with its entities, gear ratio and folder
 status: verified
-verified_on: SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates and a code-made mate folder also SolidWorks 2026 (34.1.1)
+verified_on: SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates and code-made mate folders also SolidWorks 2026 (34.1.1)
 language: [python]
 api: [IFeatureManager.InsertFeatureTreeFolder2, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IFeature.GetTypeName2, IFeature.GetSpecificFeature2, IFeature.GetDefinition, IFeature.IsSuppressed, IFeature.GetErrorCode2, IMate2.Type, IMate2.Alignment, IMate2.Flipped, IMate2.MaximumVariation, IMate2.MinimumVariation, IMate2.GetMateEntityCount, IMate2.MateEntity, IMateEntity2.ReferenceComponent, IMateEntity2.ReferenceType2, IMateEntity2.EntityParams, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IGearMateFeatureData.Reverse, IDistanceMateFeatureData.Distance, IDistanceMateFeatureData.MateAlignment]
 keywords: [read mates, list mates, dump mates, mate inventory, existing mates, MateGroup, MateGearDim, MateConcentric, MateCoincident, MateCoordinate, MateDistanceDim, MateLimitDistanceDim, gear mate ratio, GearRatioNumerator, GearRatioDenominator, which gear is the numerator, swMateType_e, swSelectType_e, ReferenceType2, EntityParams, mate folder, FtrFolder, ___EndTag___, limit mate range, MaximumVariation, suppressed mates, mechanism from mates]
@@ -289,6 +289,29 @@ the folder's own `GetFirstSubFeature` gave nothing. `IModelDoc2.FeatureByName`
 found both mates inside the folder, no mate reported an error, and a walk that
 keeps only type names starting with `Mate` skipped both folder entries and still
 saw every mate.
+
+A second run walked four cases on both versions (`mate_folders`, runs
+20261114-105135 and 20261114-111150, fresh sessions): the one folder; a folder
+made inside it the same way, holding one of the two mates; the assembly saved
+under its own name, closed and reopened; and the outer folder suppressed.
+
+- **In all four, the mates were ordinary siblings in the `MateGroup` walk and
+  `IModelDoc2.FeatureByName` found them.** Every folder entry, each folder and
+  each `…___EndTag___` marker, read `GetTypeName2` `FtrFolder`.
+- **Nested, and again after the reopen, the walk read:** the outer folder, its
+  mate, the inner folder, its mate, `Folder2___EndTag___`, then
+  `Folder1___EndTag___`. The inner folder's tag comes first, so the stack in
+  `folder_paths` above unwinds correctly. After this reopen the tags kept their
+  names, with no `…___EndTag___0` suffix: the renaming §19 records on reopening
+  a part was not seen here, which does not show it cannot happen.
+- **Suppressing the folder suppresses its mates.** `IFeature.SetSuppression2(0, 1, None)`
+  on the outer folder's feature (the call that suppresses a mate) left both
+  mates inside reading `IsSuppressed2` `True`, and the walk still listed them;
+  `SetSuppression2(1, 1, None)` on the folder brought both back with no mate
+  error. So read `IsSuppressed2` on each mate: a mate can be suppressed by its
+  folder.
+- **Not probed:** unsuppressing a mate on its own while its folder is
+  suppressed, and a folder made in the user interface.
 
 ## What it does not do
 

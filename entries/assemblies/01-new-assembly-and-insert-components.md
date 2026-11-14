@@ -196,23 +196,44 @@ established; setting every frame is the fix. See
 
 Added from the Gear-Generator probe's tier 7 (`add_component_opened_part` and
 `add_component_same_name_elsewhere`), SolidWorks 2026
-(34.0.0, 34.1.1) and 2024 SP5 (32.5.0):
+(34.0.0, 34.1.1) and 2024 SP5 (32.5.0). Condensed from the probe (the same
+calls; its checks and records removed; not run as written):
 
 ```python
-        # (ii) closed on disk, never opened in this session
-        closed = _add(px, asm, closed_path, "a part saved and closed")
-        routes["closed"] = closed is not None
-        px.fact("closed_part_listed_open_after_insert", os.path.normcase(closed_path) in _open_paths(px))
+import pythoncom
+from win32com.client import VARIANT
 
-        # (i) opened by path (and so made active) first
-        _part, _route = open_by_path(px, opened_path)
-        px.fact("active_after_opening_the_part", _active_title(px))
-        opened = _add(px, asm, opened_path, "a part opened by path, the part active")
+SW_DOC_PART, OPEN_SILENT = 1, 1          # swDocumentTypes_e, swOpenDocOptions_e.swOpenDocOptions_Silent
+
+
+def call(obj, name, *args):
+    member = getattr(obj, name)
+    return member(*args) if args else member
+
+
+def out_long():
+    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)
+
+
+def insert(asm, path, x_m=0.0, y_m=0.0, z_m=0.0):
+    """IAssemblyDoc.AddComponent5; None when SolidWorks would not insert it."""
+    return call(asm, "AddComponent5", path, 0, "", False, "", x_m, y_m, z_m)
+
+
+def open_part(app, path):
+    """ISldWorks.OpenDoc6; returns (document, errors, warnings)."""
+    errors, warnings = out_long(), out_long()
+    doc = call(app, "OpenDoc6", path, SW_DOC_PART, OPEN_SILENT, "", errors, warnings)
+    return doc, errors.value, warnings.value
+
+
+closed = insert(asm, closed_path)        # saved and closed on disk: returned None
+part, errors, warnings = open_part(app, opened_path)
+opened = insert(asm, opened_path)        # opened first (the part now active): a component
 ```
 
-`_add` is `AddComponent5(path, 0, "", False, "", x, y, z)` as above, and
-`open_by_path` is `ISldWorks.OpenDoc6(path, 1, 1, "", out errors, out warnings)`
-(option 1 `swOpenDocOptions_Silent`).
+`OpenDoc6` returned the document itself, not a tuple; the errors and warnings
+come back in the by-reference longs.
 
 - **`AddComponent5` of a part saved and closed returned `None`** — no error,
   no component, and the part was not left open. The same part opened by

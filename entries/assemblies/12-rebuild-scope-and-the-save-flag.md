@@ -24,20 +24,28 @@ is which rebuild marks what, what each returns when a component fails, what
 ## The calls
 
 From the Gear-Generator probe (`assembly_rebuild_scope` in its tier 7,
-`mated_rebuild_scope` in `p8_motion.py`), Python over pywin32 late binding.
+`mated_rebuild_scope` in `p8_motion.py`), Python over pywin32 late binding. The
+listings are **condensed from the probe**: the same calls, with its logging and
+records removed and its helpers written out. Not run as written.
 
 **The routes compared**, each on its own copy of an assembly:
 
 ```python
-def _apply_route(px: Px, asm: Any, route: str, label: str) -> Dict[str, Any]:
-    """Rebuild the assembly by one route; what it returned (``None`` for no rebuild at all)."""
-    if route == "none":
-        return {"returned": None}
-    thunks = {"ForceRebuild3(True)": lambda: call(asm, "ForceRebuild3", True),
-              "EditRebuild3": lambda: call(asm, "EditRebuild3"),
-              "ForceRebuild3(False)": lambda: call(asm, "ForceRebuild3", False)}
-    got, value = px.attempt(f"{route} on the assembly, {label}", thunks[route])
-    return {"returned": plain(value) if got else "raised"}
+def call(obj, name, *args):
+    """Late-bound member: invoked when given arguments, read by attribute access otherwise."""
+    member = getattr(obj, name)
+    return member(*args) if args else member
+
+
+def rebuild(asm, route):
+    """One assembly rebuild by the route named; what it returned (None for no rebuild at all)."""
+    if route == "ForceRebuild3(True)":
+        return call(asm, "ForceRebuild3", True)       # top level only
+    if route == "EditRebuild3":
+        return call(asm, "EditRebuild3")
+    if route == "ForceRebuild3(False)":
+        return call(asm, "ForceRebuild3", False)      # everything
+    return None
 ```
 
 `ForceRebuild3(topOnly)` and `EditRebuild3` on **IModelDoc2** (the assembly).
@@ -45,22 +53,26 @@ def _apply_route(px: Px, asm: Any, route: str, label: str) -> Dict[str, Any]:
 **Every document's flag, by path**, after each step:
 
 ```python
-def _doc_at(px: Px, path: str) -> Any:
-    doc = call(sc.app(px), "GetFirstDocument")
-    guard = 0
-    while doc is not None and guard < 500:
-        guard += 1
-        if same_path(str(call(doc, "GetPathName") or ""), path):
+import os
+
+
+def doc_at(app, path):
+    """The open document with this path, components loaded by an assembly included; None if not loaded."""
+    want = os.path.normcase(os.path.abspath(path))
+    doc = call(app, "GetFirstDocument")
+    while doc is not None:
+        have = str(call(doc, "GetPathName") or "")
+        if have and os.path.normcase(os.path.abspath(have)) == want:
             return doc
         doc = call(doc, "GetNext")
     return None
 
 
-def _save_flags(px: Px, paths: Mapping[str, str]) -> Dict[str, Optional[bool]]:
-    """``GetSaveFlag`` of each labelled document; None for one not in memory."""
-    out: Dict[str, Optional[bool]] = {}
+def save_flags(app, paths):
+    """GetSaveFlag of each labelled document; None for one not in memory."""
+    out = {}
     for label, path in paths.items():
-        doc = _doc_at(px, path)
+        doc = doc_at(app, path)
         out[label] = None if doc is None else bool(call(doc, "GetSaveFlag"))
     return out
 ```
@@ -71,24 +83,24 @@ list too.
 
 **Whether SolidWorks says a rebuild is needed**: the probe listed every member
 of `IModelDoc2` and `IModelDocExtension` in the installed `sldworks.tlb` whose
-name says so and takes no argument — that was `IModelDocExtension.NeedsRebuild`
-and `NeedsRebuild2` on both versions — and read them, never calling anything
-that rebuilds:
+name says so and takes no argument (read with `pythoncom.LoadTypeLib`) — that
+was `IModelDocExtension.NeedsRebuild` and `NeedsRebuild2` on both versions — and
+read them, never calling anything that rebuilds:
 
 ```python
-def _rebuild_status(px: Px, doc: Any, members: Mapping[str, Sequence[str]], label: str) -> Dict[str, Any]:
-    """One read of each listed rebuild-status member; what each answered."""
-    out: Dict[str, Any] = {}
-    for interface, names in members.items():
-        owner = doc if interface == "IModelDoc2" else sc.extension(doc)
-        for name in names:
-            got, value = px.attempt(f"{interface}.{name} ({label})", lambda n=name, o=owner: member(o, n)[0])
-            out[f"{interface}.{name}"] = plain(value) if got else "raised"
-    return out
+def read_member(obj, name):
+    """A zero-argument member: read, and called only if late binding handed back a method."""
+    value = call(obj, name)
+    return value() if type(value).__name__ in ("method", "function") else value
+
+
+def rebuild_status(doc):
+    ext = call(doc, "Extension")
+    return {"NeedsRebuild": read_member(ext, "NeedsRebuild"), "NeedsRebuild2": read_member(ext, "NeedsRebuild2")}
 ```
 
-(`member` reads a zero-argument member and calls it only if a method came
-back, [assemblies/03](03-interference-detection.md).)
+(`read_member` is the probe's way of reading a zero-argument member, as in
+[assemblies/03](03-interference-detection.md); both came back as values.)
 
 ## What each rebuild marked
 
@@ -202,8 +214,10 @@ A "has it moved" tolerance of 1e-6 mm sits far above that.
   with nothing left open.
 - **`SetSuppression2(1, 1, None)` (unsuppress) on a mate that was already on
   marks the assembly modified.** It returned `True`, left the lock on and raised
-  no error, but the assembly read `GetSaveFlag` `True`. Check `IsSuppressed2`
-  before unsuppressing if the flag matters.
+  no error. Every document's `GetSaveFlag` was read straight before the call and
+  straight after it, with nothing in between: the assembly went from `False` to
+  `True`, the skeleton and the part stayed `False`. So the mark is the call's
+  own. Check `IsSuppressed2` before unsuppressing if the flag matters.
 
 ## NeedsRebuild, and a change made in another window
 
@@ -290,7 +304,10 @@ active, the way a tool edits a part that is already loaded as a component:
   SolidWorks 2026 34.1.1, run 20261114-095421, and SolidWorks 2024 SP5, run
   20261114-102300 (49 of 49 each, fresh sessions).
   `mates_under_command_in_progress_hold = True`;
-  `unsuppress_on_a_lock_already_on = {'returned': True, 'suppressed_after': False, 'marks_assembly': True, 'errors': {}}`;
+  `unsuppress_on_a_lock_already_on = {'returned': True, 'suppressed_after': False, 'marks_assembly': True, 'errors': {}}`,
+  and, read straight around the call in runs 20261114-105135 (2026) and
+  20261114-111150 (2024), `flags_before_call` all `False`, `flags_after_call`
+  `{'assembly': True, 'layout': False, 'part': False}`, `marked_by_the_call = ['assembly']`;
   `origin_noise_mm = {'nothing': 0.0, 'part_global': 0.0, 'layout_move': 0.0, 'drive': 0.0, 'drive_start_to_end': 2.85e-14}`;
   `gear_mate_definition_read_marks = 'nothing'`.
 - Opened-from-file flags and what marks the assembly: the Gear-Generator's

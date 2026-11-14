@@ -22,62 +22,73 @@ method.
 
 ## The call
 
-From the Gear-Generator probe (`assembly_rebuild_scope`, tier 7):
+Condensed from the Gear-Generator probe (`assembly_rebuild_scope`, tier 7): the
+same calls, arguments and order, with its logging removed and its helpers
+written out. `_invoke_method` is the probe's own, unchanged. Not run as written.
 
 ```python
-def _invoke_method(obj: Any, name: str, *args: Any) -> Any:
-    """Invoke a COM member as a method, where late binding would reach it as a property get (p4_nonparallel's way)."""
-    import pythoncom  # noqa: PLC0415 - Windows only, and only ever on the worker
+import pythoncom
+from win32com.client import VARIANT
 
-    oleobj = obj._oleobj_  # noqa: SLF001
+
+def call(obj, name, *args):
+    member = getattr(obj, name)
+    return member(*args) if args else member
+
+
+def null():
+    return VARIANT(pythoncom.VT_DISPATCH, None)          # VBA's Nothing, typed
+
+
+def selected_count(doc):
+    return int(call(call(doc, "SelectionManager"), "GetSelectedObjectCount2", -1) or 0)
+
+
+def _invoke_method(obj, name, *args):
+    """Invoke a COM member as a method, where late binding would reach it as a property get."""
+    oleobj = obj._oleobj_
     return oleobj.Invoke(oleobj.GetIDsOfNames(name), 0, pythoncom.DISPATCH_METHOD, True, *args)
 
 
-def _axis_from_right(px: Px, asm: Any, axis_ref: str) -> Dict[str, Any]:
-    """``IModelDocExtension.CreateMeasure`` between a layout axis in the assembly and the assembly's Right plane.
+def third_plane(doc):
+    """The third reference plane in tree order (Right, in an English template); its name is read, not typed."""
+    planes, feature = [], call(doc, "FirstFeature")
+    while feature is not None:
+        if call(feature, "GetTypeName2") == "RefPlane":
+            planes.append(feature)
+        feature = call(feature, "GetNextFeature")
+    return planes[2]
 
-    The axis is selected by ``SelectByID2 "<axis>@<component>@<assembly>"``
-    (probe layout_part_without_body), the plane by tree order (the third plane).
-    """
-    out: Dict[str, Any] = {"axis": axis_ref}
-    ext = sc.extension(asm)
+
+def axis_to_right_plane_m(asm, axis_ref):
+    """IMeasure between a component's axis ("<axis>@<component>@<assembly>") and the assembly's Right plane."""
+    ext = call(asm, "Extension")
     call(asm, "ClearSelection2", True)
     try:
-        out["axis_selected"] = bool(call(ext, "SelectByID2", axis_ref, "AXIS", 0.0, 0.0, 0.0, False, 0, sc.null(), 0)
-                                    and sc.selected_count(asm) == 1)
-        out["plane_selected"] = bool(out["axis_selected"] and sc.select_plane(asm, 3, append=True)
-                                     and sc.selected_count(asm) == 2)
-        if not out["plane_selected"]:
-            return out
-        got, measure = px.attempt("CreateMeasure", lambda: call(ext, "CreateMeasure"))
-        if not got or measure is None:
-            out["measure"] = None
-            return out
-        # The first run (2026, 34.1.1) found late binding reaching Calculate as a property get: it answered a bool
-        # and "'bool' object is not callable" for the argument, as CreateTransform did (make_transform). So it is
-        # invoked as the method it is, with VBA's Nothing first, then an empty argument.
-        for label, argument in (("Calculate(null dispatch), invoked as a method", sc.null()),
-                                ("Calculate(None), invoked as a method", None)):
-            ok, value = px.attempt(f"IMeasure.{label}", lambda a=argument: _invoke_method(measure, "Calculate", a))
-            if ok and value:
-                out["calculate"] = label
-                break
-        if "calculate" not in out:
-            return out
-        for name in ("Distance", "NormalDistance"):
-            ok, value = px.attempt(f"IMeasure.{name}", lambda n=name: call(measure, n))
-            out[f"{name}_mm"] = round(float(value) * sc.MM, 9) if ok and isinstance(value, (int, float)) else None
+        if not (call(ext, "SelectByID2", axis_ref, "AXIS", 0.0, 0.0, 0.0, False, 0, null(), 0)
+                and selected_count(asm) == 1):
+            return None
+        plane = third_plane(asm)
+        if not (call(plane, "Select2", True, 0) and selected_count(asm) == 2):
+            # the probe's fallback: the same plane by its own name
+            call(ext, "SelectByID2", str(call(plane, "Name")), "PLANE", 0.0, 0.0, 0.0, True, 0, null(), 0)
+        if selected_count(asm) != 2:
+            return None
+        measure = call(ext, "CreateMeasure")
+        if measure is None or not _invoke_method(measure, "Calculate", null()):
+            return None
+        return float(call(measure, "Distance")), float(call(measure, "NormalDistance"))   # metres
     finally:
         call(asm, "ClearSelection2", True)
-    return out
 ```
 
 - `CreateMeasure` on **IModelDocExtension**, reached by attribute access through
   `call` (it takes no arguments), returned the `IMeasure`.
 - `Calculate(null)` on **IMeasure**, invoked by its dispid with
-  `pythoncom.DISPATCH_METHOD` and a typed null dispatch (`sc.null()`, VBA's
+  `pythoncom.DISPATCH_METHOD` and a typed null dispatch (`null()`, VBA's
   `Nothing`: measure the current selection), returned `True`. The second form,
-  with `None`, was never needed.
+  with `None` in place of the typed null, was never needed (the probe tried it
+  only if the first returned nothing).
 - `Distance` and `NormalDistance` on **IMeasure**, property gets, in **metres**.
 - The two entities: a component's reference axis selected by
   `SelectByID2("<axis>@<component>@<assembly>", "AXIS", 0, 0, 0, False, 0, null, 0)`
@@ -94,7 +105,7 @@ with `'bool' object is not callable`. That is [GOTCHAS §55](../../GOTCHAS.md)'s
 ([assemblies/04](../assemblies/04-mates-between-non-parallel-axes.md#why-createtransform-needs-invoke)):
 invoke the dispid as a method.
 
-That failing form is recorded in the probe's source comment above, from a 2026
+That failing form is recorded in a comment in the probe's source, from a 2026
 (34.1.1) run whose results were not kept; no kept result file shows it. Every
 kept run used the `Invoke` form, and it worked in all of them.
 

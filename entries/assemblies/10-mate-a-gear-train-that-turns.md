@@ -27,14 +27,17 @@ with a reference axis named `Gear Axis` made from their Top then Right planes)
 and annuli standing in for ring gears, on shaft axes held by a body-less
 skeleton part (planes driven by globals, one named axis per shaft). Lengths
 cross COM in **metres** and angles in **radians**; the probe's helpers take
-millimetres and degrees and convert at the call (`sc.m`, `math.radians`).
+millimetres and degrees and converted at the call; the listings here take metres and radians.
 
 ## The calls
 
-All from the Gear-Generator probe's tier 8 (`p8_motion.py`), driven from Python
-over pywin32 late binding. `call` is the late-bound helper
-([connect/02](../connect/02-attach-from-python.md)), `sc.null()` a typed null
-dispatch and `sc.out_long()` a by-reference long. Mate type and alignment
+From the Gear-Generator probe's tier 8 (`p8_motion.py`), driven from Python
+over pywin32 late binding ([connect/02](../connect/02-attach-from-python.md)).
+The listings below are **condensed from the probe**: the same SolidWorks calls,
+arguments and order, with its logging, retries and record-keeping removed and
+its helpers written out, so that each stands on its own. They were not run as
+written; what ran is the probe, and its results are in the Evidence section.
+The first listing defines the small helpers the rest use. Mate type and alignment
 numbers were read from `swconst.tlb` at run time: `swMateCOINCIDENT` 0,
 `swMateCONCENTRIC` 1, `swMateDISTANCE` 5, `swMateANGLE` 6, `swMateGEAR` 10,
 `swMateLOCK` 16; `swMateAlignALIGNED` 0, `swMateAlignANTI_ALIGNED` 1,
@@ -44,53 +47,86 @@ numbers were read from `swconst.tlb` at run time: `swMateCOINCIDENT` 0,
 **One `AddMate5` for every mate**, on **IAssemblyDoc**, with what is selected:
 
 ```python
-def add_mate(px: Px, asm: Any, label: str, kind: int, align: int, flip: bool = False, distance: float = 0.0,
-             angle: float = 0.0, ratio: Tuple[float, float] = (1.0, 1.0), lock_rotation: bool = False) -> Dict[str, Any]:
-    """``AddMate5`` on what is selected; what it returned, its error status, and the one new mate's name (or None).
+# Condensed from the probe (its add_mate and the scaffold helpers it uses): the
+# same calls, arguments and order, with its logging, retries and records left
+# out. This listing was not run as written. Python, pywin32 late binding.
+import pythoncom
+from win32com.client import VARIANT
 
-    Distance in mm and angle in degrees; the argument order is the API help's:
-    type, align, flip, distance and its two limits, the gear ratio's numerator
-    and denominator, angle and its two limits, for-positioning-only, lock
-    rotation, width option, error status.
-    """
-    before = [n for n, _ in _mate_features(asm)]
-    d, a = sc.m(distance), math.radians(angle)
-    status = sc.out_long()
-    got, result = px.attempt(
-        f"AddMate5 {label}",
-        lambda: call(asm, "AddMate5", kind, align, flip, d, d, d, float(ratio[0]), float(ratio[1]), a, a, a, False,
-                     lock_rotation, 0, status))
-    call(asm, "ClearSelection2", True)
-    mate = result[0] if got and isinstance(result, tuple) and result else result
-    code = result[1] if got and isinstance(result, tuple) and len(result) > 1 else getattr(status, "value", None)
-    made = [n for n, _ in _mate_features(asm) if n not in before]
-    names = px.shared.get("mate_errors") or {}
-    out = {"returned": (type(mate).__name__ if mate is not None else None) if got else "raised",
-           "status": plain(code), "status_name": names.get(code) if isinstance(code, int) else None, "made": made,
-           "name": made[0] if got and mate is not None and len(made) == 1 else None}
-    if not got:
-        out["error"] = plain(result)
+
+def call(obj, name, *args):
+    """Late-bound member: invoked when given arguments, read by attribute access otherwise."""
+    member = getattr(obj, name)
+    return member(*args) if args else member
+
+
+def null():
+    return VARIANT(pythoncom.VT_DISPATCH, None)              # a typed Nothing
+
+
+def out_long():
+    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)  # a by-reference long
+
+
+def selected_count(doc):
+    return int(call(call(doc, "SelectionManager"), "GetSelectedObjectCount2", -1) or 0)
+
+
+def top_features(doc):
+    out, feature = [], call(doc, "FirstFeature")
+    while feature is not None:
+        out.append(feature)
+        feature = call(feature, "GetNextFeature")
     return out
+
+
+def mate_features(asm):
+    """The sub-features of the MateGroup, in walk order."""
+    out = []
+    for feature in top_features(asm):
+        if call(feature, "GetTypeName2") == "MateGroup":
+            child = call(feature, "GetFirstSubFeature")
+            while child is not None:
+                out.append(child)
+                child = call(child, "GetNextSubFeature")
+    return out
+
+
+def add_mate(asm, kind, align, flip=False, distance_m=0.0, angle_rad=0.0, ratio=(1.0, 1.0)):
+    """IAssemblyDoc.AddMate5 on what is selected at mark 1: type, align, flip, distance and its two
+    limits, the gear ratio's numerator and denominator, angle and its two limits, for-positioning-only,
+    lock rotation, width option, error status. Returns (mate, status, names of the new mates)."""
+    before = {str(call(f, "Name")) for f in mate_features(asm)}
+    d, a = distance_m, angle_rad
+    status = out_long()
+    mate = call(asm, "AddMate5", kind, align, flip, d, d, d, float(ratio[0]), float(ratio[1]),
+                a, a, a, False, False, 0, status)
+    call(asm, "ClearSelection2", True)
+    made = [str(call(f, "Name")) for f in mate_features(asm) if str(call(f, "Name")) not in before]
+    return mate, status.value, made
 ```
 
-`_mate_features` is the `MateGroup` walk of
+`mate_features` is the `MateGroup` walk of
 [assemblies/02](02-mates-from-code.md). Every call returned the mate object
 alone (never a tuple), and the status was read from the by-reference long's
-`.value` afterwards.
+`.value` afterwards. The probe passed distances in millimetres and angles in
+degrees to its own helper and converted them at the call; here they are given
+in metres and radians directly.
 
 **A gear is unfixed first.** Placed gears were fixed, as an assembly built from
 frames leaves them ([assemblies/04](04-mates-between-non-parallel-axes.md)):
 
 ```python
-def unfix(px: Px, asm: Any, component: Any) -> bool:
-    if not bool(call(component, "IsFixed")):
+def unfix(asm, component):
+    """Select the component, then IAssemblyDoc.UnfixComponent() with parentheses."""
+    if not call(component, "IsFixed"):
         return True
     call(asm, "ClearSelection2", True)
-    if not call(component, "Select4", False, sc.null(), False):
+    if not call(component, "Select4", False, null(), False):
         return False
-    px.attempt(f"UnfixComponent() on {call(component, 'Name2')}", lambda: asm.UnfixComponent())
+    asm.UnfixComponent()           # reached by attribute access alone it would only be fetched
     call(asm, "ClearSelection2", True)
-    return not bool(call(component, "IsFixed"))
+    return not call(component, "IsFixed")
 ```
 
 `UnfixComponent` on **IAssemblyDoc** takes no arguments, so like `FixComponent`
@@ -100,49 +136,52 @@ read `False` afterwards. Unfixing did not move the gear (0 mm, 0 rotation).
 ### Holding a gear on its shaft
 
 ```python
-def mount(px: Px, asm: Assembly, key: str, shaft: str, sigma: int, z_front: float, at: Sequence[float],
-          record: Optional[List[Dict[str, Any]]] = None) -> List[str]:
-    """Unfix gear ``key`` and mate it to ``"<shaft> Axis"`` and along it, the way shaft_axis_mates decided.
+COINCIDENT, DISTANCE, CLOSEST = 0, 5, 2      # swMateType_e and swMateAlign_e, read from swconst.tlb
 
-    Returns the mates' names (and adds what each AddMate5 answered to ``record``); a mate that was not made ends
-    the probe.
-    """
-    enums = _enums(px)
-    kind, axial = px.shared.get("axis_mate_route"), px.shared.get("axial_mate_route")
-    if not kind or not axial:
-        raise Require("shaft_axis_mates has not decided how a gear is held on its shaft.")
-    gear, layout, doc = asm.gears[key], asm.layout, asm.doc
-    if not unfix(px, doc, gear):
-        raise Require(f"{key} would not unfix.")
-    if kind == "face concentric":
-        picked = select_face_at(px, doc, face_point(at, sigma), False, str(call(gear, "Name2")))
-    else:
-        picked = bool(select_in(px, doc, gear, "Gear Axis", "AXIS", False))
-    if not (picked and select_in(px, doc, layout, f"{shaft} Axis", "AXIS", True)):
-        raise Require(f"{key}'s axis and {shaft} Axis could not be selected.")
-    mate_type = enums["coincident"] if kind == "axis coincident" else enums["concentric"]
-    made = [add_mate(px, doc, f"{key} on {shaft} Axis", mate_type, enums["closest"])]
-    if axial.startswith("origin"):
-        picked = bool(_select_origin(px, doc, gear, append=False))
-    else:
-        picked = bool(select_in(px, doc, gear, _plane_names(gear)[0], "PLANE", False))
-    if not (picked and select_in(px, doc, layout, _plane_names(layout)[0], "PLANE", True)):
-        raise Require(f"{key}'s axial reference and the layout's Front could not be selected.")
-    if abs(z_front) < 1e-9:
-        made.append(add_mate(px, doc, f"{key} at 0 along {shaft}", enums["coincident"], enums["closest"]))
-    else:
-        made.append(add_mate(px, doc, f"{key} at {z_front:g} along {shaft}", enums["distance"], enums["closest"],
-                             flip=axial.startswith("origin") and z_front < 0, distance=abs(z_front)))
-    if record is not None:
-        record.extend(made)
-    names = [m["name"] for m in made]
-    if None in names:
-        raise Require(f"{key} was not mounted: {made}")
-    return names
+
+def select_feature_of(asm, component, name, append, mark=1):
+    """A component's plane or axis: IComponent2.FeatureByName, then IFeature.Select2(append, mark)."""
+    if not append:
+        call(asm, "ClearSelection2", True)
+    before = selected_count(asm)
+    feature = call(component, "FeatureByName", name)
+    return feature is not None and bool(call(feature, "Select2", append, mark)) and selected_count(asm) > before
+
+
+def select_origin(asm, component, append, mark=1):
+    """Point1@<origin feature>@<component>@<assembly>, as an EXTSKETCHPOINT (assemblies/04)."""
+    part = call(component, "GetModelDoc2")
+    origin = next(str(call(f, "Name")) for f in top_features(part)
+                  if call(f, "GetTypeName2") == "OriginProfileFeature")
+    assembly = str(call(asm, "GetTitle")).rsplit(".", 1)[0]
+    if not append:
+        call(asm, "ClearSelection2", True)
+    before = selected_count(asm)
+    full = f"Point1@{origin}@{call(component, 'Name2')}@{assembly}"
+    return bool(call(call(asm, "Extension"), "SelectByID2", full, "EXTSKETCHPOINT", 0.0, 0.0, 0.0,
+                     append, mark, null(), 0)) and selected_count(asm) > before
+
+
+def hold_on_shaft(asm, gear, skeleton, shaft_axis, skeleton_front, z_front_m):
+    """Unfix a gear, put its Gear Axis on the skeleton's shaft axis, and hold its origin
+    z_front_m (metres, signed) from the skeleton's Front plane."""
+    if not unfix(asm, gear):
+        raise RuntimeError("the gear would not unfix")
+    if not (select_feature_of(asm, gear, "Gear Axis", False) and
+            select_feature_of(asm, skeleton, shaft_axis, True)):
+        raise RuntimeError("the two axes could not be selected")
+    made = [add_mate(asm, COINCIDENT, CLOSEST)]
+    if not (select_origin(asm, gear, False) and select_feature_of(asm, skeleton, skeleton_front, True)):
+        raise RuntimeError("the origin and the Front plane could not be selected")
+    if abs(z_front_m) < 1e-12:
+        made.append(add_mate(asm, COINCIDENT, CLOSEST))
+    else:   # a point's distance is along the plane's normal: Flip for the negative side (GOTCHAS §42)
+        made.append(add_mate(asm, DISTANCE, CLOSEST, flip=z_front_m < 0, distance_m=abs(z_front_m)))
+    return made
 ```
 
-The route the probe settled on is `kind = "axis coincident"` and
-`axial = "origin distance"`:
+`skeleton_front` is the name of the skeleton part's first plane, read from its
+tree. That is the route the probe settled on, after trying the others below:
 
 - **The gear's axis coincident with the shaft axis**: `AddMate5(0, 2, False, …)`
   with the component's `Gear Axis` and the skeleton part's `ShaftAxis1`
@@ -167,20 +206,23 @@ The route the probe settled on is `kind = "axis coincident"` and
   5 mm along it, and a 10° tilt all came back. Saved, closed and reopened, the
   mates and frames came back unchanged with no mate error.
 
-`select_in` tries `IComponent2.FeatureByName` then `IFeature.Select2(append, 1)`,
-then `SelectByID2("<feature>@<component>@<assembly>", "AXIS", …)`; all three
-routes it knows selected the axes, including the third,
-`IComponent2.GetCorresponding` of the part's own feature then
-`IEntity.Select4(append, data)` with a select data whose `Mark` is 1:
+The probe selected the axes three ways, and all three worked on both
+versions: `select_feature_of` above; `SelectByID2("<feature>@<component>@<assembly>", "AXIS", 0, 0, 0, append, 1, null, 0)`
+on the assembly's extension; and `IComponent2.GetCorresponding` of the part's
+own feature, then `Select4(append, data)` on what it returned (its interface was
+not checked) with a select data whose `Mark` is 1:
 
 ```python
-        elif route == SELECT_CORRESPONDING:
-            def thunk() -> Any:
-                part = call(component, "GetModelDoc2")
-                entity = call(component, "GetCorresponding", sc.feature_by_name(part, name))
-                data = call(call(asm, "SelectionManager"), "CreateSelectData")
-                data.Mark = mark
-                return call(entity, "Select4", append, data)
+def select_by_corresponding(asm, component, feature_name, append, mark=1):
+    """The assembly's instance of one of the part's features, selected at a mark."""
+    if not append:
+        call(asm, "ClearSelection2", True)
+    part = call(component, "GetModelDoc2")
+    feature = next(f for f in top_features(part) if str(call(f, "Name")) == feature_name)
+    entity = call(component, "GetCorresponding", feature)
+    data = call(call(asm, "SelectionManager"), "CreateSelectData")
+    data.Mark = mark
+    return bool(call(entity, "Select4", append, data))
 ```
 
 ### A gear mate
@@ -188,12 +230,15 @@ routes it knows selected the axes, including the third,
 With the first gear's `Gear Axis` selected, then the second's, both at mark 1:
 
 ```python
-made = add_mate(px, doc, f"{name}: gear {ratio[0]}:{ratio[1]}", enums["gear"], enums[align], flip=flip,
-                ratio=(float(ratio[0]), float(ratio[1])))
+GEAR = 10                                    # swMateType_e.swMateGEAR
+select_feature_of(asm, first_gear, "Gear Axis", False)
+select_feature_of(asm, second_gear, "Gear Axis", True)
+mate, status, made = add_mate(asm, GEAR, CLOSEST, flip=False, ratio=(z_first, z_second))
 ```
 
 that is `AddMate5(10, 2, flip, 0, 0, 0, zFirst, zSecond, 0, 0, 0, False, False, 0, out)`,
-with the **first selection's** tooth count as the numerator argument. It made
+with the **first selection's** tooth count as the numerator argument (the probe
+also tried `Flip` True, faces in place of axes, and explicit alignments, below). It made
 one `MateGearDim` (status 1).
 
 - **The ratio goes first selection first.** With `(20, 40)` and the first gear
@@ -213,12 +258,17 @@ one `MateGearDim` (status 1).
   selection's count and `GearRatioDenominator` the first's, in all 22 mates on
   both versions (`(20, 40)` read back numerator 40, denominator 20). That is
   [GOTCHAS §75](../../GOTCHAS.md) seen from the making side: `IMate2.MateEntity(0)`
-  was the first-selected gear's axis and `MateEntity(1)` the second's in every
-  one of the 22, so the numerator read back belongs to `MateEntity(1)`.
-- **`Reverse` is not `Flip`.** What `IGearMateFeatureData.Reverse` read back
-  matched `Flip`, inverted once when the two shafts pointed opposite ways and
-  once for a ring, in every case measured. Read it as the mate's own bookkeeping,
-  not as which way the pair turns.
+  was the first-selected gear's entity (its axis, or its face where faces were
+  selected) and `MateEntity(1)` the second's in every one of the 22, so the
+  numerator read back belongs to `MateEntity(1)`.
+- **`Reverse` is not `Flip`.** In the 15 meshing pairs mated by their axes,
+  what `IGearMateFeatureData.Reverse` read back was `Flip`, inverted once when
+  the two shafts pointed opposite ways and once for a ring; the three pairs
+  mated by their faces fitted the same rule. Three did **not**: the pair mated
+  by one axis and one face, a pinion moved along its ring's axis clear of the
+  ring, and a pinion placed outside its ring (each read `False` where the rule
+  gives `True`). Read `Reverse` as the mate's own bookkeeping, not as which way
+  the pair turns.
 - **Two of the skeleton's own axes were refused** as a gear mate's entities:
   `AddMate5` returned `None`, status 0.
 
@@ -230,40 +280,33 @@ the first (the anchor) is held on the shaft as above; the second is unfixed and
 components, selected like this:
 
 ```python
-def select_components(px: Px, asm: Any, components: Sequence[Any]) -> Optional[str]:
-    """Select whole components for a mate that takes them (a lock): with a mark-1 select data, else none."""
-    for label in ("Select4 with a mark-1 select data", "Select4 with no select data"):
-        call(asm, "ClearSelection2", True)
-        ok = True
-        for position, component in enumerate(components):
-            before = sc.selected_count(asm)
-            if label.startswith("Select4 with a mark"):
-                data = call(call(asm, "SelectionManager"), "CreateSelectData")
-                data.Mark = 1
-            else:
-                data = sc.null()
-            got, value = px.attempt(f"{label}: {call(component, 'Name2')}",
-                                    lambda c=component, d=data, a=position > 0: call(c, "Select4", a, d, False))
-            if not (got and value and sc.selected_count(asm) > before):
-                ok = False
-                break
-        if ok:
-            return label
+LOCK = 16                                    # swMateType_e.swMateLOCK
+
+
+def select_components(asm, components):
+    """Whole components at mark 1: IComponent2.Select4(append, data, False) with data.Mark = 1."""
     call(asm, "ClearSelection2", True)
-    return None
+    for position, component in enumerate(components):
+        before = selected_count(asm)
+        data = call(call(asm, "SelectionManager"), "CreateSelectData")
+        data.Mark = 1
+        if not (call(component, "Select4", position > 0, data, False) and selected_count(asm) > before):
+            return False
+    return True
 ```
 
 then
 
 ```python
-result["select"] = select_components(px, doc, (p, q))
-result["mate"] = add_mate(px, doc, f"{name}: lock", enums["lock"], enums["closest"])
+if select_components(asm, (anchor, follower)):
+    mate, status, made = add_mate(asm, LOCK, CLOSEST)
 ```
 
 that is `AddMate5(16, 2, False, 0, 0, 0, 1, 1, 0, 0, 0, False, False, 0, out)`.
-The first route, `IComponent2.Select4(append, data, False)` with a
-`ISelectionMgr.CreateSelectData` whose `Mark` was set to 1, selected both
-components every time; the fallback was never needed.
+`IComponent2.Select4(append, data, False)` with an
+`ISelectionMgr.CreateSelectData` whose `Mark` was set to 1 selected both
+components every time; the probe's fallback (`Select4` with a null select data)
+was never needed.
 
 The second gear placed 37° (and, in another pair, 137°) from the first:
 
@@ -279,15 +322,14 @@ The second gear placed 37° (and, in another pair, 137°) from the first:
 
 A finished train of two stages (four gears on three shafts, the middle shaft's
 two gears locked, two gear mates) was checked with
-`IComponent2.GetConstrainedStatus`, read through the probe's `member` helper
-(property or method, whichever came back):
+`IComponent2.GetConstrainedStatus`, read as the probe read it (by attribute
+access, and called only if a method came back):
 
 ```python
-def constrained(px: Px, component: Any) -> Any:
-    """``IComponent2.GetConstrainedStatus``, as far as it answers (evidence only)."""
-    got, value = px.attempt(f"GetConstrainedStatus of {call(component, 'Name2')}",
-                            lambda: member(component, "GetConstrainedStatus")[0])
-    return plain(value) if got else "raised"
+def constrained_status(component):
+    """2 under-defined, 3 fully defined, 4 over-defined (swConstrainedStatus_e)."""
+    value = call(component, "GetConstrainedStatus")
+    return value() if type(value).__name__ == "method" else value
 ```
 
 Every gear read **2** (under-defined) once mated. One angle mate between the
@@ -346,9 +388,11 @@ on both versions ([assemblies/12](12-rebuild-scope-and-the-save-flag.md#what-eac
 - Only cylinders and annuli were mated: no tooth geometry was involved in any
   sense or ratio reading. Real gears were mated the same way by the tool
   afterwards, but those runs are not the evidence here.
-- Mating was measured with every component fully resolved. A gear mate was
-  also remade with the components forced lightweight, which worked but needed
-  two `OpenDoc6` flags and raised an add-in dialog
+- Mating was measured with every component fully resolved. With the
+  components forced lightweight, the train's first drive read one gear far from
+  where it should be (possibly a stale transform read while lightweight); read
+  `GetSuppression2` on every component and require 2 before reading transforms,
+  driving or changing a train
   ([assemblies/11](11-change-a-mated-gear-train.md#with-the-components-lightweight)).
 - The sense rule was fitted to placements a meshing pair can have. Of three
   placements no meshing pair has, recorded beside it, one did **not** fit: a

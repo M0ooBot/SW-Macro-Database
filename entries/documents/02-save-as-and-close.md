@@ -112,30 +112,39 @@ meets one hangs.
 scratch assembly whose saved component parts had been changed opened a modal
 "Save Modified Documents" dialog on 2024, and the probe hung (no answer in
 600 s); SolidWorks 2026 closed the same assembly without asking. The probe's
-fix was to save its own modified parts before closing an assembly:
+fix was to save its own modified parts before closing an assembly (condensed
+from the probe: the same calls, its error handling and records removed; not run
+as written; `created` is the set of titles the script itself made):
 
 ```python
-def save_created_parts(px: Px) -> None:
-    """Save every modified part this probe made and already saved to disk.
+import pythoncom
+from win32com.client import VARIANT
 
-    On SolidWorks 2024 (32.5.0), CloseDoc on an assembly whose saved components
-    had changed opened a modal "Save Modified Documents" dialog, and the probe
-    hung on it; SolidWorks 2026 closed the same assembly without asking. Saving
-    the components first leaves nothing to ask about. Only the probe's own
-    documents with a path are touched: a never-saved part closes silently anyway.
-    """
-    created = set(px.shared.get("created", []))
-    doc = call(app(px), "GetFirstDocument")
-    guard = 0
-    while doc is not None and guard < 500:
-        guard += 1
+SW_DOC_PART, SAVE_AS_CURRENT, SAVE_AS_SILENT = 1, 0, 1
+
+
+def call(obj, name, *args):
+    member = getattr(obj, name)
+    return member(*args) if args else member
+
+
+def null():
+    return VARIANT(pythoncom.VT_DISPATCH, None)
+
+
+def out_long():
+    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)
+
+
+def save_created_parts(app, created):
+    """Save, in place, every modified part this script made and had already saved to a path."""
+    doc = call(app, "GetFirstDocument")
+    while doc is not None:
         title = str(call(doc, "GetTitle"))
         path = str(call(doc, "GetPathName") or "")
         if title in created and path and int(call(doc, "GetType")) == SW_DOC_PART and call(doc, "GetSaveFlag"):
-            try:
-                call(extension(doc), "SaveAs3", path, 0, 1, null(), null(), out_long(), out_long())
-            except Exception as exc:  # noqa: BLE001 - a part that will not save must not stop the cleanup
-                px.note(f"CLEANUP could not save {title} before closing its assembly: {exc}")
+            call(call(doc, "Extension"), "SaveAs3", path, SAVE_AS_CURRENT, SAVE_AS_SILENT,
+                 null(), null(), out_long(), out_long())
         doc = call(doc, "GetNext")
 ```
 
@@ -144,24 +153,35 @@ files your own code made: saving is not an option for a user's documents.
 
 **`QuitDoc` closed modified documents without a dialog.** `QuitDoc(title)` on
 **ISldWorks** closes a document **without saving**, the way a person answering
-"Don't save" would:
+"Don't save" would (condensed from the check that ran it; not run as written):
 
 ```python
-def quit_in(folder):
-    """Close the open documents under ``folder`` WITHOUT saving them (``ISldWorks::QuitDoc``), assemblies first, as
-    a person closing SolidWorks and answering "Don't save" would. Returns what is left open under it."""
-    def under(path):
-        return bool(path) and os.path.normcase(os.path.abspath(path)).startswith(
-            os.path.normcase(os.path.abspath(folder)) + os.sep)
+import os
 
-    def work(session):
-        app = session._app  # noqa: SLF001
-        for kind in (2, 1):
-            for doc in documents(app):
-                if under(str(call(doc, "GetPathName") or "")) and int(call(doc, "GetType")) == kind:
-                    call(app, "QuitDoc", str(call(doc, "GetTitle")))
-        return [str(call(d, "GetTitle")) for d in documents(app) if under(str(call(d, "GetPathName") or ""))]
-    return work
+SW_DOC_ASSEMBLY = 2
+
+
+def documents(app):
+    out, doc = [], call(app, "GetFirstDocument")
+    while doc is not None:
+        out.append(doc)
+        doc = call(doc, "GetNext")
+    return out
+
+
+def quit_in(app, folder):
+    """Close every open document under folder WITHOUT saving (ISldWorks.QuitDoc), assemblies
+    first; returns the titles still open under it."""
+    root = os.path.normcase(os.path.abspath(folder)) + os.sep
+
+    def under(path):
+        return bool(path) and os.path.normcase(os.path.abspath(path)).startswith(root)
+
+    for kind in (SW_DOC_ASSEMBLY, SW_DOC_PART):
+        for doc in documents(app):
+            if under(str(call(doc, "GetPathName") or "")) and int(call(doc, "GetType")) == kind:
+                call(app, "QuitDoc", str(call(doc, "GetTitle")))
+    return [str(call(d, "GetTitle")) for d in documents(app) if under(str(call(d, "GetPathName") or ""))]
 ```
 
 On an assembly and the parts an update had just changed and not saved,
@@ -181,11 +201,14 @@ silently. Afterwards no file on disk had been written (modification times
 unchanged) and the parts reopened with their saved values. `QuitDoc`, in the
 same order on a second copy, did exactly the same.
 
-That is not the 2024 "Save Modified Documents" case above. There, the parts had
-been modified while loaded **only as components** of the assembly; here they
-were open in their own windows. That this difference is what decides whether
-2024 asks is the likeliest reading of the two cases, not something a probe
-isolated.
+That differs from the 2024 "Save Modified Documents" case above, which was
+**observed once** and not reproduced since. In that probe the parts were also
+still open in their own windows (it closed them after the assembly), so being
+open is not the difference. What differed is how the parts came to be modified:
+there through the assembly (a mate linked to a global, and `ForceRebuild3(False)`,
+which marks every component, [assemblies/12](../assemblies/12-rebuild-scope-and-the-save-flag.md)),
+here by edits made in each part's own document before the assembly was
+updated. Which difference decides whether 2024 asks is **not known**.
 
 **But on 2026, `QuitDoc` on an assembly saved by SolidWorks 2024 raised a modal
 "SOLIDWORKS CAM Warning: Save changes to <assembly>?"**, from the SOLIDWORKS CAM

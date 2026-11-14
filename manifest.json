@@ -322,7 +322,7 @@
       "path": "entries/assemblies/06-read-every-mate.md",
       "category": "assemblies",
       "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates and a code-made mate folder also SolidWorks 2026 (34.1.1)",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates and code-made mate folders also SolidWorks 2026 (34.1.1)",
       "language": [
         "python"
       ],
@@ -631,6 +631,9 @@
         "remade mate goes last",
         "half pitch interference control",
         "lightweight",
+        "GetSuppression2",
+        "swComponentFullyResolved",
+        "first drive wrong while lightweight",
         "LoadLightweight",
         "OverrideDefaultLoadLightweight",
         "SOLIDWORKS CAM Error"

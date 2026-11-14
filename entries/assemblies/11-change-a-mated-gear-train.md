@@ -5,7 +5,7 @@ status: verified
 verified_on: SolidWorks 2026 (revisions 34.0.0 and 34.1.1) and SolidWorks 2024 SP5 (32.5.0), each in a session started fresh for the run
 language: [python]
 api: [IComponent2.Transform2, IFeature.SetSuppression2, IFeature.IsSuppressed2, IFeature.GetDefinition, IFeature.ModifyDefinition, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IModelDoc2.EditDelete, IAssemblyDoc.GetComponentByName, IAssemblyDoc.AddMate5, ISldWorks.CloseDoc, ISldWorks.OpenDoc6, IComponent2.GetSuppression2]
-keywords: [change gear ratio, gear mate ratio, ModifyDefinition gear mate, IGearMateFeatureData put, AccessSelections AttributeError, 0x80010105, server threw an exception, CloseDoc cannot close, assembly will not close, remake gear mate, delete and re-add mate, lock mate re-take, suppress lock, re-phase gear, mesh phase, Transform2 put with gear mate, lock does not hold against put, shaft moved by globals, skeleton part, axial distance global, tooth count change, idler gear, remade mate goes last, half pitch interference control, lightweight, LoadLightweight, OverrideDefaultLoadLightweight, SOLIDWORKS CAM Error]
+keywords: [change gear ratio, gear mate ratio, ModifyDefinition gear mate, IGearMateFeatureData put, AccessSelections AttributeError, 0x80010105, server threw an exception, CloseDoc cannot close, assembly will not close, remake gear mate, delete and re-add mate, lock mate re-take, suppress lock, re-phase gear, mesh phase, Transform2 put with gear mate, lock does not hold against put, shaft moved by globals, skeleton part, axial distance global, tooth count change, idler gear, remade mate goes last, half pitch interference control, lightweight, GetSuppression2, swComponentFullyResolved, first drive wrong while lightweight, LoadLightweight, OverrideDefaultLoadLightweight, SOLIDWORKS CAM Error]
 answers: "My gear train is mated and turns; how do I change it from code afterwards — turn one gear to a new phase, move a shaft, change a compound gear's angle or position, or give a gear mate a new ratio — without breaking the mates?"
 ---
 
@@ -30,114 +30,153 @@ said ([assemblies/12](12-rebuild-scope-and-the-save-flag.md)).
 ## The calls
 
 From the Gear-Generator probe's tier 8 (`p8_motion.py`), Python over pywin32
-late binding. `put(px, doc, component, matrix, origin)` is the `Transform2` put
-of [assemblies/04](04-mates-between-non-parallel-axes.md) followed by a rebuild.
+late binding. A "put" below is the `Transform2` put of
+[assemblies/04](04-mates-between-non-parallel-axes.md) followed by a rebuild.
+The listings are **condensed from the probe**: the same SolidWorks calls,
+arguments and order, with its logging, retries and records removed and its
+helpers written out so the entry stands alone. They were not run as written;
+the probe was, and its results are in the Evidence section.
+
+**Helpers**, the same as in [assemblies/10](10-mate-a-gear-train-that-turns.md#the-calls):
+
+```python
+import pythoncom
+from win32com.client import VARIANT
+
+GEAR, CLOSEST = 10, 2                     # swMateType_e.swMateGEAR, swMateAlign_e.swMateAlignCLOSEST
+
+
+def call(obj, name, *args):
+    member = getattr(obj, name)
+    return member(*args) if args else member
+
+
+def null():
+    return VARIANT(pythoncom.VT_DISPATCH, None)
+
+
+def out_long():
+    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)
+
+
+def selected_count(doc):
+    return int(call(call(doc, "SelectionManager"), "GetSelectedObjectCount2", -1) or 0)
+
+
+def mate_features(asm):
+    out, feature = [], call(asm, "FirstFeature")
+    while feature is not None:
+        if call(feature, "GetTypeName2") == "MateGroup":
+            child = call(feature, "GetFirstSubFeature")
+            while child is not None:
+                out.append(child)
+                child = call(child, "GetNextSubFeature")
+        feature = call(feature, "GetNextFeature")
+    return out
+
+
+def mate_feature(asm, name):
+    return next(f for f in mate_features(asm) if str(call(f, "Name")) == name)
+
+
+def select_feature_of(asm, component, name, append, mark=1):
+    if not append:
+        call(asm, "ClearSelection2", True)
+    before = selected_count(asm)
+    feature = call(component, "FeatureByName", name)
+    return feature is not None and bool(call(feature, "Select2", append, mark)) and selected_count(asm) > before
+
+
+def add_mate(asm, kind, align, flip=False, distance_m=0.0, angle_rad=0.0, ratio=(1.0, 1.0)):
+    before = {str(call(f, "Name")) for f in mate_features(asm)}
+    d, a, status = distance_m, angle_rad, out_long()
+    mate = call(asm, "AddMate5", kind, align, flip, d, d, d, float(ratio[0]), float(ratio[1]),
+                a, a, a, False, False, 0, status)
+    call(asm, "ClearSelection2", True)
+    made = [str(call(f, "Name")) for f in mate_features(asm) if str(call(f, "Name")) not in before]
+    return mate, status.value, made
+```
 
 **Suppressing and unsuppressing one mate**, judged by reading the state back:
 
 ```python
-def suppress(px: Px, asm: Any, name: str, on: bool) -> Optional[str]:
-    """Suppress or unsuppress one mate; the route that did it, judged by ``IsSuppressed2``, or None."""
-    enums = _enums(px)
-    action = enums["suppress"] if on else enums["unsuppress"]
+SUPPRESS, UNSUPPRESS, THIS_CONFIGURATION = 0, 1, 1   # swFeatureSuppressionAction_e, swInConfigurationOpts_e
+
+
+def is_suppressed(feature):
+    """IFeature.IsSuppressed2 in this configuration (one flag per configuration asked for)."""
+    value = call(feature, "IsSuppressed2", THIS_CONFIGURATION, null())
+    value = value[0] if isinstance(value, tuple) else value
+    return bool(value[0] if isinstance(value, (list, tuple)) else value)
+
+
+def set_suppressed(asm, name, on):
     feature = mate_feature(asm, name)
-
-    def state() -> Optional[bool]:
-        return is_suppressed(px, feature)
-
-    routes: List[Tuple[str, Callable[[], Any]]] = [
-        ("SetSuppression2 this configuration, None",
-         lambda: call(feature, "SetSuppression2", action, enums["this_configuration"], None)),
-        ("SetSuppression2 this configuration, null dispatch",
-         lambda: call(feature, "SetSuppression2", action, enums["this_configuration"], sc.null())),
-        ("Select2 then EditSuppress2()" if on else "Select2 then EditUnsuppress2()",
-         lambda: (call(feature, "Select2", False, 0), getattr(asm, "EditSuppress2" if on else "EditUnsuppress2")())[1]),
-    ]
-    for label, thunk in routes:
-        px.attempt(f"{label} on {name}", thunk)
-        call(asm, "ClearSelection2", True)
-        if state() is on:
-            return label
-    return None
+    call(feature, "SetSuppression2", SUPPRESS if on else UNSUPPRESS, THIS_CONFIGURATION, None)
+    call(asm, "ClearSelection2", True)
+    return is_suppressed(feature) is on
 ```
 
 `swFeatureSuppressionAction_e` `swSuppressFeature` 0 / `swUnSuppressFeature` 1
 and `swInConfigurationOpts_e` `swThisConfiguration` 1, read from `swconst.tlb`.
-`is_suppressed` reads `IFeature.IsSuppressed2(1, null)` (this configuration),
-falling back to `IsSuppressed`. **The first route,
-`IFeature.SetSuppression2(action, 1, None)`, did it every time**, for gear
-mates, locks and angle mates, both ways, on both versions; the other two were
-never needed.
+The probe kept two fallbacks behind this call (a typed null in place of
+`None`, and `Select2` then `EditSuppress2()` / `EditUnsuppress2()`), and fell
+back to `IsSuppressed` if `IsSuppressed2` raised. **`IFeature.SetSuppression2(action, 1, None)`
+did it every time**, for gear mates, locks and angle mates, both ways, on both
+versions; neither fallback was needed.
 
 **Changing a gear mate's ratio through its definition:**
 
 ```python
-def set_gear_ratio_by_definition(px: Px, doc: Any, name: str, recipe: str, old: float, new: float,
-                                 access: bool = True) -> Dict[str, Any]:
-    """``GetDefinition`` of a gear mate, the fields ``recipe`` names put, ``ModifyDefinition(data, doc, None)`` (the
-    pattern of TWIST_REVERSE_ROUTE, ``AccessSelections`` first when ``access``); what each step answered."""
-    feature = mate_feature(doc, name)
-    out: Dict[str, Any] = {"recipe": recipe, "before": gear_mate_definition(px, doc, name), "access_selections": access}
-    got, data = px.attempt(f"GetDefinition of {name} to change it", lambda: call(feature, "GetDefinition"))
-    if not got or data is None:
-        out["definition"] = None
-        return out
-    if access:
-        got, value = px.attempt(f"AccessSelections(doc, None) on {name}'s definition",
-                                lambda: call(data, "AccessSelections", doc, sc.null()))
-        out["accessed"] = plain(value) if got else "raised"
-    fields = ratio_fields(recipe, out["before"], old, new)
-    out["fields"] = fields
-    if not fields:
-        return out
-    out["put"] = all(px.attempt(f"IGearMateFeatureData.{k} = {v:g}", lambda k=k, v=v: setattr(data, k, v))[0]
-                     for k, v in fields.items())
-    got, modified = px.attempt(f"ModifyDefinition(data, doc, None) of {name}",
-                               lambda: call(feature, "ModifyDefinition", data, doc, sc.null()))
-    out["modified"] = plain(modified) if got else "raised"
-    if access and out.get("accessed") is True and not (got and modified):
-        ok, value = px.attempt(f"ReleaseSelectionAccess on {name}'s definition",
-                               lambda: member(data, "ReleaseSelectionAccess")[0])
-        out["released"] = plain(value) if ok else "raised"
-    out["after"] = gear_mate_definition(px, doc, name)
-    return out
+def set_gear_ratio_by_definition(asm, name, z_first, z_second):
+    """IFeature.GetDefinition of a gear mate, both ratio fields put, IFeature.ModifyDefinition."""
+    feature = mate_feature(asm, name)
+    data = call(feature, "GetDefinition")                 # an IGearMateFeatureData
+    data.GearRatioNumerator = float(z_first)              # AddMate5's order, not the order it reads back in
+    data.GearRatioDenominator = float(z_second)
+    return call(feature, "ModifyDefinition", data, asm, null())
 ```
 
-`ratio_fields` decides what to put. The recipe that gave the right ratio,
-`"both fields, the other way round"`, puts the two counts **in `AddMate5`'s
-order** (first selection's count in `GearRatioNumerator`), although
-`GetDefinition` reads them back the other way round
-([assemblies/10](10-mate-a-gear-train-that-turns.md#a-gear-mate)).
+The probe called `AccessSelections(asm, null)` on the definition first; it
+raised `AttributeError` every time, and `ModifyDefinition` worked without it.
+The way of filling the fields that gave the right ratio puts the two counts
+**in `AddMate5`'s order** (first selection's count in `GearRatioNumerator`),
+although `GetDefinition` reads them back the other way round
+([assemblies/10](10-mate-a-gear-train-that-turns.md#a-gear-mate)). The probe
+also tried putting the new count into the field that held the old one, alone and
+with the other field as read; both made the inverse ratio.
 
 **Changing it by deleting the gear mate and making it again** ("remake"):
 
 ```python
-def remake_gear_mate(px: Px, doc: Any, names: Mapping[str, str], name: str, first: str, second: str,
-                     ratio: Tuple[float, float], new_name: str) -> Dict[str, Any]:
-    """Delete a gear mate (MATE_DELETE_ROUTE) and make it again between the two components found by
-    ``GetComponentByName``, at ``ratio`` with GEAR_MATE_FLIP, named ``new_name``; what happened."""
-    enums = _enums(px)
-    out: Dict[str, Any] = {"deleted_by": delete_mate(px, doc, name)}
-    if not out["deleted_by"]:
-        return out
-    a, b = call(doc, "GetComponentByName", names[first]), call(doc, "GetComponentByName", names[second])
-    picked = a is not None and b is not None and bool(select_in(px, doc, a, "Gear Axis", "AXIS", False)) and \
-        bool(select_in(px, doc, b, "Gear Axis", "AXIS", True))
-    out["selected"] = picked
-    if not picked:
-        return out
-    out["made"] = add_mate(px, doc, f"{first}-{second} gear {ratio[0]:g}:{ratio[1]:g} made again", enums["gear"],
-                           enums["closest"], flip=bool(findings.GEAR_MATE_FLIP), ratio=ratio)
-    if out["made"]["name"]:
-        out["name"] = _rename(px, mate_feature(doc, out["made"]["name"]), new_name)
-        out["definition"] = gear_mate_definition(px, doc, out["name"])
-    return out
+def delete_mate(asm, name):
+    """IFeature.Select2 on the mate, then IModelDoc2.EditDelete() with parentheses; judged by the tree."""
+    call(asm, "ClearSelection2", True)
+    call(mate_feature(asm, name), "Select2", False, 0)
+    asm.EditDelete()
+    call(asm, "ClearSelection2", True)
+    return all(str(call(f, "Name")) != name for f in mate_features(asm))
+
+
+def remake_gear_mate(asm, name, first_component, second_component, z_first, z_second):
+    """Delete a gear mate and make it again at a new ratio, Flip False, under its old name."""
+    if not delete_mate(asm, name):
+        return None
+    a = call(asm, "GetComponentByName", first_component)
+    b = call(asm, "GetComponentByName", second_component)
+    if not (select_feature_of(asm, a, "Gear Axis", False) and select_feature_of(asm, b, "Gear Axis", True)):
+        return None
+    mate, status, made = add_mate(asm, GEAR, CLOSEST, flip=False, ratio=(z_first, z_second))
+    if mate is None or len(made) != 1:
+        return None
+    feature = mate_feature(asm, made[0])
+    feature.Name = name                                   # read it back: SolidWorks renames on collision
+    return str(call(feature, "Name"))
 ```
 
-`findings.GEAR_MATE_FLIP` is `False`. `delete_mate` is `IFeature.Select2(False, 0)`
-then `IModelDoc2.EditDelete()` ([assemblies/02](02-mates-from-code.md#deleting-a-mate));
-`_rename` is an `IFeature.Name` put read back; `GetComponentByName(name)` on
-**IAssemblyDoc** found each component by its `Name2`.
+`delete_mate` is the deletion of [assemblies/02](02-mates-from-code.md#deleting-a-mate);
+`GetComponentByName(name)` on **IAssemblyDoc** found each component by its
+`Name2`.
 
 ## What each change did
 
@@ -196,10 +235,28 @@ options 193) did every component read 1 (`swComponentLightweight`). Then, on
 both versions, the SOLIDWORKS CAM add-in put up a **modal "SOLIDWORKS CAM
 Error"** box ("SOLIDWORKS CAM data cannot be restored because loading of
 lightweight parts has been detected…"), which blocked `OpenDoc6` until it was
-closed; the probe's dialog watch closed it with `WM_CLOSE`. Lightweight, each
-gear's `Gear Axis` was found, the remake made the gear mate
-(status 1, no error), the train turned at the new ratio, and afterwards every
-component read fully resolved.
+closed; the probe's dialog watch closed it with `WM_CLOSE`.
+
+Reading `GetSuppression2` on every gear at each step, on both versions:
+
+| Step | Every gear read | What happened |
+|---|---|---|
+| A plain `OpenDoc6` (option 1 only) | 2, fully resolved | — |
+| After the lightweight open (options 193) | **1, lightweight** | — |
+| After `FeatureByName("Gear Axis")` found the axis on two of them | still 1 | — |
+| The train's **first drive**, one step: every component's `Transform2` read, a global set to turn the input 30°, `ForceRebuild3(True)`, every `Transform2` read again | — | the output gear **read −24.17° where 2.5° is right**; the other gears and the other train in the same assembly read right |
+| After that step | **2, fully resolved** | — |
+| The remake, and the drive after it | 2 | right: status 1, no mate error, the train turned at the new ratio |
+
+Which call in that step resolved the components (the transform reads, the
+global, the rebuild) was not separated, so it is not known; and the wrong
+reading may be a stale transform read while the gear was still lightweight
+rather than a wrong solve. Either way the remake and the drive after it ran on
+components that were already resolved: nothing was shown to work **while**
+they were lightweight. **Read `IComponent2.GetSuppression2` on every component
+and require 2 (`swComponentFullyResolved`) before reading transforms, driving
+or changing a mated train.** Only 2 was ever seen for a resolved component
+(`swComponentResolved`, 3, never came).
 
 ### The ratio change that strands an assembly on 2024
 
@@ -279,10 +336,18 @@ Gear-Generator probe tier 8, Python over pywin32 late binding.
   and SolidWorks 2024 SP5, run 20261114-102300 (49 of 49), each in a session
   started fresh. Interference counts, both versions: two-stage train
   `interference_before_put` 4, `interference_half_pitch` 4, after the put 0;
-  idler train 0, 6 and 0. `lightweight_remake`: options 129 left
+  idler train 0, 6 and 0. `lightweight_remake` (first form): options 129 left
   `swComponentFullyResolved`, options 193 gave `swComponentLightweight` on all
-  eight, the CAM error box logged and closed, the remade mate status 1, the
-  output turned at the new ratio.
+  eight, the CAM error box logged and closed.
+- `lightweight_remake` with the state read at every step: SolidWorks 2026
+  34.1.1, run 20261114-105135, and SolidWorks 2024 SP5, run 20261114-111150
+  (34 of 34 each, fresh sessions). `states`: `after the open` and
+  `after FeatureByName('Gear Axis')` all `[1, 'swComponentLightweight']`;
+  `after the first drive`, `after the remake` and `after the drive that follows`
+  all `[2, 'swComponentFullyResolved']`; `lightweight_first_drive_right = False`
+  (`turns_before` read the output at −24.166666658° where 2.5° is right);
+  `component_resolved_read = {'call': 'IComponent2.GetSuppression2', 'fully_resolved': 2, 'plain_open_values': [2]}`;
+  the remade mate status 1 and the output at the new ratio.
 - The definition route (`gear_mate_definition`, run last and never chosen):
   SolidWorks 2026 34.1.1 (20261114-081921) `definition_closes = {'both fields, the other way round': True}`;
   SolidWorks 2024 runs 20261114-040636, 20261114-051023 and 20261114-073328 (that

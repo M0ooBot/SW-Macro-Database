@@ -233,58 +233,47 @@ call itself still returned the mate alone):
   two planes. The status read **5** (`swAddMateError_OverDefinedAssembly`) **but
   the mate was made**, and `ForceRebuild3` still returned `True`.
 
-How the over-definition showed, read like this:
+How the over-definition showed, read like this (condensed from the probe: the
+same calls, its logging and records removed, its helpers written out; not run
+as written):
 
 ```python
-def error_code(px: Px, feature: Any) -> Dict[str, Any]:
-    """``IFeature.GetErrorCode2``: the code and whether it is only a warning."""
-    out = _out_bool()
-    try:
-        result = call(feature, "GetErrorCode2", out)
-    except Exception as exc:  # noqa: BLE001 - evidence
-        return {"error": str(exc)}
-    if isinstance(result, tuple):
-        return {"code": plain(result[0]), "warning": plain(result[1]) if len(result) > 1 else None}
-    return {"code": plain(result), "warning": plain(getattr(out, "value", None))}
+import pythoncom
+from win32com.client import VARIANT
+
+
+def call(obj, name, *args):
+    member = getattr(obj, name)
+    return member(*args) if args else member
+
+
+def error_code(feature):
+    """IFeature.GetErrorCode2: (code, is only a warning), with the warning flag as a by-reference bool."""
+    flag = VARIANT(pythoncom.VT_BYREF | pythoncom.VT_BOOL, False)
+    result = call(feature, "GetErrorCode2", flag)
+    if isinstance(result, tuple):                  # pywin32 may hand the out value back in a tuple
+        return result[0], (result[1] if len(result) > 1 else None)
+    return result, flag.value
 ```
 
 ```python
-def whats_wrong(px: Px, asm: Any) -> Dict[str, Any]:
-    """``IModelDocExtension.GetWhatsWrongCount`` and ``GetWhatsWrong``, as far as each answers."""
-    ext = sc.extension(asm)
-    out: Dict[str, Any] = {}
-    got, count = px.attempt("GetWhatsWrongCount", lambda: call(ext, "GetWhatsWrongCount"))
-    out["count"] = plain(count) if got else "raised"
-    def by_reference() -> Any:
-        from win32com.client import VARIANT  # noqa: PLC0415 - Windows only
-        import pythoncom  # noqa: PLC0415
-        outs = [VARIANT(pythoncom.VT_BYREF | pythoncom.VT_VARIANT, None) for _ in range(3)]
-        returned = call(ext, "GetWhatsWrong", *outs)
-        if isinstance(returned, tuple):
-            return returned
-        return (returned,) + tuple(o.value for o in outs)
-
+def whats_wrong(asm):
+    """IModelDocExtension.GetWhatsWrongCount, and GetWhatsWrong with its three out parameters."""
+    ext = call(asm, "Extension")
+    count = call(ext, "GetWhatsWrongCount")
     # Its three arrays are out parameters: with none passed it raised "Parameter not optional".
-    got, listed = px.attempt("GetWhatsWrong with three by-reference variants", by_reference)
-    if got and isinstance(listed, tuple):
-        names = []
-        for item in listed[1] or () if len(listed) > 1 else ():
-            try:
-                names.append(str(call(item, "Name")))
-            except Exception:  # noqa: BLE001
-                names.append(repr(item))
-        out["list"] = {"returned": plain(listed[0]), "features": names,
-                       "codes": plain(listed[2]) if len(listed) > 2 else None,
-                       "warnings": plain(listed[3]) if len(listed) > 3 else None}
-    else:
-        out["list"] = plain(listed) if got else "raised"
-    return out
+    outs = [VARIANT(pythoncom.VT_BYREF | pythoncom.VT_VARIANT, None) for _ in range(3)]
+    returned = call(ext, "GetWhatsWrong", *outs)
+    listed = returned if isinstance(returned, tuple) else (returned,) + tuple(o.value for o in outs)
+    features = [str(call(item, "Name")) for item in (listed[1] or ())]
+    return {"count": count, "returned": listed[0], "features": features,
+            "codes": listed[2], "warnings": listed[3]}
 ```
 
-`_out_bool()` is `VARIANT(VT_BYREF | VT_BOOL, False)`. `GetErrorCode2` is on
-**IFeature** (the mate's sub-feature), `GetWhatsWrongCount` and `GetWhatsWrong`
-on **IModelDocExtension**, `GetConstrainedStatus` on **IComponent2** (read
-through the probe's `member` helper).
+`GetErrorCode2` is on **IFeature** (the mate's sub-feature), `GetWhatsWrongCount`
+and `GetWhatsWrong` on **IModelDocExtension**, `GetConstrainedStatus` on
+**IComponent2** (read by attribute access, and called only if a method came
+back, as in [assemblies/10](10-mate-a-gear-train-that-turns.md#one-degree-of-freedom-and-a-drive)).
 
 | Reading | SolidWorks 2026 | SolidWorks 2024 |
 |---|---|---|
@@ -306,27 +295,34 @@ out parameters; called with none it raised "Parameter not optional".
 ## Deleting a mate
 
 ```python
-def delete_mate(px: Px, asm: Any, name: str) -> Optional[str]:
-    """Delete one mate: selected, then ``EditDelete``, else ``DeleteSelection2``; the route, judged by the tree."""
-    # EditDelete takes no arguments, so it is invoked: call() would only fetch it (as with FixComponent).
-    for label, thunk in (("Select2 then EditDelete()", lambda: asm.EditDelete()),
-                         ("Select2 then DeleteSelection2(0)", lambda: call(sc.extension(asm), "DeleteSelection2", 0))):
-        try:
-            feature = mate_feature(asm, name)
-        except Require:
-            return None
-        call(asm, "ClearSelection2", True)
-        call(feature, "Select2", False, 0)
-        px.attempt(f"{label} on {name}", thunk)
-        call(asm, "ClearSelection2", True)
-        if name not in [n for n, _ in _mate_features(asm)]:
-            return label
-    return None
+def mate_features(asm):
+    """The sub-features of the MateGroup, in walk order."""
+    out, feature = [], call(asm, "FirstFeature")
+    while feature is not None:
+        if call(feature, "GetTypeName2") == "MateGroup":
+            child = call(feature, "GetFirstSubFeature")
+            while child is not None:
+                out.append(child)
+                child = call(child, "GetNextSubFeature")
+        feature = call(feature, "GetNextFeature")
+    return out
+
+
+def delete_mate(asm, name):
+    """Select the mate, then IModelDoc2.EditDelete() with parentheses; judged by the tree."""
+    feature = next((f for f in mate_features(asm) if str(call(f, "Name")) == name), None)
+    if feature is None:
+        return False
+    call(asm, "ClearSelection2", True)
+    call(feature, "Select2", False, 0)
+    asm.EditDelete()               # attribute access alone would only fetch it
+    call(asm, "ClearSelection2", True)
+    return all(str(call(f, "Name")) != name for f in mate_features(asm))
 ```
 
-`mate_feature` is the `MateGroup` walk above, matching `Name`. The first route,
-`IFeature.Select2(False, 0)` on the mate then `IModelDoc2.EditDelete()` with
-parentheses, deleted it every time, on both versions (the over-defining mate,
+The probe kept `IModelDocExtension.DeleteSelection2(0)` as a fallback behind
+this. `IFeature.Select2(False, 0)` on the mate then `IModelDoc2.EditDelete()`
+with parentheses deleted it every time, on both versions (the over-defining mate,
 drive mates, gear mates being remade); `DeleteSelection2` was never reached.
 After deleting the over-defining mate its errors went and the component read
 `GetConstrainedStatus` 3 again. `EditDelete` reached by attribute access
@@ -336,11 +332,10 @@ without parentheses is only fetched, as with `FixComponent`
 ## Renaming a mate and finding it again
 
 ```python
-def _rename(px: Px, feature: Any, name: str) -> str:
+def rename(feature, name):
+    """An IFeature.Name put, read back: SolidWorks renames quietly on a collision."""
     feature.Name = name
-    kept = str(call(feature, "Name"))
-    px.check(kept == name, f"renamed {name!r}, it reads back {kept!r}")
-    return kept
+    return str(call(feature, "Name"))
 ```
 
 A lock, a gear mate, an axis (coincident) mate, an axial distance mate and a
@@ -369,9 +364,12 @@ whether it was a sound lock or the conflicting angle mate that over-defined the
 assembly when it was on. So a mate check that reads only error codes passes a
 suppressed conflict: read `IsSuppressed2` too. And `SetSuppression2(1, 1, None)`
 on a mate that is already on returned `True`, changed nothing, raised no error,
-and still **marked the assembly modified**
+and still **marked the assembly modified**: `GetSaveFlag` read straight before
+and straight after the call, nothing in between, went from `False` to `True` for
+the assembly alone
 ([assemblies/12](12-rebuild-scope-and-the-save-flag.md#what-sets-getsaveflag)).
-SolidWorks 2026 (34.1.1) and 2024 SP5, fresh sessions.
+SolidWorks 2026 (34.1.1) and 2024 SP5, fresh sessions (the pinned reading in
+runs 20261114-105135 and 20261114-111150).
 
 ## An angle mate following its global
 

@@ -136,8 +136,8 @@ added next to their gear mate.
 
 **Gear mates did carry motion through a drag** — in this assembly. (On a gear
 train whose gears were held by axis-coincident mates, the same recipe, call for
-call, did **not** carry through gear mates or a lock mate; the mate kind was not
-varied. See [the third assembly](#a-third-assembly-a-mated-gear-train-on-2026-and-2024)
+call, did **not** carry through gear mates or a lock mate; the mate kind, the
+mesh being internal or external, and the drag angle were not varied. See [the third assembly](#a-third-assembly-a-mated-gear-train-on-2026-and-2024)
 and [GOTCHAS §101](../../GOTCHAS.md) before relying on a drag for a gear train.)
 With the tangent mate suppressed, dragging the output 30° turned the ring gear 30° and back-drove
 the pinion by 30° times the gear mate's
@@ -182,38 +182,63 @@ coincident with a skeleton part's shaft axis, a compound pair locked, two gear
 mates with `Flip` False, every gear under-defined, one degree of freedom. The
 input's drive mate was suppressed first, so nothing held the input but its
 shaft. Driving that mate through a global turned the whole train at its ratio,
-so the gear mates were solving. The drag:
+so the gear mates were solving. The drag, condensed from the probe (the same
+calls and order; its logging removed and its helpers written out; not run as
+written):
 
 ```python
-def drag(px: Px, asm: Any, component: Any, degrees: float, route: str) -> Dict[str, Any]:
-    """Drag a component ``degrees`` about its own axis through ``IDragOperator`` — what a mouse drag does, mates
-    solving as it goes — by ``DragAsUI`` or ``Drag`` with a relative transform. What each step answered."""
-    out: Dict[str, Any] = {}
-    got, op = px.attempt("IAssemblyDoc.GetDragOperator", lambda: member(asm, "GetDragOperator")[0])
-    if not got or op is None:
-        out["operator"] = None
-        return out
-    for key in ("TransformType", "DragMode", "UseAbsoluteTransform", "IsDragSpecific"):
-        ok, value = px.attempt(f"IDragOperator.{key}", lambda k=key: member(op, k)[0])
-        out[key] = plain(value) if ok else "raised"
-    px.attempt("IDragOperator.UseAbsoluteTransform = False", lambda: setattr(op, "UseAbsoluteTransform", False))
-    call_part, _, setting = route.partition(" ")
-    if setting:
-        key, _, value = setting.partition("=")
-        px.attempt(f"IDragOperator.{key} = {value}", lambda: setattr(op, key, int(value)))
-        ok, read = px.attempt(f"IDragOperator.{key} read back", lambda: member(op, key)[0])
-        out[f"{key} set"] = plain(read) if ok else "raised"
-    m, o = frame_of(component)
-    r, t = turn_about_point(column(m, 2), degrees, o)
-    xform = make_transform(px, array_data(r, t, findings.TRANSFORM_ARRAY_ORDER or "columns"))
-    method = call_part.rsplit(".", 1)[-1]
-    for step, thunk in (("AddComponent", lambda: call(op, "AddComponent", component, False)),
-                        ("BeginDrag", lambda: member(op, "BeginDrag")[0]),
-                        (method, lambda: call(op, method, xform)),
-                        ("EndDrag", lambda: member(op, "EndDrag")[0])):
-        ok, value = px.attempt(f"IDragOperator.{step}", thunk)
-        out[step] = plain(value) if ok else "raised"
-    return out
+import math
+import pythoncom
+import win32com.client.dynamic as dynamic
+from win32com.client import VARIANT
+
+
+def call(obj, name, *args):
+    member = getattr(obj, name)
+    return member(*args) if args else member
+
+
+def read_member(obj, name):
+    """A zero-argument member, read, and called only if late binding handed back a method."""
+    value = call(obj, name)
+    return value() if type(value).__name__ in ("method", "function") else value
+
+
+def create_transform(app, data16):
+    """IMathUtility.CreateTransform invoked as a method with a double array (assemblies/04)."""
+    utility = call(app, "GetMathUtility")
+    oleobj = utility._oleobj_
+    raw = oleobj.Invoke(oleobj.GetIDsOfNames("CreateTransform"), 0, pythoncom.DISPATCH_METHOD, True,
+                        VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_R8, data16))
+    return raw if hasattr(raw, "ArrayData") else dynamic.Dispatch(raw)
+
+
+def turn_about_own_axis(component, degrees):
+    """The relative move x' = R x + (p - R p): a turn about the component's own Z axis through its
+    origin, as 16 numbers (rotation by columns, translation in metres, scale 1, three zeros)."""
+    d = [float(v) for v in call(call(component, "Transform2"), "ArrayData")]
+    axis, p = d[6:9], d[9:12]                    # the component's Z column, and its origin
+    x, y, z = axis
+    c, s = math.cos(math.radians(degrees)), math.sin(math.radians(degrees))
+    k = 1.0 - c
+    r = ((c + x * x * k, x * y * k - z * s, x * z * k + y * s),
+         (y * x * k + z * s, c + y * y * k, y * z * k - x * s),
+         (z * x * k - y * s, z * y * k + x * s, c + z * z * k))
+    rp = [sum(r[i][j] * p[j] for j in range(3)) for i in range(3)]
+    columns = [r[i][j] for j in range(3) for i in range(3)]
+    return columns + [p[i] - rp[i] for i in range(3)] + [1.0, 0.0, 0.0, 0.0]
+
+
+def drag(app, asm, component, degrees, method="Drag", setting=None):
+    """IDragOperator, as a mouse drag would: one relative transform for the whole turn."""
+    op = read_member(asm, "GetDragOperator")
+    op.UseAbsoluteTransform = False
+    if setting:                                  # e.g. ("TransformType", 1) or ("DragMode", 0)
+        setattr(op, setting[0], setting[1])
+    xform = create_transform(app, turn_about_own_axis(component, degrees))
+    answers = [call(op, "AddComponent", component, False), read_member(op, "BeginDrag"),
+               call(op, method, xform), read_member(op, "EndDrag")]
+    return answers                               # every one answered True
 ```
 
 One relative transform for the whole 20° turn about the gear's own axis (not
@@ -227,36 +252,41 @@ input 20.0° and every other gear 0.0°**, on SolidWorks 2026 (34.0.0 and 34.1.1
 and 2024 SP5 (32.5.0). A `Transform2` put on the *output* gear while the input
 was driven also turned the output alone.
 
-**This entry's own recipe, reproduced on the same train.** A later probe
+**This entry's own recipe, repeated on the same train.** A later probe
 (`drag_operator_turns_train`) then repeated the recipe at the top of this entry
-call for call on that train, its drives suppressed: `GetDragOperator`,
+call for call on that train, its drive mates suppressed (so nothing held the
+input but its gear mates): `GetDragOperator`,
 `AddComponent(gear, False)`, `TransformType = 0`, `UseAbsoluteTransform = False`,
 `DragMode` left as it came (3), `BeginDrag`, `Drag` with one relative turn per
 step about the gear's own axis through its origin, `EndDrag`; positions put back
 afterwards by `Transform2` and `EditRebuild3` (to 2.2e-16 mm). Each case asked
-for 10°:
+for 10° (30° on the output would have turned the input a whole turn):
 
 | Dragged | Steps | Turned |
 |---|---|---|
-| The output gear | 10 (this entry's successful case) | the output 10.0°, every other gear 0.0° |
+| The output gear | 10 | the output 10.0°, every other gear 0.0° |
 | The output gear | 1, and 30 | the same |
 | The input gear | 10 | the input 10.0°, every other gear 0.0° |
 | The second gear of the compound pair (locked to the first) | 10 | that gear 10.0°, **its locked partner 0.0°** and every other gear 0.0° |
 
 Every `Drag` returned `True`, no mate reported an error, nothing was left
 selected and `CommandInProgress` read `False` afterwards; the same on
-SolidWorks 2026 (34.1.1) and 2024 SP5, each in a session started fresh. So the
-number of steps and which end of the train is dragged are ruled out.
+SolidWorks 2026 (34.1.1) and 2024 SP5, each in a session started fresh. So, on
+this train, the number of steps and which end of it is dragged made no
+difference.
 
-**What still differs from the first assembly, and was not varied:** here every
-gear was held on its shaft by its reference axis **coincident** with a skeleton
-part's axis; in the first assembly, where dragging the output back-drove the
-pinion through the gear mate, the gears were held **concentric to sketch
-points**. Whether that is the reason is **open**. This entry's verified result
-for the first assembly stands as observed; it does not carry over to a gear
-train held by axis-coincident mates. Settling it takes the same train with its
-gears held concentric (to sketch points, then to faces) and dragged the same
-way. Until then, prove a gear train's ratio and direction by driving a mate
+**What still differs from the first assembly, none of it varied.** The first
+assembly's success was the output dragged **30° in ten steps**, turning a
+**ring (internal) gear** whose gear mate back-drove its pinion, with the gears
+held **concentric to sketch points**. The repeat asked **10°**, on **external**
+meshes only, with every gear held by its reference axis **coincident** with a
+skeleton part's axis, and the trains' driving mates suppressed. Any of the mate
+kind, internal against external mesh, or the drag angle may be the reason; which
+is **open**. This entry's own second assembly, whose gears were concentric to
+cylindrical faces, already showed no carry either. The first assembly's result
+stands as observed; it does not carry over to a gear train without testing.
+Settling it takes the same train with its gears held concentric (to sketch
+points, then to faces), an internal mesh, and a 30° drag in ten steps. Until then, prove a gear train's ratio and direction by driving a mate
 through a global
 ([assemblies/10](10-mate-a-gear-train-that-turns.md#one-degree-of-freedom-and-a-drive)),
 and confirm a drag by hand in the user interface.
@@ -296,7 +326,9 @@ on both trains; `drag_operator` records
 `put_turns_a_gear_mated_gear_alone = True`. The recipe reproduced: probe
 `drag_operator_turns_train`, SolidWorks 2026 34.1.1 (run 20261114-095421) and
 2024 SP5 32.5.0 (run 20261114-102300), each 49 of 49 in a fresh session:
-`drag_operator_turns_train = {'holds': False, 'recipes_that_held': []}`,
+`drag_operator_turns_train = {'holds': False, 'recipes_that_held': []}`, five
+cases each asking 10° (the output in 1, 10 and 30 steps, the input in 10, the
+locked follower in 10),
 `mate_kind = 'axis coincident …, not varied'`, every case's `Drag` list all
 `True`, `errors {}`, `selected_after 0`, `command_in_progress_after False`,
 `restored_after_mm` 2.2e-16. The result files are kept in the Gear-Generator
