@@ -33,9 +33,11 @@ From the Gear-Generator probe's tier 8 (`p8_motion.py`), Python over pywin32
 late binding. A "put" below is the `Transform2` put of
 [assemblies/04](04-mates-between-non-parallel-axes.md) followed by a rebuild.
 The listings are **condensed from the probe**: the same SolidWorks calls,
-arguments and order, with its logging, retries and records removed and its
-helpers written out so the entry stands alone. They were not run as written;
-the probe was, and its results are in the Evidence section.
+arguments and order, except that the definition-route listing leaves out the
+probe's `AccessSelections` call (it raised every time), with the probe's logging,
+retries and records removed and its helpers written out so the entry stands
+alone. They were not run as written; the probe was, and its results are in the
+Evidence section.
 
 **Helpers**, the same as in [assemblies/10](10-mate-a-gear-train-that-turns.md#the-calls):
 
