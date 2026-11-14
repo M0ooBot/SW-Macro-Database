@@ -224,8 +224,13 @@ so what it read when the prompt came up is not known. The run was unblocked from
 outside: a separate Python process found the dialog's "&No" button
 (`win32gui.EnumChildWindows`) and posted it `BM_CLICK`; nothing was saved and
 every file's sha256 and mtime compared equal afterwards. A 2026-made assembly
-closed by `QuitDoc` raised no such prompt. Whether the add-in asks with the add-in
-unloaded, or for a 2024 file that was saved again in 2026, was not tried.
+closed by `QuitDoc` raised no such prompt. A later probe on 2026 (34.1.1,
+run 20261114-162546) changed 2024-saved assemblies and closed them by
+`CloseDoc`: the same add-in box came up, a modal with Yes and No only that
+ignored `WM_CLOSE` and Escape; it was answered No and every file on disk was
+left as it was. So the box follows the file's older version and the add-in,
+not the close call. Whether the add-in asks with the add-in unloaded, or for a
+2024 file that was saved again in 2026, was not tried.
 
 **After `ModifyDefinition` on a gear mate, SolidWorks 2024 could not close the
 assembly at all**: `CloseDoc` raised `0x80010105` and later closes left it open

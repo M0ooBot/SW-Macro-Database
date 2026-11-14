@@ -276,7 +276,9 @@ format**, in place. For a read-only pass over someone's library that is data
 loss with a friendly dialog in front of it.
 
 `CloseAllDocuments` raises this prompt. `ISldWorks.CloseDoc(title)` discards
-silently, which is what a batch wants.
+silently, which is what a batch wants, except that on SolidWorks 2026 with the
+CAM add-in loaded, `CloseDoc` and `QuitDoc` on a changed assembly saved by 2024
+both raised the add-in's Yes/No box (§100).
 
 ## 23. `ShowConfiguration2` returns False when the configuration is already active
 
@@ -1245,7 +1247,11 @@ Observed once, not reproduced since.
 both. But on SolidWorks 2026 (34.1.1), `QuitDoc` on an assembly **saved by
 2024** raised the SOLIDWORKS CAM add-in's "Save changes to <assembly>?",
 although `GetSaveFlag` had read `False` after the open (it was not read again
-before the close). An assembly with unsaved changes whose changed parts were
+before the close). A later probe, on 2026 with 2024-saved assemblies it had
+changed, raised the same box from `CloseDoc`: a modal with Yes and No only,
+which ignored `WM_CLOSE` and Escape; answered No, every file on disk was left
+as it was. So it follows the file's older version and the add-in, not the
+close call (an unsaved close of a same-version assembly asked nothing). An assembly with unsaved changes whose changed parts were
 open in their own windows closed with no question by either call, on both
 versions, and nothing was written. Why one case asked and the other did not is
 not known: the cause is a reading of the two cases, not isolated (see
@@ -1321,8 +1327,14 @@ made mate back. It turns its gears as they mesh exactly when
 `(IGearMateFeatureData.Reverse == the two IMateEntity2.EntityParams directions
 point the same way) == internal`. Correct a wrong one by deleting it and adding
 it again with the other `Flip`. Driven off its built phase, a wrong sense
-interferes and a right one does not. Limits as they stand: only spur rings, one
-20° helical ring geometry and a plain annulus were tried; the external pair was
-mated only on opposite-sense shafts; and every reading was taken straight after
-`AddMate5`, not after a rebuild or a save and reopen. See
+interferes and a right one does not. A follow-up round found the same for
+helical rings of the other hand and of 15°, a herringbone ring and a spur ring
+with a shifted pinion (each opposite between the versions; these on one shaft
+sense combination only), and `Flip` False for an external pair in every shaft
+sense. There, the read marked no document, and it agreed with the drive read
+straight after `AddMate5`, after a top-only rebuild, after a remake, after a
+save and reopen, and under `CommandInProgress` (wrong-to-right remake under it
+shown on 2026 only). A train mated right on 2024 and opened in 2026 kept its
+stored `Reverse` and turned right (2024 to 2026 only; 2024 cannot open a 2026
+file). See
 [assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#checking-a-gear-mates-sense-after-making-it).

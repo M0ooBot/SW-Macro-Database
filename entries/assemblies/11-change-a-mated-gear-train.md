@@ -301,6 +301,17 @@ to 2.3e-10 mm (1.1e-10 on 2024, where nothing needed remaking), with the same
 mates once the remade one was counted last, no mate error, and only the
 assembly marked modified.
 
+A follow-up round showed that the read can come first: reading every gear
+mate's sense marks no document, so a change can check the existing mates
+before it touches anything. The remake also worked with `CommandInProgress`
+True and no rebuild between making, reading, deleting and making again (wrong
+to right shown on 2026 only; on 2024 the remake under it only went from right
+to wrong). And after a remake at a new ratio, the new mate must be read back
+too: on 2026 a ring mesh remade with `Flip` False read wrong, was made again
+with `Flip` True, and then read right and turned right with no clash; on 2024
+it read right first time. The first "wrong" on 2026 was the read-back's word
+alone: the train was driven only after the second remake.
+
 ### The ratio change that strands an assembly on 2024
 
 On SolidWorks 2024, after `IFeature.ModifyDefinition` had changed a gear
@@ -369,6 +380,12 @@ Gear-Generator probe tier 8, Python over pywin32 late binding.
   20261114-135104), fresh sessions: tooth clashes in the wrong-sense case were
   5 with the mate as first made and 0 after the remake on 2026, and 0 and 0 on
   2024; `ring_check_and_remake_holds = True` on both.
+- The read before a change and the remake under `CommandInProgress` or at a new
+  ratio: probe `ring_trains_saved`, SolidWorks 2024 SP5 (run 20261114-151013)
+  and 2026 34.1.1 (run 20261114-162034), fresh sessions, 3 trains and 13 gear
+  mates: no save flag changed across the reads; the remade mate's read under
+  `CommandInProgress` equalled its read after the rebuild; the ratio remake
+  read and turned right on both after the steps above.
 - `gear_mate_ratio` (the remake), `gear_mate_update`, `lock_retake_offset`,
   `put_on_twice_meshed_gear`: SolidWorks 2026 34.1.1, full run 20261114-081921
   (85 of 85); SolidWorks 2024 SP5, run 20261114-071324 (47 of 47) in a session

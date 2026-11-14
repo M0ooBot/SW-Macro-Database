@@ -272,11 +272,13 @@ one `MateGearDim` (status 1).
   differed between the spur rings and the helical ones; which gear was selected
   first never changed it. The plain annulus and an external pair needed `Flip`
   False on both versions, which is how the first round, on annuli, missed it.
-  The ring round tried only spur rings, one 20° helical ring geometry and a plain
-  annulus; its external pair was mated only on opposite-sense shafts (the
-  external result for every shaft sense is the first round's, read from a drive
-  without the read-back); and every reading was taken straight after
-  `AddMate5`, not after a rebuild or a save and reopen. So
+  A follow-up round found the same for other ring geometries: helical rings
+  of the other hand and of 15°, a herringbone ring and a spur ring with a
+  shifted pinion each needed opposite `Flip` on the two versions (the helical
+  and herringbone rings one way, the spur rings the other), though these were
+  tried on one shaft-sense combination only, pinion +Z and ring −Z. An external
+  pair needed `Flip` False on both versions with both shafts +Z, both −Z, and
+  on opposite senses either way round. So
   nothing known before the mate is made (inside or outside, both shaft senses,
   which gear first, spur or helical) gives the right `Flip` on both versions.
   **Read the made mate back instead** ([below](#checking-a-gear-mates-sense-after-making-it)).
@@ -324,18 +326,42 @@ the tool knows. `Reverse` is read through `IFeature.GetDefinition`
 `IMateEntity2.EntityParams` ([assemblies/06](06-read-every-mate.md)). In the
 probe round's 52 mates on each version (toothed spur rings, one 20° helical
 ring geometry, plain annuli, every shaft sense for the rings, an external pair
-on opposite-sense shafts only, either gear first, `Flip` False and True) this
+on opposite-sense shafts, either gear first, `Flip` False and True) this
 read-back agreed with the measured turn every time: the two versions
 store a different `Reverse` for the same toothed-ring call, and the read-back
 follows what each decided. Driven 10° off the built phase, every toothed pair
 whose sense was wrong clashed (3 interferences for a spur ring, 4 for a helical
 ring, 2 for an external pair) and every right one stayed clear. A wrong sense is
 corrected by deleting the mate and adding it again with the other `Flip`
-([assemblies/11](11-change-a-mated-gear-train.md)). Every one of those readings
-was taken straight after `AddMate5`; whether the read-back still holds after a
-rebuild, after a save and reopen, or for a train saved by one version and opened
-in the other was not checked, nor other ring geometries or external pairs on
-same-sense shafts.
+([assemblies/11](11-change-a-mated-gear-train.md)).
+
+A follow-up probe round, on three tool-built trains with 13 gear mates on each
+version, settled when the read can be taken and what it costs:
+
+- **The read marks nothing.** On reopened trains with every document's
+  `GetSaveFlag` False, each gear mate was read (`GetDefinition` for `Reverse`
+  and the ratio, then `GetSpecificFeature2`, `MateEntity(0)` and `(1)`,
+  `EntityParams`), with every save flag read straight before and after. No
+  flag changed on the assembly, the skeleton or any part, on either version.
+  So the sense can be checked before anything is changed.
+- **Any read point gives the same answer.** Read straight after the `AddMate5`
+  calls, after a top-only rebuild, straight after a delete-and-remake, and after
+  a save, close and reopen, each mate told the sense a drive then found, on
+  both versions.
+- **It holds under `CommandInProgress`.** Made, read, deleted and made again
+  with the other `Flip` with `CommandInProgress` True and no rebuild between,
+  the remade mate's read equalled its read after the rebuild and told the
+  drive's sense, on both versions. Two limits: the mate first made under it was
+  deleted before any drive, so its read is right by comparison (the same read
+  with `CommandInProgress` off, and the opposite of the remade mate's), not by a
+  drive; and the remake from a wrong mate to a right one under it was shown on
+  2026 only (on 2024 it only went from right to wrong).
+- **The sense crosses versions in one direction tested.** Trains mated right on
+  2024 and opened in 2026 kept the `Reverse` 2024 stored; the read-back said
+  right and a drive turned all 13 meshes right with no clash, with no remake.
+  2026 does not re-decide the sense on open. The other direction cannot be
+  tried: 2024 cannot open a 2026 file. Closing such an assembly in 2026 after
+  changing it can raise the CAM add-in's box ([GOTCHAS §100](../../GOTCHAS.md)).
 
 ### A lock mate for a compound gear
 
@@ -452,8 +478,10 @@ on both versions ([assemblies/12](12-rebuild-scope-and-the-save-flag.md#what-eac
 
 - The first round mated only cylinders and annuli: no tooth geometry was
   involved in its sense or ratio readings. The later ring round mated toothed
-  spur rings and one 20° helical ring geometry (see the `Flip` bullets above,
-  with their limits); no other tooth geometry was tried.
+  spur rings and one 20° helical ring geometry, and a follow-up round further
+  helical, herringbone and shifted-pinion spur rings, these on one shaft-sense
+  combination only (see the `Flip` bullets above). Internal gears other than
+  toothed rings on parallel shafts, and other gear kinds, were not tried.
 - Mating was measured with every component fully resolved. With the
   components forced lightweight, the train's first drive read one gear far from
   where it should be (possibly a stale transform read while lightweight); read
@@ -517,6 +545,20 @@ Readings, both versions unless said:
   with the measured turn in all 52 on both; `ring_sense_needed_flip_annulus` all
   `False` on both; the needed `Flip` for toothed rings opposite between the two
   files for every shaft combination where it was defined.
+- The read-back's footing: probes `ring_trains_saved` (SolidWorks 2024 SP5 run
+  20261114-151013, SolidWorks 2026 34.1.1 run 20261114-162034) and
+  `ring_trains_from_another_version` (the 2024-saved trains opened in 2026, run
+  20261114-162546), each in a fresh session, 3 trains and 13 gear mates: no
+  save flag changed across any read; the read agreed with the drive at every
+  read point; the remade mate's read under `CommandInProgress` equalled its read
+  after the rebuild; the needed `Flip` for the further helical, herringbone and
+  shifted-pinion spur rings opposite between the versions, and `False` for the
+  external pair in every shaft sense; after a ratio remake, a ring mesh that
+  read wrong on 2026 was remade with the other `Flip` and then read and turned
+  right (it was driven only after that second remake); on 2026, the 2024 trains
+  read `GetSaveFlag` False on open and after the read-back and turned right.
+  The two versions' runs came from different probe revisions, differing only in
+  how the remake verdict is judged; the raw readings agree.
 
 - The listings themselves, on four plain cylinders and a skeleton: the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0), 25 of 25 steps each.
   Both versions: the concentric mate between two axes `{'returned': None, 'status': 0}`;
