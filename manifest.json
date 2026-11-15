@@ -3428,7 +3428,7 @@
       "path": "entries/sketches/02-3d-sketch-as-vba.md",
       "category": "sketches",
       "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 (34.1.1) and SolidWorks 2024 SP5 (32.5.0), opening and closing a 3D sketch and drawing one line in it from Python; the VBA listings were not run",
+      "verified_on": "SolidWorks 2026 (34.1.1), opening and closing a 3D sketch and drawing one line in it from Python, step by step; SolidWorks 2024 SP5 (32.5.0) inside an application build, where only the resulting axis on the line was read; the VBA listings were not run",
       "language": [
         "vba",
         "python"

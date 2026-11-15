@@ -652,11 +652,12 @@ Readings, both versions unless said:
   no mate error, every frame back within 1.5e-12 mm after each drive.
 - The collinear 1 : 1 gear mate: a configurations probe, SolidWorks 2026
   (34.1.1) run 20261114-204436 and 2024 SP5 (32.5.0) run 20261114-232510, each
-  in a fresh session. `spline both Flips`: on 2026 `{'False': {'Reverse': True,
-  'same_way': True, 'status': 1, 'moved_on_make': 0.0}, 'True': {'Reverse':
-  False, 'same_way': False, ...}}`, on 2024 `{'False': {'Reverse': False,
-  'same_way': False, ...}, 'True': {'Reverse': True, 'same_way': True, ...}}`,
-  the read-back agreeing every time; `slide: {'moved_along_mm': 10.0,
+  in a fresh session. Sleeve to anchor, by `Flip`: on 2026, `Flip` False read
+  `Reverse` True and turned them the same way (status 1, moved on make 0.0),
+  `Flip` True read `Reverse` False and turned them opposite ways; on 2024,
+  `Flip` False read `Reverse` False and turned them opposite ways, `Flip` True
+  read `Reverse` True and turned them the same way; the read-back agreed every
+  time; `slide: {'moved_along_mm': 10.0,
   'relative_turn_change': 0.0, 'errors': {}}` and `coupling drive: {'A': 30.0,
   'D': 30.0, 'S': 30.0}` on both. The mate entities' points along the line read
   z = 9.4382 and 9.4296 mm on 2026, 9.4999 mm for both on 2024.

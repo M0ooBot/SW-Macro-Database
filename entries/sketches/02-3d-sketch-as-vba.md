@@ -2,7 +2,7 @@
 id: sketches-02-3d-sketch-as-vba
 title: Generate a 3D sketch as a VBA macro
 status: partly-verified
-verified_on: SolidWorks 2026 (34.1.1) and SolidWorks 2024 SP5 (32.5.0), opening and closing a 3D sketch and drawing one line in it from Python; the VBA listings were not run
+verified_on: SolidWorks 2026 (34.1.1), opening and closing a 3D sketch and drawing one line in it from Python, step by step; SolidWorks 2024 SP5 (32.5.0) inside an application build, where only the resulting axis on the line was read; the VBA listings were not run
 language: [vba, python]
 api: [ISketchManager.Insert3DSketch, ISketchManager.CreateLine, ISketchManager.ActiveSketch, IModelDoc2.InsertAxis2, CreatePoint, CreateLine2, CreateSpline, AddConstraint]
 keywords: [3d sketch, Insert3DSketch, Insert3DSketch2, AttributeError Insert3DSketch2, 3DProfileFeature, three coordinates, no plane, axis from a 3D sketch line, EXTSKETCHSEGMENT, spline on surface, CreateArc plane]
@@ -152,7 +152,13 @@ one dimension. Note the header's counted manual steps.
   (−0.5, 0.866025404, 0), and again after a reopen.
 
 Not run: `CreatePoint`, `CreateLine2` and `CreateSpline` in a 3D sketch, and any
-of the VBA in this entry.
+of the VBA in this entry. On 2024 the toggle and `ActiveSketch` were not read
+step by step; only the axis the build made on the line was.
+
+**Open:** the generator that wrote `code/vba/Sketch3D.bas` (in another
+repository) still emits `Insert3DSketch2`. The file here was corrected by hand
+and says so in its header; the generator's source needs the same correction,
+or a fresh generation will bring the wrong call back.
 
 ## See also
 

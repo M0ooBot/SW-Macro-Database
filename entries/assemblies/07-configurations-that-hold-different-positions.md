@@ -32,17 +32,18 @@ mates leaves the mechanism wherever the previous one put it. So each
 configuration needs **its own mates that fix the position completely**, active
 only in that configuration.
 
-**Qualified since.** That paragraph describes this mechanism, positioned by
-dragging and given a full rebuild (`ForceRebuild3(False)`) after each show; the
-"same position" was not read by instrument. A later measurement on SolidWorks
-2026 (34.1.1) and 2024 SP5 found the opposite under another procedure: a
-component held by an axis mate and a distance along it, turned by a
-`Transform2` put and a top-only rebuild (`ForceRebuild3(True)`), kept a
-different turn in each configuration, through a save and reopen, read through
-freshly fetched handles ([assemblies/13](13-assembly-configurations-from-code.md#where-components-stand-in-each-configuration)).
-A drag and a full rebuild after a show were not tried there, so the two results
-are not reconciled. The recipe below, mates per configuration, holds either
-way.
+**Qualified since.** The drag observation behind that paragraph records
+neither how the positions were set nor how they were read. The instrumented
+reads further down (show, then `ForceRebuild3(False)`) are of mates per
+configuration, and the table's "showed the same position" is of an attempt
+whose mates were in error (51). A later measurement on SolidWorks 2026 (34.1.1)
+and 2024 SP5 found positions kept per configuration under another procedure: a
+component held by an axis mate and a distance along it, with no gear mate,
+turned by a `Transform2` put and a top-only rebuild (`ForceRebuild3(True)`),
+kept a different turn in each configuration, through a save and reopen, read
+through freshly fetched handles ([assemblies/13](13-assembly-configurations-from-code.md#where-components-stand-in-each-configuration)).
+Not tried there, so the two are not reconciled: a drag instead of a put; a full rebuild (`ForceRebuild3(False)`) after a show; a put on a component whose gear mate is on in every configuration; a component free to slide as well as turn. The recipe
+below, mates per configuration, holds either way.
 
 ## Mates that hold one exact position
 
@@ -142,10 +143,9 @@ its own it keeps the last configuration's position.
   `AddMate5` while that configuration was active or from a later hand edit. It
   was seen once, made by hand in the UI. `AddMate5` in another assembly did
   something else (above).
-- **Open:** whether positions set by dragging are kept per configuration when
-  each show gets only a top-only rebuild, and whether a full rebuild after a
-  show discards a put's per-configuration position
-  ([assemblies/13](13-assembly-configurations-from-code.md#where-components-stand-in-each-configuration)).
+- **Open:** how the per-configuration position measured with a put
+  ([assemblies/13](13-assembly-configurations-from-code.md#where-components-stand-in-each-configuration))
+  meets this entry's drag observation. Not tried: a drag instead of a put; a full rebuild (`ForceRebuild3(False)`) after a show; a put on a component whose gear mate is on in every configuration; a component free to slide as well as turn.
 
 ## Evidence
 

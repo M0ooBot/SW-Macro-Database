@@ -176,19 +176,23 @@ What this test did:
 - An earlier run of the same kind found the same for D alone: put +5° in `Y`
   with its gear mate suppressed there, it was back at its old angle when `X`
   was shown.
+- **F is the clean case.** D's gear mate is on in `X`, the configuration it
+  returns to its old angle in, so that return may be the gear mate re-solving
+  rather than a stored position: D's result is consistent with positions kept
+  per configuration, not proof of it.
 
 Stale handles cannot explain this: a stale handle answers `Transform2` with
 None, not with an older position.
 
-What §83's case was, by contrast: a closed-loop mechanism (slider-crank-like)
-whose position was set by **dragging**, given a **full rebuild**
-(`ForceRebuild3(False)`) after each show, on SolidWorks 2024 SP5; two
-configurations differing only in where the part had been dragged "showed the
-same position", a sentence with no instrumented position reading behind it.
+What §83's case was, by contrast: on the slider-crank-like mechanism of
+assemblies/07, SolidWorks 2024 SP5, two configurations "whose only difference
+was where a part had been dragged showed the same position". That drag sentence
+records neither how the positions were set nor how they were read. The
+instrumented reads in assemblies/07 (show, then `ForceRebuild3(False)`) were of
+mates per configuration; its one instrumented "same position" was of an
+attempt whose added mates left others in error (51), a different case.
 
-**Not tried, and needed to reconcile the two:** a drag instead of a put; a full
-rebuild (`ForceRebuild3(False)`) after a show; a put on a component whose gear
-mate is on in every configuration; a component free to slide as well as turn.
+**Not tried, and needed to reconcile the two:** a drag instead of a put; a full rebuild (`ForceRebuild3(False)`) after a show; a put on a component whose gear mate is on in every configuration; a component free to slide as well as turn.
 Until one of these is run, do not rely on either statement beyond its own
 procedure. A macro that needs a position in a configuration can still give that
 configuration its own mates ([assemblies/07](07-configurations-that-hold-different-positions.md)),

@@ -1088,14 +1088,17 @@ axis mate and a distance along it, turned by a `Transform2` put in one
 configuration and followed by a top-only rebuild (`ForceRebuild3(True)`), held
 its own turn in each configuration, read through freshly fetched handles, and
 kept it through a save and reopen; a put held in the active configuration only.
-That was one component with no gear mate and one whose gear mate was
-suppressed in the configuration of the put. The case above was a dragged,
-closed-loop mechanism given a full rebuild (`ForceRebuild3(False)`) after each
-show, and the "same position" sentence has no instrumented reading behind it.
-A drag, a full rebuild after a show, and a put on a component whose gear mate
-is on in every configuration were not tried, so neither statement is known to
-reach the other's case. Stale handles do not explain the later result: a stale
-handle answers `Transform2` with None, not an old position. See
+The clean case is the component with no gear mate. A second component, whose
+gear mate was suppressed in the configuration of the put and on in the other,
+came back to its old turn in the other configuration too, but there its gear
+mate re-solved, so its result is consistent with positions kept per
+configuration, not proof of it. The drag sentence above records neither how
+the positions were set nor how they were read; the instrumented reads in
+assemblies/07 (show, then `ForceRebuild3(False)`) were of mates per
+configuration, and its one instrumented "same position" was of an attempt
+whose mates were in error (51). Not tried, so neither statement is known to
+reach the other's case: a drag instead of a put; a full rebuild (`ForceRebuild3(False)`) after a show; a put on a component whose gear mate is on in every configuration; a component free to slide as well as turn. Stale handles do not explain the later
+result: a stale handle answers `Transform2` with None, not an old position. See
 [assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#where-components-stand-in-each-configuration).
 
 ## 84. Deleted smart-explode-line segments come back
