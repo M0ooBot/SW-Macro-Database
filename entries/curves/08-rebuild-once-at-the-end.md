@@ -183,3 +183,4 @@ also made under it and rebuilt once. See
 - [equations/01 — Global variables from code](../equations/01-global-variables-from-code.md) — changing many globals, then one rebuild
 - [features/12 — Insert a guided loft](../features/12-guided-loft.md) — one rebuild after all the lofts
 - [files/04 — Export a body to STEP](../files/04-export-a-body-to-step.md) — suppressions restored in a `finally`
+- [assemblies/12 — Rebuild an assembly without marking every part modified](../assemblies/12-rebuild-scope-and-the-save-flag.md) — `ForceRebuild3(False)` versus `(True)` on an assembly

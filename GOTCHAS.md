@@ -276,7 +276,9 @@ format**, in place. For a read-only pass over someone's library that is data
 loss with a friendly dialog in front of it.
 
 `CloseAllDocuments` raises this prompt. `ISldWorks.CloseDoc(title)` discards
-silently, which is what a batch wants.
+silently, which is what a batch wants, except that on SolidWorks 2026 with the
+CAM add-in loaded, `CloseDoc` and `QuitDoc` on a changed assembly saved by 2024
+both raised the add-in's Yes/No box (§100).
 
 ## 23. `ShowConfiguration2` returns False when the configuration is already active
 
@@ -294,6 +296,12 @@ If swModel.ConfigurationManager.ActiveConfiguration.Name <> cfg Then
 
 Same shape as §8. A SolidWorks call's return value tells you less than the state
 does.
+
+In an assembly, `ShowConfiguration2` also **marks the assembly modified** (its
+`GetSaveFlag` False → True before any rebuild) and no part, and it makes every
+component handle held from before stale (§108). SolidWorks 2026 (34.1.1) and
+2024 SP5. See
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md).
 
 Two more from the same area, both silent:
 
@@ -750,6 +758,19 @@ access had already run, where adding parentheses failed:
 `INote.GetBalloonStyle` (`'tuple'`/`'bool'`/`'int' object is not callable`). Reach them
 through `call`. See [drawings/02](entries/drawings/02-bom-table-and-balloons.md)
 and [drawings/09](entries/drawings/09-add-dimensions-and-tolerances.md).
+
+`IMeasure.Calculate` is the same case, on SolidWorks 2026 (34.1.1): reached by
+attribute access it answered a `bool`, and the call with its argument failed
+with `'bool' object is not callable`. Invoked by its dispid with
+`DISPATCH_METHOD` and a typed null dispatch it returned `True` and the measure
+read the right distance, on 2026 and 2024 SP5. The failing form is recorded in
+the probe's source, not in a kept result. See
+[reading/16](entries/reading/16-measure-between-two-selections.md).
+
+`ISldWorks.ExitApp` is the plain case, and a pywin32 late-binding point rather
+than a SolidWorks one: it returns nothing, so `call(app, "ExitApp")` only
+fetched it and SolidWorks stayed open (seen once, on 2026, in a run whose
+results were not kept); `app.ExitApp()` ended it, on 2026 (34.1.1) and 2024 SP5. See [`code/python/gear_train/`](code/python/gear_train/README.md).
 ## 56. Reloading a curve is charged for the whole tree below it
 
 `IFeature.ModifyDefinition` after `LoadPointsFromFile` cost **25 seconds per
@@ -1061,6 +1082,25 @@ coincident with an *exact* point in an assembly sketch solved in every
 configuration. SolidWorks 2024 SP5 (32.5.0). See
 [assemblies/07](entries/assemblies/07-configurations-that-hold-different-positions.md).
 
+**Qualified by a later measurement that found the opposite under another
+procedure.** On SolidWorks 2026 (34.1.1) and 2024 SP5, a component held by an
+axis mate and a distance along it, turned by a `Transform2` put in one
+configuration and followed by a top-only rebuild (`ForceRebuild3(True)`), held
+its own turn in each configuration, read through freshly fetched handles, and
+kept it through a save and reopen; a put held in the active configuration only.
+The clean case is the component with no gear mate. A second component, whose
+gear mate was suppressed in the configuration of the put and on in the other,
+came back to its old turn in the other configuration too, but there its gear
+mate re-solved, so its result is consistent with positions kept per
+configuration, not proof of it. The drag sentence above records neither how
+the positions were set nor how they were read; the instrumented reads in
+assemblies/07 (show, then `ForceRebuild3(False)`) were of mates per
+configuration, and its one instrumented "same position" was of an attempt
+whose mates were in error (51). Not tried, so neither statement is known to
+reach the other's case: a drag instead of a put; a full rebuild (`ForceRebuild3(False)`) after a show; a put on a component whose gear mate is on in every configuration; a component free to slide as well as turn. Stale handles do not explain the later
+result: a stale handle answers `Transform2` with None, not an old position. See
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#where-components-stand-in-each-configuration).
+
 ## 84. Deleted smart-explode-line segments come back
 
 Smart Explode Lines make a 3D sketch (`3DExplode1`, `ExplodeLineProfileFeature`).
@@ -1139,3 +1179,258 @@ SolidWorks 2024 SP5 (32.5.0). See
 not. `CreateBalloonOptions` is property-style through late binding (§55).
 SolidWorks 2024 SP5 (32.5.0). See
 [drawings/02](entries/drawings/02-bom-table-and-balloons.md#balloons-one-at-a-time-without-the-quantity).
+
+## 93. `ForceRebuild3(False)` on an assembly marks every component modified
+
+On an assembly, `ForceRebuild3(False)` marked every component document modified
+(`GetSaveFlag` `True`), including parts nothing had changed, so closing asked
+to save them all. `ForceRebuild3(True)` and `EditRebuild3` marked only the
+documents changed on purpose, still showed every change (a component put, a
+skeleton part's moved axis, a changed part), still re-solved mates driven by an
+assembly global, and returned `False` while a component failed to rebuild. A
+`Transform2` put alone marked nothing; an interference check marks the assembly,
+reading component frames does not. SolidWorks 2026 (34.1.1) and 2024 SP5
+(32.5.0). See
+[assemblies/12](entries/assemblies/12-rebuild-scope-and-the-save-flag.md).
+
+## 94. Two reference axes cannot be mated concentric
+
+`AddMate5` with `swMateCONCENTRIC` (1) between a component's reference axis and
+another's returned `None`, made nothing, and set the status to 0
+(`swAddMateError_ErrorUknown`), with no other message. `swMateCOINCIDENT` (0)
+between the same two axes held the component on the axis; a cylindrical face
+concentric with an axis also worked. SolidWorks 2026 (34.0.0, 34.1.1) and 2024
+SP5 (32.5.0). See
+[assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md).
+
+## 95. An over-defining mate is still made, and the rebuild still says True
+
+`AddMate5` set its status to 5 (`swAddMateError_OverDefinedAssembly`) and
+**made the mate anyway**; `ForceRebuild3` returned `True` afterwards. What
+shows it: the new mate's `GetErrorCode2` with the warning flag `False`, the
+mates it fights with the flag `True`, the component's `GetConstrainedStatus`
+4, and `GetWhatsWrongCount` rising. The codes differ by version for the same
+mates: 47 and 46 on SolidWorks 2026, 51 for all of them on 2024 SP5. Treat any
+non-zero code as a problem and never read meaning into the number. See
+[assemblies/02](entries/assemblies/02-mates-from-code.md#when-a-mate-is-refused-or-over-defines)
+(and §83 for 2024's error 5 earlier).
+
+## 96. A gear mate's ratio goes in first-selection-first and comes back reversed
+
+With `AddMate5(10, …, zFirst, zSecond, …)`, driving the first selected gear
+30° turned the second 30·zFirst/zSecond: the numerator argument is the first
+selection's tooth count. `IGearMateFeatureData` then read `GearRatioNumerator`
+= zSecond (§75's rule: the numerator belongs to `MateEntity(1)`), and a ratio
+put through the definition had to be given in `AddMate5`'s order again. `Flip`
+False gave every external pair and every pinion in a plain annulus its own
+sense, but not every toothed ring (§105); the alignment argument was ignored. SolidWorks 2026 and 2024 SP5. See
+[assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-gear-mate).
+
+## 97. On SolidWorks 2024, a gear mate changed by `ModifyDefinition` strands its assembly
+
+After `IFeature.ModifyDefinition` changed a gear mate's ratio (returning `True`,
+and the ratio right), `CloseDoc` on that assembly raised `0x80010105` ("The
+server threw an exception") on SolidWorks 2024 SP5, and later closes left it
+open without a word, with its parts, until SolidWorks was killed — saved first
+or not, and with that probe alone in a fresh session. SolidWorks 2026 closed
+it normally. Delete the gear mate and add it again instead, which carried a new
+ratio through a save, a close and a reopen on both versions, each in a fresh
+session. See
+[assemblies/11](entries/assemblies/11-change-a-mated-gear-train.md#the-ratio-change-that-strands-an-assembly-on-2024).
+
+## 98. A put on a locked or gear-mated gear moves that gear alone, silently
+
+A `Transform2` put on one gear of a mated train turned that gear only: its gear
+mate partners did not follow, its **lock** partner did not follow either, and no
+mate reported an error after the rebuild; driven afterwards, the locked pair
+turned together **at the put's new relative angle**, so the lock silently adopts
+whatever relation it finds. `SetTransformAndSolve2` and
+`IDragOperator` (`Drag`, `DragAsUI`, several settings; every call `True`) did
+the same to the input gear. Suppress every lock of a train around a put; prove
+a train's ratio by driving a mate through a global, not by moving a gear.
+SolidWorks 2026 and 2024 SP5. See
+[assemblies/11](entries/assemblies/11-change-a-mated-gear-train.md) and
+[assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md#a-third-assembly-a-mated-gear-train-on-2026-and-2024)
+(and §73).
+
+## 99. `AddComponent5` of a part that is not open returns `None`
+
+A part saved and closed, inserted by path, gave `None`: no error, no component.
+Opened by `OpenDoc6` first, the same part went in. A part of the same file name
+from another folder cannot be opened beside it at all (`OpenDoc6` error 65536,
+`swFileWithSameTitleAlreadyOpen`). SolidWorks 2026 (34.0.0, 34.1.1) and 2024
+SP5. See
+[assemblies/01](entries/assemblies/01-new-assembly-and-insert-components.md#inserting-a-part-that-is-not-open-and-two-parts-of-one-file-name).
+
+## 100. Closing an assembly can raise a modal dialog that hangs the script
+
+On SolidWorks 2024 SP5, `CloseDoc` on an assembly whose saved parts had been
+changed through the assembly (its full rebuild marks every component, §93)
+opened "Save Modified Documents" and the script hung; 2026 did not ask.
+Observed once, not reproduced since.
+`QuitDoc` (close without saving) closed modified documents with no dialog on
+both. But on SolidWorks 2026 (34.1.1), `QuitDoc` on an assembly **saved by
+2024** raised the SOLIDWORKS CAM add-in's "Save changes to <assembly>?",
+although `GetSaveFlag` had read `False` after the open (it was not read again
+before the close). A later probe, on 2026 with 2024-saved assemblies it had
+changed, raised the same box from `CloseDoc`: a modal with Yes and No only,
+which ignored `WM_CLOSE` and Escape; answered No, every file on disk was left
+as it was. So it follows the file's older version and the add-in, not the
+close call (an unsaved close of a same-version assembly asked nothing). An assembly with unsaved changes whose changed parts were
+open in their own windows closed with no question by either call, on both
+versions, and nothing was written. Why one case asked and the other did not is
+not known: the cause is a reading of the two cases, not isolated (see
+documents/02). See
+[documents/02](entries/documents/02-save-as-and-close.md#closing-an-assembly-closedoc-quitdoc-and-the-dialogs-they-raised).
+
+## 101. The drag operator did not turn a gear train held by axis-coincident mates
+
+[assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md)'s
+recipe (`AddComponent(gear, False)`, `TransformType` 0, `UseAbsoluteTransform`
+`False`, `DragMode` as it came, relative `Drag` steps, `EndDrag`), repeated call
+for call on a mated gear train with its driving mates suppressed, turned **only
+the dragged gear**, each case asking 10°: the output in 1, 10 and 30 steps; the
+input; and the second gear of a locked compound pair, whose lock partner stayed
+put too. Every `Drag` returned `True` and no mate reported an error. That
+entry's case where a drag did carry through a gear mate differed in three ways
+none of which was varied: its gears were concentric to sketch points (here
+their axes were **coincident** with shaft axes), its mesh was a ring (internal)
+gear (here external meshes only), and it dragged 30° (here 10°). Its own second
+assembly, gears concentric to faces, showed no carry either. So that result
+stands for its own assembly but must not be relied on for a gear train without
+testing. Prove a train by
+driving a mate through a global instead. SolidWorks 2026 (34.1.1) and 2024 SP5.
+See [assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md#a-third-assembly-a-mated-gear-train-on-2026-and-2024).
+
+## 102. Forcing lightweight needs two flags, and the CAM add-in then blocks the open
+
+`OpenDoc6` with `swOpenDocOptions_LoadLightweight` (128) alone left every
+component fully resolved. With `swOpenDocOptions_OverrideDefaultLoadLightweight`
+(64) added, every component read lightweight (`GetSuppression2` 1), and the
+SOLIDWORKS CAM add-in put up a modal "SOLIDWORKS CAM Error" box ("…loading of
+lightweight parts has been detected") that blocked `OpenDoc6` until something
+closed it. Worse, lightweight, a mated gear train's first drive (transforms
+read, a global set, a top-only rebuild, transforms read again) read one gear at
+−24.17° where 2.5° was right; after that step every component read 2 (fully
+resolved), and which call resolved them was not separated. The wrong reading
+may be a stale transform read while lightweight. Read `GetSuppression2` on every
+component and require 2 before reading transforms, driving or changing a train.
+SolidWorks 2026 (34.1.1) and 2024 SP5, with that add-in loaded. See
+[assemblies/11](entries/assemblies/11-change-a-mated-gear-train.md#with-the-components-lightweight).
+
+## 103. A suppressed mate reads error code 0, and unsuppressing an unsuppressed mate marks the assembly
+
+`GetErrorCode2` on a suppressed mate read 0 with the warning flag `False`, even
+for the mate that over-defined the assembly when it was on: a check that reads
+only codes passes it. `SetSuppression2(1, 1, None)` on a mate already on returned
+`True` and did nothing visible, yet `GetSaveFlag` read straight before and
+straight after it, nothing in between, went from `False` to `True` for the
+assembly alone: the call itself marks it. SolidWorks 2026 (34.1.1) and 2024
+SP5. See
+[assemblies/02](entries/assemblies/02-mates-from-code.md#suppressed-mates-read-clean).
+
+## 104. "No interference" after a gear change proves nothing without a half-pitch control
+
+After a tooth-count change, gears left at their **old** phases clashed in one
+train (4 interferences) and happened to clear in another (0). Put half a tooth
+pitch off the new phase, both clashed (4 and 6). Run the check once at the
+intended phase and once half a pitch off; only the pair of readings shows that
+the check can see the mesh. SolidWorks 2026 (34.1.1) and 2024 SP5. See
+[assemblies/11](entries/assemblies/11-change-a-mated-gear-train.md#a-whole-tooth-count-change-in-place)
+and [assemblies/03](entries/assemblies/03-interference-detection.md).
+
+## 105. The `Flip` a toothed ring gear's gear mate needs differs between versions; read the mate back
+
+For a pinion inside a toothed internal ring gear, the `Flip` that `AddMate5`
+needed for the pair to turn as it meshes was **opposite on SolidWorks 2026 and
+2024**, and on each version, on opposite-sense shafts, it also differed
+between spur and helical rings. Plain
+annuli with no teeth, and external pairs, needed `Flip` False on both, so a test
+on annuli misses it. No rule from what is known before the mate is made is right
+on both versions. What does tell, in 52 of 52 cases on each version: read the
+made mate back. It turns its gears as they mesh exactly when
+`(IGearMateFeatureData.Reverse == the two IMateEntity2.EntityParams directions
+point the same way) == internal`. Correct a wrong one by deleting it and adding
+it again with the other `Flip`. Driven off its built phase, a wrong sense
+interferes and a right one does not. A follow-up round found the same for
+helical rings of the other hand and of 15°, a herringbone ring and a spur ring
+with a shifted pinion (each opposite between the versions; these on one shaft
+sense combination only), and `Flip` False for an external pair in every shaft
+sense. There, the read marked no document, and it agreed with the drive read
+straight after `AddMate5`, after a top-only rebuild, after a remake, after a
+save and reopen, and under `CommandInProgress` (wrong-to-right remake under it
+shown on 2026 only). A train mated right on 2024 and opened in 2026 kept its
+stored `Reverse` and turned right (2024 to 2026 only; 2024 cannot open a 2026
+file). Nor is the `Flip` stable for one ring on one version: on 2024 a ring
+mate made straight after its pinion was moved 2 mm along its shaft (a put with
+the other mates suppressed and a top-only rebuild) needed `Flip` True, where the
+same mate made after a reopen, pinion unmoved, needed False; the cause (the
+move, the put and rebuild, or the missing reopen) was not separated. Never
+carry a `Flip` from one make to the next. The same holds for a 1 : 1 gear mate
+between two components on one axis: the `Flip` that turned them together was
+False on 2026 and True on 2024 in the case measured, and the read-back named it
+on both ([assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-1--1-gear-mate-between-two-components-on-one-axis)). See
+[assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#checking-a-gear-mates-sense-after-making-it).
+
+## 106. A gear mate between non-parallel axes: the `Flip` does not tell its sense; read it back
+
+`AddMate5` makes a gear mate between axes that meet at an angle or pass each
+other, and it solves (status 1, nothing moves when it is made). But which way
+it turns cannot be taken from `Flip`: on SolidWorks 2026, `Flip` False gave
+`Reverse` False at 30°–90° between the own axes and True at 120°–150°, and the
+right `Flip` was False for some meeting and skew pairs and True for others.
+What told the sense in all 40 turned cases measured: the mate turns the two
+components the same way about their `IMateEntity2.EntityParams` directions
+exactly when `IGearMateFeatureData.Reverse` is True. Measured for meeting axes
+at 30°–150° and skew axes at 60°–120° on plain cylinders (SolidWorks 2026
+34.1.1), and with real teeth in three meshes on 2026 and 2024 SP5; outside
+those ranges nothing is measured, and each entity pointed along its own
+component's axis in every case. See
+[assemblies/04](entries/assemblies/04-mates-between-non-parallel-axes.md#a-gear-mate-between-axes-that-are-not-parallel).
+
+## 107. A gear mate holds its ratio relative to the line between the axes, not the fixed frame
+
+In a planetary, a sun–planet gear mate is the mesh equation in the carrier's
+frame: with the sun held and the carrier turned 30°, a sun–planet mate of equal
+tooth counts turned the planet +60° in the fixed frame. So give a planet's gear
+mate the **tooth ratio**. Mating each body to the sun at its absolute speed
+ratio instead was accepted, mate by mate, and turned the planets wrong (−3.75°
+where −15° was right) with interferences. One sun–planet mate per planet plus
+one planet–ring mate drove the train with nothing over-defined. SolidWorks 2026
+(34.1.1) only. See
+[assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-gear-mate-whose-axis-rides-a-carrier-planetary).
+
+## 108. Component handles go stale after every `AddConfiguration2` and `ShowConfiguration2`, silently
+
+After each add or show, every `IComponent2` held from before answered
+`Transform2` with **None** and `IsFixed` with **False**, a fixed part's
+included. No exception and no error code: a check such as "fix it unless
+`IsFixed`" acts on a wrong answer. Re-fetch every component with
+`IAssemblyDoc.GetComponentByName` after every add and show; those handles
+answered correctly. Handles held across `DeleteConfiguration2` of a
+configuration that was not active stayed good. SolidWorks 2026 (34.1.1) and
+2024 SP5. See
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#component-handles-go-stale-on-every-add-and-show).
+
+## 109. `SetSuppression2` per configuration straight after `AddConfiguration2` misreports both ways
+
+With no rebuild after adding configurations, the first
+`IFeature.SetSuppression2(0, 3, names)` on a mate **raised `0x80010105` and
+still took effect**, and the second **returned False and did nothing**, in
+every run that reached them (four on 2026, one on 2024 SP5). After a top-only
+rebuild every call returned True and did what it said. Rebuild first, ignore
+the return value, and read each flag back with `IsSuppressed2(3, names)`. See
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#a-mates-suppression-per-configuration).
+
+## 110. A dimension's value per configuration: `GetSystemValue3` reads 0 until set, and `SystemValue` ignores the configuration
+
+`IDimension.SetSystemValue3(m, 3, [name])` sets one configuration's value (it
+returned 0, also for a configuration that was not active), and
+`GetSystemValue3(3, names)` reads each without showing it. But before a
+configuration has a value of its own, `GetSystemValue3` read **0** for it, and
+`IDimension.SystemValue` read another configuration's 30 mm while the shown
+one stood at 10 mm. Set every configuration's value before reading any, and
+read with `GetSystemValue3` and the name. Linking the dimension to a global by
+`IEquationMgr.Add2` instead returned −1 once several configurations existed.
+SolidWorks 2026 (34.1.1) and 2024 SP5. See
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#a-distance-mates-value-per-configuration).

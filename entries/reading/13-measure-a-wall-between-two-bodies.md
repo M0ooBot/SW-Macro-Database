@@ -175,3 +175,4 @@ Experiments `e26`, `e27` and `e25` of 2026-09-22.
 - [connect/02 — Attach from Python](../connect/02-attach-from-python.md) — why `GetTessTriangles` has to be called
 - [GOTCHAS §55](../../GOTCHAS.md)
 - [reading/15 — Measure a part that has no dimensions](15-measure-a-part-that-has-no-dimensions.md)
+- [reading/16 — Measure between two selections](16-measure-between-two-selections.md) — the Measure tool's `IMeasure`

@@ -2,10 +2,10 @@
 id: assemblies-01-new-assembly-and-insert-components
 title: Make an assembly and insert saved parts as components
 status: verified
-verified_on: SolidWorks 2026 (revision 34.0.0)
+verified_on: SolidWorks 2026 (revision 34.0.0); inserting a closed part, a fixed component's put, and the template's effect on fixing also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)
 language: [python]
-api: [ISldWorks.NewDocument, IAssemblyDoc.AddComponent5, IComponent2.Name2, IComponent2.Transform2, IComponent2.IsFixed, IComponent2.Select4, IAssemblyDoc.FixComponent]
-keywords: [assembly, AddComponent5, insert component, component name -1, Name2, Transform2, ArrayData, IsFixed, FixComponent, fixed on insert, first component fixed, asmdot, assembly template, component position]
+api: [ISldWorks.NewDocument, IAssemblyDoc.AddComponent5, IComponent2.Name2, IComponent2.Transform2, IComponent2.IsFixed, IComponent2.Select4, IAssemblyDoc.FixComponent, IAssemblyDoc.GetComponentByName, ISldWorks.OpenDoc6]
+keywords: [assembly, AddComponent5, insert component, component name -1, Name2, Transform2, ArrayData, IsFixed, FixComponent, fixed on insert, first component fixed, asmdot, assembly template, component position, AddComponent5 returns None, insert a closed part, swFileWithSameTitleAlreadyOpen, 65536, same file name, GetComponentByName, move a fixed component]
 answers: "How do I make a new assembly and insert saved parts into it as components from code?"
 ---
 
@@ -160,8 +160,13 @@ an assembly global that drives a mate distance is in document units.
 **Components are named `<file stem>-1`.** Inserting `Probe Add A.SLDPRT` gave
 `Probe Add A-1`. Read `Name2` rather than building the name yourself.
 
-**The first component is already fixed.** `IsFixed` read `True` on the first
-component straight after `AddComponent5`, before anything was done to it.
+**The first component is already fixed** — with that template. `IsFixed` read
+`True` on the first component straight after `AddComponent5`, before anything
+was done to it. Later it turned out to follow the session's default assembly
+template: on SolidWorks 2026 (34.0.0 and 34.1.1, 2026-11-13 and -14) with a
+different default template, the first component came in **floating**, while
+SolidWorks 2024 SP5 on the same machine still fixed it. Fix or unfix every
+component yourself rather than relying on either.
 
 **`FixComponent` works, when it is actually called.** Select the component
 with `Select4(False, null, False)` and call `asm.FixComponent()`: on a free
@@ -187,10 +192,88 @@ made the error 0 mm. The same 10 mm part both times, so the rule is still not
 established; setting every frame is the fix. See
 [assemblies/04](04-mates-between-non-parallel-axes.md) and [GOTCHAS §41](../../GOTCHAS.md).
 
+## Inserting a part that is not open, and two parts of one file name
+
+Added from the Gear-Generator probe's tier 7 (`add_component_opened_part` and
+`add_component_same_name_elsewhere`), SolidWorks 2026
+(34.0.0, 34.1.1) and 2024 SP5 (32.5.0). The calls, as copied from [`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py)
+(the last two lines are from its step; it ran on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), results `gear-train-check-20261114-140356` and `gear-train-check-20261114-140631` beside it):
+
+```python
+import pythoncom
+from win32com.client import VARIANT
+
+SW_DOC_PART, SW_DOC_ASSEMBLY = 1, 2
+OPEN_SILENT = 1                       # swOpenDocOptions_Silent
+
+
+def call(obj, name, *args):
+    """Late-bound member: invoked when given arguments, read by attribute access otherwise."""
+    member = getattr(obj, name)
+    return member(*args) if args else member
+
+
+def out_long():
+    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)  # a by-reference long
+
+
+def insert(asm, path, x_m=0.0, y_m=0.0, z_m=0.0):
+    """IAssemblyDoc.AddComponent5; None when SolidWorks would not insert it."""
+    return call(asm, "AddComponent5", path, 0, "", False, "", x_m, y_m, z_m)
+
+
+def open_doc(app, path, doc_type):
+    """ISldWorks.OpenDoc6; returns (document, errors, warnings)."""
+    errors, warnings = out_long(), out_long()
+    doc = call(app, "OpenDoc6", path, doc_type, OPEN_SILENT, "", errors, warnings)
+    return doc, errors.value, warnings.value
+
+
+s.fact("insert closed part", insert(first, part_path) is None)
+part, errors, warnings = open_doc(app, part_path, SW_DOC_PART)
+```
+
+`OpenDoc6` returned the document itself, not a tuple; the errors and warnings
+come back in the by-reference longs.
+
+- **`AddComponent5` of a part saved and closed returned `None`** — no error,
+  no component, and the part was not left open. The same part opened by
+  `OpenDoc6` first went in, even with the part (not the assembly) the active
+  document. So open a part before inserting it; this is what the API help's
+  "the file must be loaded" means in practice.
+- The same file inserted twice is `<stem>-1` and `<stem>-2`.
+- **Two files of the same name cannot be in one session.** With
+  `<stem>.SLDPRT` already a component, `OpenDoc6` of another folder's
+  `<stem>.SLDPRT` returned nothing with error **65536**
+  (`swFileWithSameTitleAlreadyOpen`, read from `swconst.tlb`), and
+  `AddComponent5` of it returned `None`. No dialog.
+
+**A second new assembly beside an unsaved one.** With a new assembly left open
+and unsaved (titled `Assem1` by SolidWorks, say), holding a component of a saved
+part and one mate, a second new assembly made from the same part took the same
+component name (`<stem>-1`), took its mate (status 1) and saved to its own path
+under its file name. No dialog, no refusal and no name clash; both closed
+afterwards. SolidWorks 2026 (34.1.1) and 2024 SP5, probe
+`second_assembly_beside_unsaved` (runs 20261114-095421 and 20261114-102300).
+
+## Finding and moving components after a reopen
+
+From the same tier (`layout_assembly_five`, `layout_assembly_reopen`), both
+versions: five components (one part twice) placed by `Transform2` puts and
+fixed, saved, closed and opened again by `OpenDoc6`. Each was where it was left,
+still fixed, and read `GetSuppression2` 2 (`swComponentFullyResolved`).
+`IAssemblyDoc.GetComponentByName(name)` found each by its `Name2` (as did
+`GetComponents(True)`, the root component's `GetChildren`, and
+`IModelDoc2.FeatureByName` then `GetSpecificFeature2`). **A `Transform2` put
+moved a fixed component without unfixing it**, and the new frames survived a
+save and reopen.
+
 ## What it does not do
 
 - The parts were saved **and still open** when inserted, because the API help
-  says the file must be loaded. Inserting a part that is not open was not tried.
+  says the file must be loaded. Inserting a part that is not open was not tried
+  in these runs; it has since been tried and returned `None`
+  ([above](#inserting-a-part-that-is-not-open-and-two-parts-of-one-file-name)).
 - Configurations, sub-assemblies, and `AddComponent5`'s other options were not
   explored.
 - Only fixing was tried; unfixing a component was not.
@@ -227,6 +310,20 @@ in `assembly_components_and_mates`:
   "FixComponent() fixes the selected component" ok.
 - Every other assembly fact above was the same in the rerun.
 
+Tier 7 and the gear-mate probe, SolidWorks 2026 34.0.0 (run 20261113-183654)
+and 34.1.1 (run 20261114-034458), SolidWorks 2024 SP5 32.5.0 (run
+20261113-184353): `add_component_routes = {'closed': False, 'opened': True}`,
+`attempt:AddComponent5(a part saved and closed) = {'ok': True, 'value': None}`,
+`closed_part_listed_open_after_insert = False`;
+`same_name_open = {'errors': 65536, 'returned': False}`, `same_name_elsewhere = {'inserted': False}`;
+`replace_fixed_route = 'Transform2 put'`, `component_find_route = 'GetComponentByName'`,
+`suppression_after_reopen` 2 for all five; `first_component_fixed_on_insert`
+`False` on 2026 and `True` on 2024. Those result files are kept in the
+Gear-Generator repository, not here.
+- Again by the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0): on both versions `AddComponent5` of the closed part returned
+  `None`; opened first, it went in; a second new assembly beside an unsaved one
+  took the same component name, its mate (status 1), and saved.
+
 ## See also
 
 - [assemblies/09 — Keep an edited Toolbox copy](09-keep-an-edited-toolbox-copy.md) — `ReplaceComponents2`, and Toolbox parts that reload from the library
@@ -239,3 +336,6 @@ in `assembly_components_and_mates`:
 - [assemblies/03 — Interference detection](03-interference-detection.md) — checking inserted parts for overlap
 - [assemblies/04 — Mates between non-parallel axes](04-mates-between-non-parallel-axes.md) — setting a component's frame
 - [assemblies/08 — Exploded view from code](08-exploded-view-from-code.md) — `Transform2` as the check on each explode step
+- [assemblies/10 — Mate a gear train that turns](10-mate-a-gear-train-that-turns.md) — `UnfixComponent`, and mating placed components
+- [assemblies/12 — Rebuild an assembly without marking every part modified](12-rebuild-scope-and-the-save-flag.md) — `OpenDoc6` on a part already loaded
+- [GOTCHAS §99](../../GOTCHAS.md)

@@ -2,10 +2,10 @@
 id: documents-02-save-as-and-close
 title: Save a document to a new path, and close it
 status: verified
-verified_on: SolidWorks 2026 (revision 34.0.0)
+verified_on: SolidWorks 2026 (revision 34.0.0); closing assemblies also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)
 language: [python]
-api: [IModelDocExtension.SaveAs3, IModelDoc2.SaveAs3, IModelDoc2.GetPathName, IModelDoc2.GetTitle, IModelDoc2.GetSaveFlag, ISldWorks.CloseDoc]
-keywords: [SaveAs3, save as, overwrite, silent overwrite, swSaveAsOptions_Silent, swSaveAsCurrentVersion, out parameter, tuple, CloseDoc, close without saving, GetSaveFlag, GetPathName, unsaved changes]
+api: [IModelDocExtension.SaveAs3, IModelDoc2.SaveAs3, IModelDoc2.GetPathName, IModelDoc2.GetTitle, IModelDoc2.GetSaveFlag, ISldWorks.CloseDoc, ISldWorks.QuitDoc]
+keywords: [SaveAs3, save as, overwrite, silent overwrite, swSaveAsOptions_Silent, swSaveAsCurrentVersion, out parameter, tuple, CloseDoc, close without saving, GetSaveFlag, GetPathName, unsaved changes, QuitDoc, Save Modified Documents dialog, modal dialog hangs, SOLIDWORKS CAM Warning, close an assembly, 0x80010105, document will not close]
 answers: "How do I save a new document to a path from code, and close a document without a prompt?"
 ---
 
@@ -96,7 +96,145 @@ added (`GetSaveFlag` read `True`: modified), and it had never been saved.
 `CloseDoc(title)` returned `None`, and the part was gone from the open
 documents with no prompt. That is what a probe or a batch wants, and exactly
 what an interactive tool must not do to a document the user was editing: close
-only what your code made, by the title it had when you made it.
+only what your code made, by the title it had when you made it. That was a
+part on SolidWorks 2026. **On SolidWorks 2024, `CloseDoc` on an assembly whose
+saved parts had changed did ask**, in a modal dialog; see
+[Closing an assembly](#closing-an-assembly-closedoc-quitdoc-and-the-dialogs-they-raised).
+
+## Closing an assembly: CloseDoc, QuitDoc, and the dialogs they raised
+
+Added from the Gear-Generator's probes and end-to-end checks, SolidWorks 2026
+(34.0.0, 34.1.1) and 2024 SP5 (32.5.0), Python over pywin32 late binding. A
+modal dialog blocks every COM call until someone answers it, so a script that
+meets one hangs.
+
+**`CloseDoc` on SolidWorks 2024 asked about modified parts.** Closing a probe's
+scratch assembly whose saved component parts had been changed opened a modal
+"Save Modified Documents" dialog on 2024, and the probe hung (no answer in
+600 s); SolidWorks 2026 closed the same assembly without asking. The probe's
+fix was to save its own modified parts before closing an assembly (copied from
+[`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py), which uses it the same way; `created` is the set of titles the
+script itself made):
+
+```python
+import pythoncom
+from win32com.client import VARIANT
+
+SW_DOC_PART, SW_DOC_ASSEMBLY = 1, 2
+SAVE_AS_CURRENT, SAVE_AS_SILENT = 0, 1
+
+
+def call(obj, name, *args):
+    """Late-bound member: invoked when given arguments, read by attribute access otherwise."""
+    member = getattr(obj, name)
+    return member(*args) if args else member
+
+
+def null():
+    return VARIANT(pythoncom.VT_DISPATCH, None)              # a typed Nothing
+
+
+def out_long():
+    return VARIANT(pythoncom.VT_BYREF | pythoncom.VT_I4, 0)  # a by-reference long
+
+
+def save_as(doc, path):
+    """IModelDocExtension.SaveAs3, current version, silent; it overwrites without asking."""
+    return call(call(doc, "Extension"), "SaveAs3", path, SAVE_AS_CURRENT, SAVE_AS_SILENT,
+                null(), null(), out_long(), out_long())
+
+
+def documents(app):
+    out, doc = [], call(app, "GetFirstDocument")
+    while doc is not None:
+        out.append(doc)
+        doc = call(doc, "GetNext")
+    return out
+
+
+def save_created_parts(app, created):
+    """Save, in place, every modified part this script made and had already saved to a path."""
+    for doc in documents(app):
+        title = str(call(doc, "GetTitle"))
+        path = str(call(doc, "GetPathName") or "")
+        if title in created and path and int(call(doc, "GetType")) == SW_DOC_PART and call(doc, "GetSaveFlag"):
+            save_as(doc, path)
+```
+
+Every 2024 run after that fix closed its assemblies. That is only right for
+files your own code made: saving is not an option for a user's documents.
+
+**`QuitDoc` closed modified documents without a dialog.** `QuitDoc(title)` on
+**ISldWorks** closes a document **without saving**, the way a person answering
+"Don't save" would (copied from [`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py); it ran on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), results `gear-train-check-20261114-140356` and `gear-train-check-20261114-140631` beside it):
+
+```python
+import os
+
+
+def quit_in(app, folder):
+    """Close every open document under folder WITHOUT saving (ISldWorks.QuitDoc), assemblies
+    first; returns the titles still open under it."""
+    root = os.path.normcase(os.path.abspath(folder)) + os.sep
+
+    def under(path):
+        return bool(path) and os.path.normcase(os.path.abspath(path)).startswith(root)
+
+    for kind in (SW_DOC_ASSEMBLY, SW_DOC_PART):
+        for doc in documents(app):
+            if under(str(call(doc, "GetPathName") or "")) and int(call(doc, "GetType")) == kind:
+                call(app, "QuitDoc", str(call(doc, "GetTitle")))
+    return [str(call(d, "GetTitle")) for d in documents(app) if under(str(call(d, "GetPathName") or ""))]
+```
+
+On an assembly and the parts an update had just changed and not saved,
+assembly first, it closed every one with nothing left open and **no dialog**
+(the script runs a dialog watcher that logs any window SolidWorks opens; it
+logged none there), on SolidWorks 2026 34.0.0 and 34.1.1 and on 2024 SP5. The
+files on disk were not changed.
+
+**Closing an assembly with unsaved changes while its changed parts are open in
+their own windows asked nothing — by `CloseDoc` or by `QuitDoc`, on 2026 and
+2024.** Two parts of a mated assembly were changed in their own documents
+(opened by path and activated) and the assembly updated, nothing saved: the
+assembly and both parts read `GetSaveFlag` `True`. `CloseDoc` on the assembly
+returned at once (0.3 s), and the probe's dialog watch saw **no window** open.
+The two parts stayed open, still modified; `CloseDoc` on each closed it
+silently. Afterwards no file on disk had been written (modification times
+unchanged) and the parts reopened with their saved values. `QuitDoc`, in the
+same order on a second copy, did exactly the same.
+
+That differs from the 2024 "Save Modified Documents" case above, which was
+**observed once** and not reproduced since. In that probe the parts were also
+still open in their own windows (it closed them after the assembly), so being
+open is not the difference. What differed is how the parts came to be modified:
+there through the assembly (a mate linked to a global, and `ForceRebuild3(False)`,
+which marks every component, [assemblies/12](../assemblies/12-rebuild-scope-and-the-save-flag.md)),
+here by edits made in each part's own document before the assembly was
+updated. Which difference decides whether 2024 asks is **not known**.
+
+**But on 2026, `QuitDoc` on an assembly saved by SolidWorks 2024 raised a modal
+"SOLIDWORKS CAM Warning: Save changes to <assembly>?"**, from the SOLIDWORKS CAM
+add-in, once for each of two such assemblies. Every document of those
+assemblies had read `GetSaveFlag` `False` straight after the open, and nothing
+was done to them in between except reading `GetSaveFlag` and trying
+`IModelDocExtension.GetVersionHistory` (which raised `<unknown>.GetVersionHistory`
+through late binding). The flag was **not read again just before the close**,
+so what it read when the prompt came up is not known. The run was unblocked from
+outside: a separate Python process found the dialog's "&No" button
+(`win32gui.EnumChildWindows`) and posted it `BM_CLICK`; nothing was saved and
+every file's sha256 and mtime compared equal afterwards. A 2026-made assembly
+closed by `QuitDoc` raised no such prompt. A later probe on 2026 (34.1.1,
+run 20261114-162546) changed 2024-saved assemblies and closed them by
+`CloseDoc`: the same add-in box came up, a modal with Yes and No only that
+ignored `WM_CLOSE` and Escape; it was answered No and every file on disk was
+left as it was. So the box follows the file's older version and the add-in,
+not the close call. Whether the add-in asks with the add-in unloaded, or for a
+2024 file that was saved again in 2026, was not tried.
+
+**After `ModifyDefinition` on a gear mate, SolidWorks 2024 could not close the
+assembly at all**: `CloseDoc` raised `0x80010105` and later closes left it open
+without a word ([assemblies/11](../assemblies/11-change-a-mated-gear-train.md#the-ratio-change-that-strands-an-assembly-on-2024)).
 
 ## What it does not do
 
@@ -128,6 +266,30 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
   probes, and every scratch document had been closed this way without leaving
   one behind or closing one that was open before.
 - The tool's own build saved its finished gear through `save_as` above.
+- Closing assemblies: the 2024 hang is run 20261102-211723 on SolidWorks 2024
+  SP5 (`assembly_distance_link` "HUNG … no answer in 600 s; a dialog may be open
+  in SolidWorks", 7 probes not run after it; the dialog's title is named in the
+  notes kept beside the results); the fixed probe passed every
+  assembly probe in run 20261103-130406 (44 of 44). `QuitDoc`: the
+  Gear-Generator's end-to-end check, section "a3", on SolidWorks 2026 34.0.0
+  (2026-11-13), 34.1.1 and 2024 SP5 (both 2026-11-14), each "this section's
+  documents closed in SolidWorks without saving: left []", with no dialog
+  logged in the section. The CAM warning: two runs of its cross-version open
+  check on SolidWorks 2026 34.1.1, 2026-11-14, each logging
+  "every document … reads GetSaveFlag False straight after the open: marked []"
+  and "closed without saving (QuitDoc): left []"; the dialog itself is not in
+  those logs (the check has no dialog watcher) and is recorded in the check's
+  own notes. The unsaved close with the parts open: probe
+  `unsaved_update_close`, SolidWorks 2026 34.1.1 (run 20261114-095421) and 2024
+  SP5 32.5.0 (run 20261114-102300), each in a session started fresh:
+  `unsaved_update_close_asks = {'CloseDoc': False, 'QuitDoc': False}`,
+  `unsaved_update_close_discards = {'CloseDoc': True, 'QuitDoc': True}`, the
+  assembly's close `{'dialog': False, 'windows': [], 'seconds': 0.3}` (0.36 on
+  2024), `written: []`. Those logs and results are kept in the Gear-Generator
+  repository, not here.
+- The unsaved close, again, by the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0): on both versions the assembly's close by
+  `CloseDoc`, and on another copy by `QuitDoc`, took 0.2 s with no dialog, the
+  changed part stayed open and then closed, and no file was written.
 
 ## See also
 
@@ -138,3 +300,6 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
 - [GOTCHAS §34](../../GOTCHAS.md)
 - [files/01 — Batch-convert STEP](../files/01-batch-convert-step.md) — `CloseDoc` in a batch, and `IModelDocExtension.SaveAs` with error codes
 - [files/04 — Export a body to STEP](../files/04-export-a-body-to-step.md) — `IModelDocExtension.SaveAs` with the copy option, so the document keeps its name
+- [assemblies/12 — Rebuild an assembly without marking every part modified](../assemblies/12-rebuild-scope-and-the-save-flag.md) — what sets `GetSaveFlag`, so there is less to close
+- [assemblies/11 — Change a mated gear train](../assemblies/11-change-a-mated-gear-train.md) — the assembly 2024 could not close
+- [GOTCHAS §97, §100](../../GOTCHAS.md)

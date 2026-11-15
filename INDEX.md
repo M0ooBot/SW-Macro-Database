@@ -29,6 +29,7 @@ set in one read should use [manifest.json](manifest.json) instead.
 |---|---|
 | Make a new part or assembly, in millimetres | [documents/01 — New part from a template](entries/documents/01-new-part-from-template.md) |
 | Save to a new path, and close without a prompt | [documents/02 — Save as, and close](entries/documents/02-save-as-and-close.md) |
+| Close an assembly without a save dialog hanging the script (`QuitDoc`, and the dialogs `CloseDoc` raised) | [documents/02 — Save as, and close](entries/documents/02-save-as-and-close.md#closing-an-assembly-closedoc-quitdoc-and-the-dialogs-they-raised) |
 
 ## Make a part parametric
 
@@ -66,7 +67,7 @@ set in one read should use [manifest.json](manifest.json) instead.
 | I want to… | Entry |
 |---|---|
 | Generate a 2D sketch as a VBA macro | [sketches/01 — A 2D sketch as VBA](entries/sketches/01-2d-sketch-as-vba.md) |
-| Generate a 3D sketch as a VBA macro | [sketches/02 — A 3D sketch as VBA](entries/sketches/02-3d-sketch-as-vba.md) |
+| Generate a 3D sketch as a VBA macro; open one with `ISketchManager.Insert3DSketch` | [sketches/02 — A 3D sketch as VBA](entries/sketches/02-3d-sketch-as-vba.md) |
 | Look up the constant for a sketch relation | [sketches/03 — Relation constants](entries/sketches/03-relation-constants.md) |
 | Add and set a dimension | [sketches/04 — Dimensions](entries/sketches/04-dimensions.md) |
 | Get the units and number formatting right | [sketches/05 — Units and number format](entries/sketches/05-units-and-number-format.md) |
@@ -114,6 +115,19 @@ set in one read should use [manifest.json](manifest.json) instead.
 | Make configurations that each hold a mechanism in a different position | [assemblies/07 — Configurations that hold different positions](entries/assemblies/07-configurations-that-hold-different-positions.md) |
 | Build an exploded view step by step, and check each step moved the right way | [assemblies/08 — Exploded view from code](entries/assemblies/08-exploded-view-from-code.md) |
 | Use an edited copy of a Toolbox part without it reverting to the library part on reopen | [assemblies/09 — Keep an edited Toolbox copy](entries/assemblies/09-keep-an-edited-toolbox-copy.md) |
+| Mate gears on their shafts into a train that turns: gear mates, lock mates, one degree of freedom | [assemblies/10 — Mate a gear train that turns](entries/assemblies/10-mate-a-gear-train-that-turns.md) |
+| Change a mated gear train: re-phase a gear, move a shaft, re-take a lock, change a gear mate's ratio | [assemblies/11 — Change a mated gear train](entries/assemblies/11-change-a-mated-gear-train.md) |
+| Rebuild an assembly without SolidWorks asking to save parts nothing changed; what sets `GetSaveFlag` | [assemblies/12 — Rebuild scope and the save flag](entries/assemblies/12-rebuild-scope-and-the-save-flag.md) |
+| Find out why `AddMate5` refused a mate, or whether a mate over-defined the assembly | [assemblies/02 — Mates from code](entries/assemblies/02-mates-from-code.md#when-a-mate-is-refused-or-over-defines) |
+| Delete, rename or find a mate from code | [assemblies/02 — Mates from code](entries/assemblies/02-mates-from-code.md#deleting-a-mate) |
+| Insert a part that is not open (`AddComponent5` returned `None`) | [assemblies/01 — New assembly and insert components](entries/assemblies/01-new-assembly-and-insert-components.md#inserting-a-part-that-is-not-open-and-two-parts-of-one-file-name) |
+| Change a gear train's tooth counts in place, and prove the interference check can see the mesh | [assemblies/11 — Change a mated gear train](entries/assemblies/11-change-a-mated-gear-train.md#a-whole-tooth-count-change-in-place) |
+| Open an assembly with its components lightweight (and the add-in box that blocks it) | [assemblies/11 — Change a mated gear train](entries/assemblies/11-change-a-mated-gear-train.md#with-the-components-lightweight) |
+| Put mates in a folder from code, and still find them | [assemblies/06 — Read every mate](entries/assemblies/06-read-every-mate.md#folders-are-markers-not-parents) |
+| Add, show and delete assembly configurations from code; a mate's suppression or a distance per configuration; stale component handles | [assemblies/13 — Assembly configurations from code](entries/assemblies/13-assembly-configurations-from-code.md) |
+| Tell which way a gear mate between non-parallel axes (bevel, crossed) turns | [assemblies/04 — Mates between non-parallel axes](entries/assemblies/04-mates-between-non-parallel-axes.md#a-gear-mate-between-axes-that-are-not-parallel) |
+| Gear-mate a planetary: planets on a carrier, sun and ring | [assemblies/10 — Mate a gear train that turns](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-gear-mate-whose-axis-rides-a-carrier-planetary) |
+| Couple two components on one axis with a 1 : 1 gear mate that still lets one slide | [assemblies/10 — Mate a gear train that turns](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-1--1-gear-mate-between-two-components-on-one-axis) |
 
 ## Make drawings
 
@@ -151,6 +165,7 @@ set in one read should use [manifest.json](manifest.json) instead.
 | Get one body's volume, where `IMassProperty` will not take bodies | [reading/13 — Measure a wall between two bodies](entries/reading/13-measure-a-wall-between-two-bodies.md) |
 | Find out afterwards what a program did to a part, when it kept no log | [reading/14 — The journal records API calls](entries/reading/14-the-journal-records-api-calls.md) |
 | Get the real sizes of a derived or imported part that has no dimensions | [reading/15 — Measure a part that has no dimensions](entries/reading/15-measure-a-part-that-has-no-dimensions.md) |
+| Measure the distance between two selected entities, as the Measure tool does | [reading/16 — Measure between two selections](entries/reading/16-measure-between-two-selections.md) |
 | Read a pick without crashing SolidWorks | [reading/04 — Read the selection](entries/reading/04-read-the-selection.md) |
 
 ## Change how a part looks
@@ -176,7 +191,7 @@ set in one read should use [manifest.json](manifest.json) instead.
 ## Index by language
 
 - **VBScript** — connect/01, connect/07, connect/08, connect/09, curves/02, curves/04, curves/07, curves/08, reading/07
-- **Python (pywin32)** — connect/02, connect/05, connect/06, connect/10, connect/11, appearance/01, curves/02, curves/04, curves/05, curves/06, curves/10, curves/11, curves/12, documents/01, documents/02, equations/01, equations/02, sketches/03, sketches/04, sketches/07, sketches/10, features/01 through 12, assemblies/01 through 09, drawings/01 through 10, reading/04, reading/05, reading/10, reading/11, reading/12, reading/13, reading/15, surfacing/04, files/04, files/05
+- **Python (pywin32)** — connect/02, connect/05, connect/06, connect/10, connect/11, appearance/01, curves/02, curves/04, curves/05, curves/06, curves/10, curves/11, curves/12, documents/01, documents/02, equations/01, equations/02, sketches/02, sketches/03, sketches/04, sketches/07, sketches/10, features/01 through 12, assemblies/01 through 13, drawings/01 through 10, reading/04, reading/05, reading/10, reading/11, reading/12, reading/13, reading/15, reading/16, surfacing/04, files/04, files/05
 - **VBA** — connect/04, sketches/01 through 06, curves/03, files/01, files/02
 - **C# (.NET 8)** — connect/03, connect/06, connect/09, reading/01, reading/02, reading/03, reading/06, reading/08, reading/09, files/01, files/02, files/03
 

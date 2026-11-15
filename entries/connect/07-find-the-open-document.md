@@ -134,3 +134,4 @@ the middle two arguments, and the out value was not read.
 - [connect/08 — Find a feature by name](08-find-a-feature-by-name.md)
 - [documents/02 — Save as, and close](../documents/02-save-as-and-close.md) — `CloseDoc` by title
 - [documents/01 — New part from a template](../documents/01-new-part-from-template.md) — a new document is the active one
+- [assemblies/12 — Rebuild an assembly without marking every part modified](../assemblies/12-rebuild-scope-and-the-save-flag.md) — `OpenDoc6` on a part already open does not bring it forward; `ActivateDoc3` does

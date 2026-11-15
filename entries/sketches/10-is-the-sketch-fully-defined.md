@@ -114,3 +114,4 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
 - [sketches/04 — Dimensions](04-dimensions.md)
 - [sketches/06 — What the sketch API cannot do](06-what-the-sketch-api-cannot-do.md) — why some sketches cannot reach 3 from code
 - [sketches/07 — Equation driven curve](07-equation-driven-curve.md)
+- [assemblies/10 — Mate a gear train that turns](../assemblies/10-mate-a-gear-train-that-turns.md) — `IComponent2.GetConstrainedStatus` on components, 4 observed

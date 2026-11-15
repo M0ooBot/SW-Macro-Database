@@ -2,10 +2,10 @@
 id: assemblies-02-mates-from-code
 title: Add coincident, distance and angle mates
 status: verified
-verified_on: SolidWorks 2026 (revision 34.0.0)
+verified_on: SolidWorks 2026 (revisions 34.0.0 and 34.1.1); failing mates, deleting and renaming also on SolidWorks 2024 SP5 (32.5.0)
 language: [python]
-api: [IAssemblyDoc.AddMate5, IComponent2.FeatureByName, IFeature.Select2, IModelDocExtension.SelectByID2, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IEquationMgr.Add2]
-keywords: [AddMate5, mate, coincident mate, distance mate, angle mate, swMateType_e, swMateCOINCIDENT, swMateDISTANCE, swMateANGLE, swMateAlign_e, MateGroup, MateCoincident, MateDistanceDim, MatePlanarAngleDim, FeatureByName, selection mark 1, drive mate from global]
+api: [IAssemblyDoc.AddMate5, IComponent2.FeatureByName, IFeature.Select2, IModelDocExtension.SelectByID2, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IEquationMgr.Add2, IFeature.GetErrorCode2, IComponent2.GetConstrainedStatus, IModelDocExtension.GetWhatsWrongCount, IModelDocExtension.GetWhatsWrong, IModelDoc2.EditDelete, IFeature.Name, IModelDoc2.FeatureByName]
+keywords: [AddMate5, mate, coincident mate, distance mate, angle mate, swMateType_e, swMateCOINCIDENT, swMateDISTANCE, swMateANGLE, swMateAlign_e, MateGroup, MateCoincident, MateDistanceDim, MatePlanarAngleDim, FeatureByName, selection mark 1, drive mate from global, mate refused, AddMate5 status 0, AddMate5 status 5, over-defined assembly, swAddMateError_OverDefinedAssembly, GetErrorCode2 46, GetErrorCode2 47, GetErrorCode2 51, IsWarning, GetWhatsWrong, GetConstrainedStatus 4, delete a mate, EditDelete, DeleteSelection2, rename a mate, find a mate by name, suppressed mate error code 0, unsuppress marks modified]
 answers: "How do I add coincident, distance and angle mates between assembly components from code?"
 ---
 
@@ -215,6 +215,175 @@ Read back from the assembly afterwards:
   read 0.061 and the second component moved to x = 60.9988 mm while the first
   stayed put: 61 mm apart, the same small offset on both.
 
+## When a mate is refused or over-defines
+
+Added from the Gear-Generator probe's tier 8 (`p8_motion.py`, `add_mate` as
+quoted in [assemblies/10](10-mate-a-gear-train-that-turns.md#the-calls)), on
+SolidWorks 2026 (34.0.0, 34.1.1) and 2024 SP5 (32.5.0). The status out
+parameter was read from the by-reference long's `.value` after the call (the
+call itself still returned the mate alone):
+
+- **Refused:** `AddMate5` returned `None`, no mate appeared under `MateGroup`,
+  and the status read **0** (`swAddMateError_ErrorUknown`). Seen for a
+  concentric mate between two reference axes, and for a gear mate between two
+  reference axes that both belong to one component (the skeleton part's
+  shaft axes) ([assemblies/10](10-mate-a-gear-train-that-turns.md)).
+- **Solved:** status **1** (`swAddMateError_NoError`).
+- **Over-defined:** a second angle mate 10° off an existing one between the same
+  two planes. The status read **5** (`swAddMateError_OverDefinedAssembly`) **but
+  the mate was made**, and `ForceRebuild3` still returned `True`.
+
+How the over-definition showed, read like this (copied from [`code/python/gear_train/gear_train_check.py`](../../code/python/gear_train/gear_train_check.py); it ran on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), results `gear-train-check-20261114-140356` and `gear-train-check-20261114-140631` beside it):
+
+```python
+import pythoncom
+from win32com.client import VARIANT
+
+
+def call(obj, name, *args):
+    """Late-bound member: invoked when given arguments, read by attribute access otherwise."""
+    member = getattr(obj, name)
+    return member(*args) if args else member
+
+
+def error_code(feature):
+    """IFeature.GetErrorCode2: (code, is only a warning), with the warning flag as a by-reference bool."""
+    flag = VARIANT(pythoncom.VT_BYREF | pythoncom.VT_BOOL, False)
+    result = call(feature, "GetErrorCode2", flag)
+    if isinstance(result, tuple):                  # pywin32 may hand the out value back in a tuple
+        return result[0], (result[1] if len(result) > 1 else None)
+    return result, flag.value
+```
+
+```python
+def whats_wrong(asm):
+    """IModelDocExtension.GetWhatsWrongCount, and GetWhatsWrong with its three out parameters."""
+    ext = call(asm, "Extension")
+    count = call(ext, "GetWhatsWrongCount")
+    # Its three arrays are out parameters: with none passed it raised "Parameter not optional".
+    outs = [VARIANT(pythoncom.VT_BYREF | pythoncom.VT_VARIANT, None) for _ in range(3)]
+    returned = call(ext, "GetWhatsWrong", *outs)
+    listed = returned if isinstance(returned, tuple) else (returned,) + tuple(o.value for o in outs)
+    features = [str(call(item, "Name")) for item in (listed[1] or ())]
+    return {"count": count, "returned": listed[0], "features": features,
+            "codes": listed[2], "warnings": listed[3]}
+```
+
+`GetErrorCode2` is on **IFeature** (the mate's sub-feature), `GetWhatsWrongCount`
+and `GetWhatsWrong` on **IModelDocExtension**, `GetConstrainedStatus` on
+**IComponent2** (read by attribute access, and called only if a method came
+back, as in [assemblies/10](10-mate-a-gear-train-that-turns.md#one-degree-of-freedom-and-a-drive)).
+
+| Reading | SolidWorks 2026 | SolidWorks 2024 |
+|---|---|---|
+| The new, conflicting mate's `GetErrorCode2` | **47** (`swFeatureErrorMateIlldefined`), warning `False` | **51**, warning `False` |
+| The mates it fights | **46** (`swFeatureErrorMateOverdefined`), warning `True` | **51**, warning `True` |
+| The over-defined component's `GetConstrainedStatus` | **4** (its partner 3) | **4** |
+| `GetWhatsWrongCount` | rose from 6 to 8; `GetWhatsWrong` named the mates, with their codes and warning flags | 8, every code 51 |
+| `ForceRebuild3` | `True` | `True` |
+
+The same mates were flagged with the same warning flags on both versions; only
+the numbers differ. 51 is the number `swconst` names
+`swSketchErrorExtRefFail`, which says nothing about mates. So: check the
+status, treat **any non-zero `GetErrorCode2`** on a mate as a problem, take the
+mate whose warning flag is `False` as the one at fault, and never read meaning
+into the number. On 2026 a mate also read code **1** with the warning flag
+`True` in an over-defined group. `GetWhatsWrong` needs its three by-reference
+out parameters; called with none it raised "Parameter not optional".
+
+## Deleting a mate
+
+```python
+def top_features(doc):
+    out, feature = [], call(doc, "FirstFeature")
+    while feature is not None:
+        out.append(feature)
+        feature = call(feature, "GetNextFeature")
+    return out
+
+
+def mate_features(asm):
+    """The sub-features of the MateGroup, in walk order."""
+    out = []
+    for feature in top_features(asm):
+        if call(feature, "GetTypeName2") == "MateGroup":
+            child = call(feature, "GetFirstSubFeature")
+            while child is not None:
+                out.append(child)
+                child = call(child, "GetNextSubFeature")
+    return out
+
+
+def delete_mate(asm, name):
+    """Select the mate, then IModelDoc2.EditDelete() with parentheses; judged by the tree."""
+    feature = next((f for f in mate_features(asm) if str(call(f, "Name")) == name), None)
+    if feature is None:
+        return False
+    call(asm, "ClearSelection2", True)
+    call(feature, "Select2", False, 0)
+    asm.EditDelete()               # attribute access alone would only fetch it
+    call(asm, "ClearSelection2", True)
+    return all(str(call(f, "Name")) != name for f in mate_features(asm))
+```
+
+The probe kept `IModelDocExtension.DeleteSelection2(0)` as a fallback behind
+this. `IFeature.Select2(False, 0)` on the mate then `IModelDoc2.EditDelete()`
+with parentheses deleted it every time, on both versions (the over-defining mate,
+drive mates, gear mates being remade); `DeleteSelection2` was never reached.
+After deleting the over-defining mate its errors went and the component read
+`GetConstrainedStatus` 3 again. `EditDelete` reached by attribute access
+without parentheses is only fetched, as with `FixComponent`
+([GOTCHAS §31](../../GOTCHAS.md)): an early run of this probe did exactly that.
+
+## Renaming a mate and finding it again
+
+```python
+def rename(feature, name):
+    """An IFeature.Name put, read back: SolidWorks renames quietly on a collision."""
+    feature.Name = name
+    return str(call(feature, "Name"))
+```
+
+A lock, a gear mate, an axis (coincident) mate, an axial distance mate and a
+suppressed lock in a gear train were renamed by an `IFeature.Name` put (to
+names such as `GearC locked to GearB` and `GearC meshes GearD`): each read its
+new name back; nothing moved, and no mate's type, suppression or error code
+changed. Saved, closed and reopened, each was found by its new name both by the
+`MateGroup` walk and by `IModelDoc2.FeatureByName`; no old name was left; each
+was still its kind (`IMate2.Type` 16, 10, 0, 5, 16; the lock's type name is
+`MateLock`), the suppressed lock still suppressed; and driven, the train turned
+as before ([assemblies/10](10-mate-a-gear-train-that-turns.md)). SolidWorks
+2026 (34.1.1) and 2024 (32.5.0), each in a session started fresh.
+
+**Renaming straight after `AddMate5` also works.** In a new, unsaved assembly,
+each of a train's 18 mates renamed by an `IFeature.Name` put right after its
+`AddMate5` (with `CommandInProgress` on) read its new name back at once and was
+found by it; saved and reopened, every mate was found by its new name and no
+first name was left. A mate that is deleted and made again goes to the end of
+the `MateGroup` ([assemblies/11](11-change-a-mated-gear-train.md#what-each-change-did)),
+so find mates by name, never by position.
+
+## Suppressed mates read clean
+
+A suppressed mate's `GetErrorCode2` read **0** with the warning flag `False`,
+whether it was a sound lock or the conflicting angle mate that over-defined the
+assembly when it was on. So a mate check that reads only error codes passes a
+suppressed conflict: read `IsSuppressed2` too. And `SetSuppression2(1, 1, None)`
+on a mate that is already on returned `True`, changed nothing, raised no error,
+and still **marked the assembly modified**: `GetSaveFlag` read straight before
+and straight after the call, nothing in between, went from `False` to `True` for
+the assembly alone
+([assemblies/12](12-rebuild-scope-and-the-save-flag.md#what-sets-getsaveflag)).
+SolidWorks 2026 (34.1.1) and 2024 SP5, fresh sessions (the pinned reading in
+runs 20261114-105135 and 20261114-111150).
+
+## An angle mate following its global
+
+Later observed in [assemblies/10](10-mate-a-gear-train-that-turns.md#one-degree-of-freedom-and-a-drive):
+an angle mate between two planes, its `D1` linked to an assembly global, turned
+its component by exactly the change in the global (90° → 120° turned it +30°;
+back to 90° put it back), on SolidWorks 2026 and 2024.
+
 ## Why it is not obvious
 
 **It returned the mate, not a tuple.** With a by-reference long for the error
@@ -238,13 +407,15 @@ from 60 mm to 70 mm.
   distance and angle, were not varied.
 - The effect of the 3° angle mate on B's orientation was not measured; only
   that the mate was created.
-- No failing mate was produced, so what `AddMate5` returns for an impossible
-  mate, and what the error out holds, are unknown.
+- No failing mate was produced in the runs this entry first came from. Since
+  then, see [When a mate is refused or over-defines](#when-a-mate-is-refused-or-over-defines):
+  `None` with status 0 for a refused mate, the mate with status 5 for an
+  over-defining one.
 - Which selection route (`FeatureByName` plus `Select2`, or `SelectByID2`)
   succeeded is not recorded.
 - An angle mate's dimension linked to a global was accepted and read back, but
-  the global was never changed afterwards, so the angle following it is not
-  observed.
+  the global was never changed afterwards in these runs. It has since been
+  observed following its global ([above](#an-angle-mate-following-its-global)).
 
 ## Evidence
 
@@ -264,6 +435,28 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
 - A later gear pair built by the tool on the same session: the angle-mate link
   accepted, and the centre distance moved 60 → 61 mm, as described above. That
   run's output is quoted in this entry; its log is not kept in this repo.
+- Renaming at once, suppressed mates: probe `mates_under_command_in_progress`,
+  SolidWorks 2026 34.1.1 (run 20261114-095421) and 2024 SP5 (run
+  20261114-102300): `mate_rename_at_once_holds = True`;
+  `suppressed_mate_error_codes = {'sound': {'type': 'MateLock', 'code': 0, 'warning': False, 'suppressed': True}, 'conflicting': {'type': 'MatePlanarAngleDim', 'code': 0, 'warning': False, 'suppressed': True}}`.
+- Failing mates, deleting and renaming: Gear-Generator probe tier 8, probes
+  `shaft_axis_mates`, `gear_mate_sense`, `compound_lock` and `lock_mate_rename`,
+  on SolidWorks 2026 34.0.0 (run 20261113-231301) and 34.1.1 (20261114-034458),
+  and SolidWorks 2024 SP5 32.5.0 (20261113-223412; `lock_mate_rename` in
+  20261114-071324, a fresh session). `compound_lock`'s `over_defined`:
+  `mate = {'returned': 'CDispatch', 'status': 5, 'status_name': 'swAddMateError_OverDefinedAssembly'}`,
+  `rebuild = {'returned': True}`, `constrained = {'p': 3, 'q': 4}`,
+  `whats_wrong.count` 8 (6 before), `deleted_by = 'Select2 then EditDelete()'`,
+  `constrained_after_delete = {'p': 3, 'q': 3}`; the codes as in the table.
+  `lock_mate_rename`: `mate_rename_route = 'IFeature.Name put'`,
+  `mate_find_routes = {'FeatureByName': True, 'mate group': True}`,
+  `moved_by_the_rename 0.0`. Those result files are kept in the Gear-Generator
+  repository, not here.
+- The over-definition, deletion and renaming listings, again, by the gear-train runner ([`code/python/gear_train/`](../../code/python/gear_train/README.md)), results `gear-train-check-20261114-140356` (SolidWorks 2026 34.1.1) and `gear-train-check-20261114-140631` (2024 SP5 32.5.0): status 5
+  with the mate made; codes 47 / 46 on 2026 and 51 for each on 2024; the
+  over-defined component 4, then 3 after the deletion; the suppressed conflict
+  `[0, False]`; every mate renamed straight after its `AddMate5` and found by
+  the new name after a reopen.
 
 ## See also
 
@@ -278,3 +471,6 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
 - [assemblies/05 — Test motion with the drag operator](05-test-motion-with-the-drag-operator.md) — whether the mated parts can move, and which mate stops them
 - [assemblies/06 — Read every mate](06-read-every-mate.md) — reading back mates someone else made
 - [assemblies/07 — Configurations that hold different positions](07-configurations-that-hold-different-positions.md) — mates that pin one position per configuration
+- [assemblies/10 — Mate a gear train that turns](10-mate-a-gear-train-that-turns.md) — gear mates, lock mates, and the axis mate that is refused
+- [assemblies/11 — Change a mated gear train](11-change-a-mated-gear-train.md) — suppressing, deleting and remaking mates in a train
+- [GOTCHAS §31, §83, §94, §95, §103](../../GOTCHAS.md)
