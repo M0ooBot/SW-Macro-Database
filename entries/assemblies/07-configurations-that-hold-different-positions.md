@@ -4,8 +4,8 @@ title: Make assembly configurations that each hold a mechanism in a different po
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
 language: [python]
-api: [IConfigurationManager.AddConfiguration2, IModelDoc2.ShowConfiguration2, IModelDoc2.GetConfigurationNames, IAssemblyDoc.AddMate5, IFeature.SetSuppression2, IFeature.IsSuppressed2, IFeature.IsSuppressed, IFeature.GetErrorCode2, ISketchManager.InsertSketch, ISketchManager.CreatePoint, ISketchManager.AddToDB, ISketch.GetSketchPoints2, IModelDoc2.BlankSketch, IMate2.MateEntity, IMateEntity2.Reference, IMateEntity2.EntityParams]
-keywords: [configuration, positions, motion positions, end of stroke, mechanism position, configuration specific mate, suppress mate in configuration, SetSuppression2, swInConfigurationOpts_e, IsSuppressed2, AddConfiguration2, positions not per configuration, configuration shows wrong position, over defined, AddMate5 error 5, mate error 51, limit mate, extreme distance, point coincident mate, assembly sketch point, exact point, rounding]
+api: [IConfigurationManager.AddConfiguration2, IModelDoc2.ShowConfiguration2, IModelDoc2.GetConfigurationNames, IAssemblyDoc.AddMate5, IFeature.SetSuppression2, IFeature.IsSuppressed2, IFeature.IsSuppressed, IFeature.GetErrorCode2, ISketchManager.InsertSketch, ISketchManager.CreatePoint, ISketchManager.AddToDB, ISketch.GetSketchPoints2, IModelDoc2.BlankSketch, IMate2.MateEntity, IMateEntity2.Reference, IMateEntity2.EntityParams, IComponent2.SetSuppression2, IModelDocExtension.DeleteSelection2]
+keywords: [configuration, positions, motion positions, end of stroke, mechanism position, configuration specific mate, suppress mate in configuration, SetSuppression2, swInConfigurationOpts_e, IsSuppressed2, AddConfiguration2, positions not per configuration, configuration shows wrong position, over defined, AddMate5 error 5, mate error 51, limit mate, extreme distance, point coincident mate, assembly sketch point, exact point, rounding, limit mate entities, anti-aligned coincident, mate with no entities, stale reference, server threw an exception, -2147417851, ShowConfiguration2 raises, suppress component in one configuration]
 answers: "How do I make configurations of an assembly that each put a mechanism in a different position, so switching configuration moves it and each position is exact?"
 ---
 
@@ -134,6 +134,76 @@ where `state()` reads the pin's `EntityParams` (assembly metres,
 unsuppressed mate's `GetErrorCode2`. Note what `Default` shows: with no mates of
 its own it keeps the last configuration's position.
 
+## A slider: mate the limit mate's own two faces
+
+For a part that only slides (one degree of freedom, bounded by a limit distance
+mate), a sketch point was not needed. The limit mate's two entities, re-mated
+with an exact value, held each end of the travel: a distance mate for one end,
+and a coincident mate, **anti-aligned** (alignment `1`), for the end where the
+faces touch. Both added with out code 1 and solved in every configuration.
+
+```python
+def add_mate(kind, align, dist, on, cfgs):
+    show(asm, on[0])
+    limm = call(mates()["LimitDistance1"], "GetSpecificFeature2"); ents = [call(limm, "MateEntity", i) for i in range(2)]
+    before = set(mates()); call(asm, "ClearSelection2", True)
+    for i, e in enumerate(ents):
+        sd = call(selmgr, "CreateSelectData"); sd.Mark = 1; call(e, "Reference").Select4(i > 0, sd)
+    if selmgr.GetSelectedObjectCount2(-1) != 2: print("ABORT selection"); return None
+    err = z(); asm.AddMate5(kind, align, False, dist / 1000, dist / 1000, dist / 1000, 1, 1, 0, 0, 0, False, False, 0, err)
+    call(asm, "ClearSelection2", True)
+    new = [n for n in mates() if n not in before]; f = mates()[new[0]]
+    print(f"  mate {new} add err={err.value} ents={ents_ok(f)}")
+    f.SetSuppression2(0, 3, VA([c for c in cfgs if c not in on], pythoncom.VT_BSTR)); f.SetSuppression2(1, 3, VA(on, pythoncom.VT_BSTR))
+    print("   suppressed:", dict(zip(cfgs, list(f.IsSuppressed2(3, VA(cfgs, pythoncom.VT_BSTR))))))
+    return new[0]
+add_mate(5, 1, 1.5, ["Position A", "Exploded"], CFGS)
+add_mate(0, 1, 0.0, ["Position B"], CFGS)
+```
+
+`mates()` maps each mate's name to its sub-feature under the `MateGroup`;
+`ents_ok` reads each `MateEntity(i).ReferenceComponent.Name2`; `VA` builds a
+typed `VARIANT` array; `show` is below. Distances are **metres** in `AddMate5`.
+
+### Read the entities after switching configuration
+
+The first version read the limit mate's entities **once**, then switched
+configuration before selecting them. `AddMate5` still returned out code 1, but
+the new mate had **no entities** (`ReferenceComponent` was `None` for both) and
+read `GetErrorCode2` 51 in its configuration. Selecting it to delete it,
+whether through `IFeature.Select2` or `SelectByID2(…, "MATE", …)`, raised "The
+server threw an exception" (−2147417851). From a configuration in which the
+mate was **suppressed**, `IFeature.Select2(False, 0)` worked and
+`IModelDocExtension.DeleteSelection2(3)` removed it. Read the entities inside
+`add_mate`, after the switch, as above.
+
+### `ShowConfiguration2` and `ForceRebuild3` can raise and still succeed
+
+On the same assembly, `ShowConfiguration2` and the `ForceRebuild3` after it
+raised −2147417851 on some switches. The configuration had changed regardless,
+and nothing was left broken. This wrapper trusted the active configuration's
+name rather than the call:
+
+```python
+def show(doc, cfg):
+    cm = call(doc, "ConfigurationManager")
+    try: doc.ShowConfiguration2(cfg)
+    except Exception: pass
+    act = call(call(cm, "ActiveConfiguration"), "Name")
+    assert act == cfg, f"config switch failed: wanted {cfg}, active {act}"
+    try: doc.ForceRebuild3(False)
+    except Exception as e: print(f"    (rebuild in {cfg} raised: {str(e)[:40]})")
+```
+
+## Components suppressed in one configuration only
+
+With a configuration active, `IComponent2.SetSuppression2(0)` on eleven
+components suppressed them **in that configuration only**: it read 11
+suppressed there and 0 in the other three. The call returned 2 each time; what
+that value means was not looked up. A drawing view or BOM of that configuration
+then left those parts out
+([drawings/02](../drawings/02-bom-table-and-balloons.md#a-bom-for-one-configuration-of-a-multi-configuration-assembly)).
+
 ## What it does not do
 
 - **Positions from a motion study** were not tried.
@@ -163,7 +233,23 @@ intermediate angle, each exactly on the crank radius, the travel equal to the
 design value, no mate errors.
 Names are placeholders here.
 
+Later run, SolidWorks 2024 SP5 (32.5.0), 2026-11-15, a sliding part bounded by a
+limit distance mate, four configurations:
+
+- A distance mate and an anti-aligned coincident on the limit mate's own
+  entities added with out code 1; the part read its two end positions in
+  alternating switches, with no mate errors.
+- Entities read before a switch gave a mate with no entities, error 51, and
+  selections that raised −2147417851. Deleting it from a configuration where
+  it was suppressed worked.
+- `ShowConfiguration2` raised on several switches while `ActiveConfiguration`
+  read the requested name.
+- `SetSuppression2(0)` on 11 components: 11 suppressed in the active
+  configuration, 0 in the others.
+
 ## See also
+
+- [assemblies/14 — An in-context part in several configurations](14-in-context-part-across-configurations.md) — a part whose size follows the mechanism
 
 - [assemblies/02 — Mates from code](02-mates-from-code.md) — `AddMate5`
 - [assemblies/05 — Test motion with the drag operator](05-test-motion-with-the-drag-operator.md) — whether it can move at all

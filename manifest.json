@@ -1,11 +1,11 @@
 {
   "schema": 1,
   "description": "SolidWorks automation entries. Each answers one question. Check 'status' before trusting an entry: verified means it ran against the named version; unverified means it is well-formed against the documented API but was never executed.",
-  "count": 97,
+  "count": 98,
   "by_status": {
     "partly-verified": 11,
     "unverified": 2,
-    "verified": 84
+    "verified": 85
   },
   "entries": [
     {
@@ -418,7 +418,9 @@
         "IModelDoc2.BlankSketch",
         "IMate2.MateEntity",
         "IMateEntity2.Reference",
-        "IMateEntity2.EntityParams"
+        "IMateEntity2.EntityParams",
+        "IComponent2.SetSuppression2",
+        "IModelDocExtension.DeleteSelection2"
       ],
       "keywords": [
         "configuration",
@@ -442,7 +444,15 @@
         "point coincident mate",
         "assembly sketch point",
         "exact point",
-        "rounding"
+        "rounding",
+        "limit mate entities",
+        "anti-aligned coincident",
+        "mate with no entities",
+        "stale reference",
+        "server threw an exception",
+        "-2147417851",
+        "ShowConfiguration2 raises",
+        "suppress component in one configuration"
       ],
       "answers": "How do I make configurations of an assembly that each put a mechanism in a different position, so switching configuration moves it and each position is exact?"
     },
@@ -767,6 +777,41 @@
         "ShowConfiguration2 marks modified"
       ],
       "answers": "How do I add, show and delete assembly configurations from code, and give a mate's suppression or a distance mate's value per configuration, without stale component handles misleading me?"
+    },
+    {
+      "id": "assemblies-14-in-context-part-across-configurations",
+      "title": "Show an in-context part at a different size in each assembly configuration",
+      "path": "entries/assemblies/14-in-context-part-across-configurations.md",
+      "category": "assemblies",
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "language": [
+        "python"
+      ],
+      "api": [
+        "IConfigurationManager.AddConfiguration2",
+        "IComponent2.ReferencedConfiguration",
+        "IComponent2.GetModelDoc2",
+        "IModelDoc2.GetConfigurationNames",
+        "IModelDoc2.Parameter",
+        "IFeature.GetFaceCount",
+        "IComponent2.GetBodies2"
+      ],
+      "keywords": [
+        "in-context",
+        "virtual component",
+        "external reference",
+        "spring length",
+        "configuration specific geometry",
+        "same size in every view",
+        "drawing view wrong size",
+        "ReferencedConfiguration",
+        "part configuration",
+        "equation driven by in-context dimension",
+        "sweep lost body",
+        "GetFaceCount 0"
+      ],
+      "answers": "My in-context part (a spring whose length follows the parts around it) draws at the same size in every configuration's drawing view. How do I make each assembly configuration keep its own size?"
     },
     {
       "id": "connect-01-attach-vbscript",
@@ -1709,7 +1754,9 @@
         "IModelDocExtension.CreateBalloonOptions",
         "IModelDocExtension.InsertBOMBalloon2",
         "IView.GetVisibleComponents",
-        "IAnnotation.GetLeaderPointsAtIndex"
+        "IAnnotation.GetLeaderPointsAtIndex",
+        "IModelDoc2.GetConfigurationByName",
+        "IModelDoc2.GetConfigurationNames"
       ],
       "keywords": [
         "BOM",
@@ -1748,7 +1795,13 @@
         "InsertBOMBalloon2",
         "CreateBalloonOptions member not found",
         "leader attach point",
-        "crossing leaders"
+        "crossing leaders",
+        "one configuration BOM",
+        "QTY column per configuration",
+        "suppressed components in BOM",
+        "SetConfigurations False",
+        "virtual component part number",
+        "AlternateName every configuration"
       ],
       "answers": "How do I put a bill of materials on an assembly drawing from code, make it actually list the parts with descriptions, and balloon every part?"
     },
@@ -2019,7 +2072,11 @@
         "IView.GetXform",
         "IView.Angle",
         "IView.Position",
-        "IView.GetVisibleComponents"
+        "IView.GetVisibleComponents",
+        "IView.GetSection",
+        "IDrSection.SetExcludedComponents",
+        "IDrSection.GetExcludedComponents",
+        "IModelDoc2.ForceRebuild3"
       ],
       "keywords": [
         "section view",
@@ -2039,7 +2096,18 @@
         "IView.Angle",
         "section between spokes",
         "aligned section tilted",
-        "swCreateSectionViewAtOptions_e"
+        "swCreateSectionViewAtOptions_e",
+        "SetExcludedComponents",
+        "GetSection",
+        "DrSection",
+        "excluded components ignored",
+        "section not hatched",
+        "no hatching in PDF",
+        "hatch missing",
+        "ForceRebuild3",
+        "move section view",
+        "aligned section stuck",
+        "section direction"
       ],
       "answers": "How do I make a section view of a part or assembly from code — draw the cutting line where I mean, make it face the right way, and keep shafts unhatched?"
     },
@@ -2095,7 +2163,15 @@
         "GetVisibleEntities2 type 4",
         "end view",
         "step shaft",
-        "trailing zero"
+        "trailing zero",
+        "angular dimension",
+        "angle between lines",
+        "radius prefix R lost",
+        "2X R",
+        "suffix",
+        "A/F",
+        "line to arc centre",
+        "hole location from face"
       ],
       "answers": "How do I add dimensions to a drawing from code — centre distances, diameters, lengths — and give them a ± tolerance or an ISO fit?"
     },
@@ -2188,7 +2264,12 @@
         "arcsin",
         "arccos",
         "inverse trig",
-        "inverse tangent"
+        "inverse tangent",
+        "Delete removes equation",
+        "Add3 -1 multi configuration",
+        "virtual part equation",
+        "in-context equation",
+        "swInConfigurationOpts_e"
       ],
       "answers": "How do I add, read and change global variables in the Equation Manager from code?"
     },
