@@ -40,7 +40,9 @@ Sub CreateSketch()
     End If
 
     ' A 3D sketch is not hosted on a plane or a face - see the header.
-    Part.SketchManager.Insert3DSketch2 True
+    ' Hand-corrected after generation: the generator wrote Insert3DSketch2, which is not an
+    ' ISketchManager member (entries/sketches/02). This corrected line has not been run in VBA.
+    Part.SketchManager.Insert3DSketch True
 
     ' ------------------------------------------------------------ entities
     ' P_root
@@ -131,7 +133,9 @@ Sub CreateSketch()
     ' Close the 3D sketch and give it its final name.
     Dim swSketch As Object
     Set swSketch = Part.SketchManager.ActiveSketch
-    Part.SketchManager.Insert3DSketch2 True
+    ' Hand-corrected after generation: the generator wrote Insert3DSketch2, which is not an
+    ' ISketchManager member (entries/sketches/02). This corrected line has not been run in VBA.
+    Part.SketchManager.Insert3DSketch True
     If Not swSketch Is Nothing Then
         On Error Resume Next
         swSketch.GetFeature().Name = "SparPath3D"

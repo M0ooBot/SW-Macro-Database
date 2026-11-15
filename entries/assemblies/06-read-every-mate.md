@@ -356,3 +356,4 @@ order, not live.
 - [GOTCHAS §19, §74, §75, §76](../../GOTCHAS.md)
 - [assemblies/07 — Configurations that hold different positions](07-configurations-that-hold-different-positions.md) — `IsSuppressed2` across configurations, and `EntityParams` as a position check
 - [assemblies/10 — Mate a gear train that turns](10-mate-a-gear-train-that-turns.md) — making gear and lock mates; which way the ratio goes in and comes back
+- [assemblies/13 — Assembly configurations from code](13-assembly-configurations-from-code.md) — the walk and `IsSuppressed2` with mates suppressed in some configurations

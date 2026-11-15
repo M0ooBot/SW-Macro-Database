@@ -17,7 +17,9 @@ A mechanism shown at several positions — the two ends of a stroke, a midpoint 
 each as a configuration, for a drawing that overlays them
 ([drawings/06](../drawings/06-alternate-position-views.md)) or for checking
 clearances at each. It looks like "add a configuration, drag the part, save". It
-is not, because **component positions are not stored per configuration**.
+was not, here, because **the dragged positions were not kept per
+configuration** (but see the qualification below: a later measurement with a
+`Transform2` put found positions kept per configuration).
 
 Attach as in [assemblies/06](06-read-every-mate.md#attaching).
 
@@ -29,6 +31,18 @@ solved, in *every* configuration. Switching to a configuration with no extra
 mates leaves the mechanism wherever the previous one put it. So each
 configuration needs **its own mates that fix the position completely**, active
 only in that configuration.
+
+**Qualified since.** That paragraph describes this mechanism, positioned by
+dragging and given a full rebuild (`ForceRebuild3(False)`) after each show; the
+"same position" was not read by instrument. A later measurement on SolidWorks
+2026 (34.1.1) and 2024 SP5 found the opposite under another procedure: a
+component held by an axis mate and a distance along it, turned by a
+`Transform2` put and a top-only rebuild (`ForceRebuild3(True)`), kept a
+different turn in each configuration, through a save and reopen, read through
+freshly fetched handles ([assemblies/13](13-assembly-configurations-from-code.md#where-components-stand-in-each-configuration)).
+A drag and a full rebuild after a show were not tried there, so the two results
+are not reconciled. The recipe below, mates per configuration, holds either
+way.
 
 ## Mates that hold one exact position
 
@@ -96,7 +110,12 @@ st = list(s.IsSuppressed2(3, VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_BSTR, CFG
 
 A mate added while a configuration is active can come out suppressed in that
 configuration and live in the others — the inverse of what was meant; this check
-catches it.
+catches it. (That was seen once, on a mate made by hand. Measured since with
+`AddMate5`, on SolidWorks 2026 and 2024 SP5: a mate made while a non-template
+configuration was active came out **suppressed in the template's `Default`
+and on in the others**, the active one included
+([assemblies/13](13-assembly-configurations-from-code.md#adding-showing-and-deleting)).
+Either way, set and read back every flag.)
 
 ## Checking the positions
 
@@ -121,7 +140,12 @@ its own it keeps the last configuration's position.
   `Transform2` put did not stay ([GOTCHAS §73](../../GOTCHAS.md)).
 - **Open:** whether the mate suppressed in its own configuration came from
   `AddMate5` while that configuration was active or from a later hand edit. It
-  was seen once, made by hand in the UI.
+  was seen once, made by hand in the UI. `AddMate5` in another assembly did
+  something else (above).
+- **Open:** whether positions set by dragging are kept per configuration when
+  each show gets only a top-only rebuild, and whether a full rebuild after a
+  show discards a put's per-configuration position
+  ([assemblies/13](13-assembly-configurations-from-code.md#where-components-stand-in-each-configuration)).
 
 ## Evidence
 
@@ -146,4 +170,5 @@ Names are placeholders here.
 - [assemblies/06 — Read every mate](06-read-every-mate.md) — `EntityParams`, `GetErrorCode2`, limit mates
 - [drawings/06 — Alternate position views](../drawings/06-alternate-position-views.md) — drawing the positions
 - [files/02 — Explode configurations](../files/02-explode-configurations.md) — configurations of a part
+- [assemblies/13 — Assembly configurations from code](13-assembly-configurations-from-code.md) — the calls in detail, stale handles, per-configuration values, and positions under a put
 - [GOTCHAS §23, §73, §83](../../GOTCHAS.md)

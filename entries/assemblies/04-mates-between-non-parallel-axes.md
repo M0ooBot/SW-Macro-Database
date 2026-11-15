@@ -2,10 +2,10 @@
 id: assemblies-04-mates-between-non-parallel-axes
 title: Place and mate components whose axes are not parallel
 status: verified
-verified_on: SolidWorks 2026 (revision 34.0.0)
+verified_on: SolidWorks 2026 (revisions 34.0.0 and 34.1.1); the gear mate sense also on SolidWorks 2024 SP5 (32.5.0), three meshes
 language: [python]
-api: [ISldWorks.GetMathUtility, IMathUtility.CreateTransform, IComponent2.Transform2, IComponent2.GetModelDoc2, IModelDocExtension.SelectByID2, IAssemblyDoc.AddMate5]
-keywords: [CreateTransform, IMathUtility, GetMathUtility, DISP_E_MEMBERNOTFOUND, Member not found, DISPATCH_METHOD, VT_ARRAY, VT_R8, Transform2 put, set component transform, component frame, rotation by columns, AddComponent5 offset, component origin, Point1@Origin, EXTSKETCHPOINT, angle mate between axes, point to plane distance mate, Flip, mate flip, negative side, bevel gears, crossed helical, skew axes, shaft angle]
+api: [ISldWorks.GetMathUtility, IMathUtility.CreateTransform, IComponent2.Transform2, IComponent2.GetModelDoc2, IModelDocExtension.SelectByID2, IAssemblyDoc.AddMate5, IGearMateFeatureData.Reverse, IMateEntity2.EntityParams]
+keywords: [gear mate between non-parallel axes, bevel gear mate, crossed gear mate, skew gear mate, gear mate sense, gear mate Reverse, gear mate Flip, turned gear mate, CreateTransform, IMathUtility, GetMathUtility, DISP_E_MEMBERNOTFOUND, Member not found, DISPATCH_METHOD, VT_ARRAY, VT_R8, Transform2 put, set component transform, component frame, rotation by columns, AddComponent5 offset, component origin, Point1@Origin, EXTSKETCHPOINT, angle mate between axes, point to plane distance mate, Flip, mate flip, negative side, bevel gears, crossed helical, skew axes, shaft angle]
 answers: "How do I set a component's rotation from code and mate it so its axis sits at an angle to another component's, such as bevel or crossed gears?"
 ---
 
@@ -303,12 +303,77 @@ def frame_of(component: Any) -> Tuple[Matrix, Tuple[float, float, float]]:
     return matrix, (data[9] * sc.MM, data[10] * sc.MM, data[11] * sc.MM)  # type: ignore[return-value]
 ```
 
+## A gear mate between axes that are not parallel
+
+`AddMate5` type 10 (gear) between two component axes that **meet at an angle**
+(bevel-style) or **pass each other** (skew, crossed-style) is accepted and
+solves: in every case measured it returned status 1, held its ratio, and moved
+neither component when made. **Which way it turns cannot be taken from the
+`Flip` argument.** Read the made mate back and remake it with the other `Flip`
+if it turns the wrong way, as for parallel axes
+([assemblies/10](10-mate-a-gear-train-that-turns.md#checking-a-gear-mates-sense-after-making-it)).
+
+**The rule that held in every case measured.** Read `Reverse` from the mate's
+definition (`IFeature.GetDefinition` → `IGearMateFeatureData.Reverse`) and the
+two entities' directions (`IFeature.GetSpecificFeature2` →
+`IMate2.MateEntity(0)` and `(1)` → `IMateEntity2.EntityParams`, items 3–5, a
+unit vector in assembly space). Then:
+
+- the mate turns the two components **the same way about their entities'
+  directions when `Reverse` is True**, and opposite ways when it is False;
+- so, with τ = +1 when an entity's direction points along its component's own
+  axis direction and −1 when against it, the sign of the turn ratio about the
+  components' own axes is `m = (+1 if Reverse else −1) · τA · τB`; the mate is
+  right when `m` equals the sign of the ratio the gears need (+1 same way about
+  their own axes, −1 opposite).
+
+For parallel axes this is the same rule as
+`(Reverse == entity directions parallel) == internal` in
+[assemblies/10](10-mate-a-gear-train-that-turns.md#checking-a-gear-mates-sense-after-making-it),
+and it agreed with that rule on the parallel and anti-parallel controls.
+
+**Why the `Flip` cannot be used instead.** On the same pair, the two `Flip`
+values always gave opposite senses, but which one was right changed with the
+geometry. On SolidWorks 2026, with `Flip` False, `Reverse` read False at angles
+between the components' own axes of 30°, 60° and 90°, and True at 120°, 150°
+and (the anti-parallel control) 180°; and the right `Flip` was False in some
+meeting and skew cases and True in others. Two other readings were tried
+against the drives and **failed**: `Reverse` against the sign of the dot
+product of the two entity directions, and `Reverse` against the hand of the
+crossing.
+
+**Ranges measured.** Axes that meet: angles between the own axes of 30°, 60°,
+90°, 120° and 150°, every facing. Skew axes: 60°, 90° and 120°, both hands of
+crossing. **Outside 30°–150° for meeting axes and 60°–120° for skew axes
+nothing is measured**; near 0° or 180° the two cases run into the parallel and
+anti-parallel ones, which are covered by assemblies/10 only for parallel
+shafts.
+
+How "right" was judged: a 30° drive on one component through a temporary angle
+mate, and the sign of each component's turn about its own axis. The probe took
+"right" as opposite turns about the own axes for meeting axes, and for skew
+axes as the sense a crossed helical pair of the crossing's hand needs (at 90°
+either hand fits; the right hand was taken). The rule describes what the mate
+does; deciding which sense your gears need is the gear geometry's job.
+
+### What it leaves open
+
+- **The per-entity sign τ was never −1**: in all 44 mates each entity pointed
+  along its own component's axis direction, so the τ terms are the reading of
+  the rule, not something a run has exercised.
+- The 44-mate round was **plain cylinders, on SolidWorks 2026 only**. With real
+  teeth, three meshes were checked on both versions (below): a 90° meeting
+  pair, a 90° skew pair and a 120° meeting pair. Other angles with teeth, and
+  any angle on 2024 beyond those three, are not measured.
+- A remake at a new ratio on such a mate was not tried.
+
 ## What it does not do
 
 - Whether the mates alone, without the frame set first, would have landed the
   same way was not tried. The recipe is place, then mate.
-- `Flip` was set only on point-to-plane distance mates. Its effect on the other
-  mate types, and alignment values other than `2`, were not tried.
+- `Flip` was set only on point-to-plane distance mates in the frame recipe
+  above. On gear mates it is covered by the section above; its effect on the
+  other mate types, and alignment values other than `2`, were not tried.
 - The angle mates' dimensions were linked to globals in the tool's builds
   (`link "D1@Shaft Angle"`, `link "D1@Mesh Angle"`), but no probe changed a
   global afterwards and measured the new frame, so an angle mate following its
@@ -378,6 +443,32 @@ for the bevel pair, and for the crossed pair
 "8 globals read back and match the maths" and "no interference between the
 gears" ([assemblies/03](03-interference-detection.md)).
 
+**The gear mate sense** (a later probe round, `turned_gear_mate_sense`, probe
+tier 9): SolidWorks 2026 (34.1.1), run 20261114-195608, one fresh session.
+Two cylinders standing for a 20- and a 40-tooth gear (radius 10 and 20 mm),
+each held on a frame axis; 22 assemblies, both `Flip` values each, 44 gear
+mates at ratio 20 : 40 made under `CommandInProgress` and read straight after.
+`turned: 40`, `controls: 4`; every `status: 1`; every ratio read back
+`[40.0, 20.0]`; `turned_gear_mate_moves_on_make: false`;
+`gear_mate_entity_order: "first selection first"`. In all 40 turned mates the
+measured sign `m` equalled the rule's (`m == m_H`); for example a 90° meeting
+pair read `{'Reverse': False, 'm': -1, 'm_H': -1, 'right': -1}` with `Flip`
+False and `{'Reverse': True, 'm': 1, 'm_H': 1}` with `Flip` True, and a 120°
+meeting pair `{'Reverse': True, 'm': 1}` with `Flip` False, so `Flip` True was
+right there. `alternatives: {'closest': false, 'crossing': false}` (neither
+other reading told the cases). Four assemblies, reopened, read and drove as
+when first made. Both `Flip` values gave opposite measured senses in every
+turned geometry. The rule was re-judged from the raw readings after the run;
+an independent reviewer recomputed all 44 cases by hand with the same result.
+
+With real teeth, an application's builds on SolidWorks 2026 (34.1.1) and 2024
+SP5 (32.5.0), 2026-11-14, each mesh built and then made again with each `Flip`
+and driven, with an interference check after each drive: on both versions the
+read-back named the `Flip` the drive found right, the right one ran clear and
+the wrong one clashed, before and after a save and reopen. The right `Flip` was
+the same on both versions for these three meshes: False for the 90° meeting
+pair, True for the 90° skew pair and the 120° meeting pair.
+
 ## See also
 
 - [assemblies/01 — New assembly and insert components](01-new-assembly-and-insert-components.md) — `AddComponent5`, and the first sighting of the offset
@@ -390,3 +481,4 @@ gears" ([assemblies/03](03-interference-detection.md)).
 - [GOTCHAS §10, §39, §41, §42](../../GOTCHAS.md)
 - [assemblies/10 — Mate a gear train that turns](10-mate-a-gear-train-that-turns.md) — placed gears unfixed and mated to shaft axes
 - [assemblies/11 — Change a mated gear train](11-change-a-mated-gear-train.md) — what a `Transform2` put does once gears are mated
+- [GOTCHAS §106](../../GOTCHAS.md) — the gear mate's sense between non-parallel axes

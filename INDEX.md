@@ -67,7 +67,7 @@ set in one read should use [manifest.json](manifest.json) instead.
 | I want to… | Entry |
 |---|---|
 | Generate a 2D sketch as a VBA macro | [sketches/01 — A 2D sketch as VBA](entries/sketches/01-2d-sketch-as-vba.md) |
-| Generate a 3D sketch as a VBA macro | [sketches/02 — A 3D sketch as VBA](entries/sketches/02-3d-sketch-as-vba.md) |
+| Generate a 3D sketch as a VBA macro; open one with `ISketchManager.Insert3DSketch` | [sketches/02 — A 3D sketch as VBA](entries/sketches/02-3d-sketch-as-vba.md) |
 | Look up the constant for a sketch relation | [sketches/03 — Relation constants](entries/sketches/03-relation-constants.md) |
 | Add and set a dimension | [sketches/04 — Dimensions](entries/sketches/04-dimensions.md) |
 | Get the units and number formatting right | [sketches/05 — Units and number format](entries/sketches/05-units-and-number-format.md) |
@@ -124,6 +124,10 @@ set in one read should use [manifest.json](manifest.json) instead.
 | Change a gear train's tooth counts in place, and prove the interference check can see the mesh | [assemblies/11 — Change a mated gear train](entries/assemblies/11-change-a-mated-gear-train.md#a-whole-tooth-count-change-in-place) |
 | Open an assembly with its components lightweight (and the add-in box that blocks it) | [assemblies/11 — Change a mated gear train](entries/assemblies/11-change-a-mated-gear-train.md#with-the-components-lightweight) |
 | Put mates in a folder from code, and still find them | [assemblies/06 — Read every mate](entries/assemblies/06-read-every-mate.md#folders-are-markers-not-parents) |
+| Add, show and delete assembly configurations from code; a mate's suppression or a distance per configuration; stale component handles | [assemblies/13 — Assembly configurations from code](entries/assemblies/13-assembly-configurations-from-code.md) |
+| Tell which way a gear mate between non-parallel axes (bevel, crossed) turns | [assemblies/04 — Mates between non-parallel axes](entries/assemblies/04-mates-between-non-parallel-axes.md#a-gear-mate-between-axes-that-are-not-parallel) |
+| Gear-mate a planetary: planets on a carrier, sun and ring | [assemblies/10 — Mate a gear train that turns](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-gear-mate-whose-axis-rides-a-carrier-planetary) |
+| Couple two components on one axis with a 1 : 1 gear mate that still lets one slide | [assemblies/10 — Mate a gear train that turns](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-1--1-gear-mate-between-two-components-on-one-axis) |
 
 ## Make drawings
 

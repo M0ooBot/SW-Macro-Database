@@ -5,7 +5,7 @@ status: verified
 verified_on: SolidWorks 2026 (revisions 34.0.0 and 34.1.1) and SolidWorks 2024 SP5 (32.5.0)
 language: [python]
 api: [IAssemblyDoc.AddMate5, IAssemblyDoc.UnfixComponent, IComponent2.Select4, ISelectionMgr.CreateSelectData, IComponent2.GetCorresponding, IComponent2.GetConstrainedStatus, IFeature.GetDefinition, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IGearMateFeatureData.Reverse, IMate2.Alignment, IMate2.MateEntity, IMateEntity2.ReferenceComponent]
-keywords: [gear train, gear mate, swMateGEAR, AddMate5 gear, gear ratio order, numerator first selection, Flip, mesh direction, ring gear, internal gear, lock mate, swMateLOCK 16, compound gear, two gears on one shaft, concentric axes refused, coincident axes, swAddMateError_ErrorUknown, status 0, closest alignment, anti-aligned, UnfixComponent, GetConstrainedStatus, one degree of freedom, drive mate, angle mate linked to a global, CreateSelectData Mark, Select4 component]
+keywords: [gear train, gear mate, planetary gear mate, planet carrier, carrier frame, epicyclic, collinear gear mate, gear mate same axis, coupling gear mate, spline gear mate, slide under gear mate, swMateGEAR, AddMate5 gear, gear ratio order, numerator first selection, Flip, mesh direction, ring gear, internal gear, lock mate, swMateLOCK 16, compound gear, two gears on one shaft, concentric axes refused, coincident axes, swAddMateError_ErrorUknown, status 0, closest alignment, anti-aligned, UnfixComponent, GetConstrainedStatus, one degree of freedom, drive mate, angle mate linked to a global, CreateSelectData Mark, Select4 component]
 answers: "How do I mate gears to their shafts and to each other from code so the whole gear train turns together at the right ratio and in the right direction?"
 ---
 
@@ -374,6 +374,88 @@ puts and rebuild, or the missing reopen changed it was not separated. So never
 carry a `Flip` from one make to the next: read each new gear mate back and remake
 a wrong one ([assemblies/11](11-change-a-mated-gear-train.md#correcting-a-gear-mate-that-turns-the-wrong-way)).
 
+### A gear mate whose axis rides a carrier (planetary)
+
+**What SolidWorks holds is the ratio relative to the line joining the two
+axes, not relative to the fixed frame.** In a planetary, that is the
+carrier's frame. Measured on SolidWorks 2026 (34.1.1) only, on a planetary
+with a sun, three copies of one planet part on a carrier, and a fixed ring:
+
+- The carrier was a body-less part with its own axis coincident with the sun's
+  axis and its Front plane coincident with the layout's, so it could only turn
+  about the sun's axis; each planet's axis was coincident with one of the
+  carrier's planet axes, and the ring was fixed.
+- **A single sun–planet gear mate**, sun and planet with equal tooth counts, sun
+  held by its drive and the carrier driven +30°: the planet turned **+60° in
+  the fixed frame** (+30° relative to the carrier). That is the epicyclic
+  relation `(ωp − ωc)·zp = −(ωs − ωc)·zs`; a ratio held in the fixed frame
+  would have left the planet still.
+- **One sun–planet gear mate per planet copy, plus one planet–ring gear mate**
+  (the other two planet–ring meshes left without a mate), turned the train
+  right: for +30° on the sun, the carrier +7.5° and each planet −15° (−22.5°
+  relative to the carrier), the ring 0, with no interference on any of the six
+  meshes, the two unmated ones included. Adding the second and third planets'
+  sun mates **over-defined nothing**: `AddMate5` status 1 for every gear mate,
+  no mate error code, and with the drive on every component read
+  `GetConstrainedStatus` 3 (fully defined). With only one planet mated, the
+  other two stayed free to spin and clashed when driven. The rebuild and drive
+  took 0.11 s with one planet mated or three.
+- **Gear mates at the absolute speed ratios are wrong.** Mating the sun to the
+  carrier (coaxial) at their absolute speed ratio, and each planet to the sun at
+  the planet's absolute speed ratio, with the ring unmated: SolidWorks accepted
+  every mate, and the coaxial sun–carrier mate turned the carrier right
+  (+7.5°), but the planets turned −3.75° where −15° is right, and clashed. A
+  planet's gear mate is the mesh equation in the carrier's frame; give it the
+  tooth ratio.
+- **The read-back works on a moving axis.** The sun–planet mates read right
+  with `Flip` False and turned right. The planet–ring mate made with `Flip`
+  False read wrong, and driven that way the train was wrong (carrier −15°,
+  planets −60°, 5 interferences on each planet–ring mesh); remade with `Flip`
+  True it read right and turned right, with no interference.
+- Saved, closed and reopened: every document read `GetSaveFlag` False on open,
+  the same drive gave the same turns, and afterwards only the assembly read
+  modified.
+
+Not covered: SolidWorks 2024; a carrier or planets facing the other way; a
+held sun or a held carrier; a carrier whose planet axes move under a changed
+global; a `Transform2` put on a component whose axis is mated to another free
+component.
+
+### A 1 : 1 gear mate between two components on one axis
+
+A gear mate at 1 : 1 between two components whose axes are **collinear**
+works as a rotation coupling that still lets one of them slide along the axis.
+Measured on SolidWorks 2026 (34.1.1) and 2024 SP5 (32.5.0), each in a fresh
+session, with three gear components on one line along +Z: an anchor and a
+second gear each held on the line by an axis mate and a distance along it, and
+a sleeve (an internal-ring part with the anchor's tooth count) held only by an
+axis mate, so free to turn and slide.
+
+- **`AddMate5` type 10 accepts two collinear axes.** It returned status 1, no
+  mate error, and moved nothing (largest frame change 0); the sleeve still read
+  `GetConstrainedStatus` 2 (under-defined), free to slide. Both mate entities
+  read the same line.
+- **Exactly one `Flip` turns them together, and it differed between the
+  versions.** Sleeve to anchor with `Flip` False: on 2026 `Reverse` read True
+  and a +30° drive turned anchor and sleeve +30° and +30°; on 2024 `Reverse`
+  read False and the sleeve turned −30°. With `Flip` True each version did the
+  other. The read-back named the right one on both versions:
+  `(Reverse == entity directions parallel) == same way`, here both directions
+  `(0, 0, 1)`. A second collinear mate, sleeve to the second gear, took `Flip`
+  False on both versions and drove anchor, sleeve and gear +30° each.
+- **A distance mate slides it with the coupling on.** The sleeve's distance
+  from the layout's Front plane (a distance mate from the sleeve's origin)
+  changed from 10 to 20 mm and a top-only rebuild moved the sleeve +10.0 mm
+  along the axis and 0.0 mm off it; its turn relative to the anchor changed by
+  0.0°, every mate error code stayed 0, the mate still read the same sense, and
+  the drive still turned it 1 : 1. Set back after each drive, every frame
+  returned within 1.4e-14 mm.
+
+So here too no fixed `Flip` is right on both versions: make it, read it back,
+and remake it with the other `Flip` if wrong. Not covered: an entity pointing
+against its component's own axis (both pointed along +Z in every case); a
+ratio other than 1 : 1 on collinear axes.
+
 ### A lock mate for a compound gear
 
 Two gears on one shaft that must turn together at a set angle to each other:
@@ -505,8 +587,9 @@ on both versions ([assemblies/12](12-rebuild-scope-and-the-save-flag.md#what-eac
   turned opposite to the ring, as an external pair does. (An external pair moved
   apart along the axis, and a pinion placed outside its ring, both turned
   opposite ways too.)
-- Gear mates between non-parallel axes (bevel, crossed) were not tried this
-  way.
+- Gear mates between non-parallel axes (bevel, crossed) are in
+  [assemblies/04](04-mates-between-non-parallel-axes.md#a-gear-mate-between-axes-that-are-not-parallel):
+  the same read-back, in a form that covers them.
 - `GetConstrainedStatus` 4 was observed (over-defined) here, unlike on
   `ISketch` ([sketches/10](../sketches/10-is-the-sketch-fully-defined.md)).
 
@@ -556,6 +639,27 @@ Readings, both versions unless said:
   with the measured turn in all 52 on both; `ring_sense_needed_flip_annulus` all
   `False` on both; the needed `Flip` for toothed rings opposite between the two
   files for every shaft combination where it was defined.
+- The carrier frame: a planetary probe, SolidWorks 2026 (34.1.1), run
+  20261114-192709, one fresh session: `expected: {'carrier': 7.5, 'planet':
+  -15.0, 'planet_relative': -22.5, 'ring': 0.0}`; with one sun–planet mate per
+  planet and one planet–ring mate (that one remade with `Flip` True after the
+  read-back), the drive gave those turns with 0 interferences on all six meshes;
+  as made with `Flip` False everywhere, carrier −15 and planets −60 with 5
+  interferences on each planet–ring mesh; the absolute-ratio set, planets
+  −3.75 (−11.25 relative to the carrier) with 2 interferences on each
+  sun–planet mesh and 4 on each planet–ring mesh; a single sun–planet mate with
+  the carrier driven +30, planet +60 (+30 relative). Every gear mate status 1,
+  no mate error, every frame back within 1.5e-12 mm after each drive.
+- The collinear 1 : 1 gear mate: a configurations probe, SolidWorks 2026
+  (34.1.1) run 20261114-204436 and 2024 SP5 (32.5.0) run 20261114-232510, each
+  in a fresh session. `spline both Flips`: on 2026 `{'False': {'Reverse': True,
+  'same_way': True, 'status': 1, 'moved_on_make': 0.0}, 'True': {'Reverse':
+  False, 'same_way': False, ...}}`, on 2024 `{'False': {'Reverse': False,
+  'same_way': False, ...}, 'True': {'Reverse': True, 'same_way': True, ...}}`,
+  the read-back agreeing every time; `slide: {'moved_along_mm': 10.0,
+  'relative_turn_change': 0.0, 'errors': {}}` and `coupling drive: {'A': 30.0,
+  'D': 30.0, 'S': 30.0}` on both. The mate entities' points along the line read
+  z = 9.4382 and 9.4296 mm on 2026, 9.4999 mm for both on 2024.
 - The read-back's footing: probes `ring_trains_saved` (SolidWorks 2024 SP5 run
   20261114-151013, SolidWorks 2026 34.1.1 run 20261114-162034) and
   `ring_trains_from_another_version` (the 2024-saved trains opened in 2026, run
@@ -589,11 +693,12 @@ The result files are kept in the Gear-Generator repository, not here.
 ## See also
 
 - [assemblies/02 — Mates from code](02-mates-from-code.md) — `AddMate5`, failing and over-defining mates, deleting and renaming
-- [assemblies/04 — Mates between non-parallel axes](04-mates-between-non-parallel-axes.md) — placing by frame, the origin point, `Flip` on a point distance
+- [assemblies/04 — Mates between non-parallel axes](04-mates-between-non-parallel-axes.md) — placing by frame, the origin point, `Flip` on a point distance, and a gear mate's sense between non-parallel axes
+- [assemblies/13 — Assembly configurations from code](13-assembly-configurations-from-code.md) — configurations that switch a collinear gear mate on and off
 - [assemblies/05 — Test motion with the drag operator](05-test-motion-with-the-drag-operator.md) — why a drag did not turn this train
 - [assemblies/06 — Read every mate](06-read-every-mate.md) — reading gear mates back; `MateEntity` order
 - [assemblies/11 — Change a mated gear train](11-change-a-mated-gear-train.md) — re-phasing, locks, and a new ratio
 - [assemblies/12 — Rebuild an assembly without marking every part modified](12-rebuild-scope-and-the-save-flag.md)
 - [assemblies/03 — Interference detection](03-interference-detection.md)
 - [equations/02 — Link a dimension to a global](../equations/02-link-a-dimension-to-a-global.md)
-- [GOTCHAS §31, §42, §75, §94, §95, §96, §98](../../GOTCHAS.md)
+- [GOTCHAS §31, §42, §75, §94, §95, §96, §98, §105, §107](../../GOTCHAS.md)

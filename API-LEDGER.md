@@ -134,7 +134,9 @@ result files stay in the Gear-Generator repository.
 | `GetConfigurationNames` | Configuration names of the open document | Verified, SW 2026 SP1.1 |
 | `GetConfigurationByName(name)` | One `IConfiguration` | Verified, SW 2026 SP1.1 |
 | `ShowConfiguration2(name)` | Activate a configuration. **Returns False when it is already active**; read the name back | Verified, SW 2026 SP1.1 |
+| `ShowConfiguration2(name)` in an assembly | Returned True, no window; **marked the assembly modified** (`GetSaveFlag` False → True before any rebuild) and no part; **every component handle held from before went stale** (GOTCHAS §108); a top-only rebuild after it re-solved the configuration's distance mates ([assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
 | `DeleteConfiguration2(name)` | Delete one. Takes derived configurations with it | Verified, SW 2026 SP1.1 |
+| `DeleteConfiguration2("Default")` in an assembly, another configuration active | Returned True, no window; names read back without it, the active one unchanged, other flags unchanged; component handles held across it stayed good ([assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
 | `DeleteDesignTable` | Drop the table. Must precede any configuration deletion | Verified, SW 2026 SP1.1 |
 | `GetDesignTable` | Non-null means the configurations are table-driven | Verified, SW 2026 SP1.1 |
 | `GetEquationMgr` | `IEquationMgr`, below | Verified, SW 2026 SP1.1 |
@@ -215,6 +217,7 @@ result files stay in the Gear-Generator repository.
 |---|---|---|
 | `ActiveConfiguration` | The active `IConfiguration`. Read its `Name` rather than trusting `ShowConfiguration2` | Verified, SW 2026 SP1.1 |
 | `AddConfiguration2(name, comment, "", 0, "", "", True)` | Add an assembly configuration; it became the active one ([assemblies/07](entries/assemblies/07-configurations-that-hold-different-positions.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
+| `AddConfiguration2(name, "", "", 0, "", "", True)`, what follows | Returned an `IConfiguration` and activated it, no window. A fixed component stayed fixed in it (read through a fresh handle). **Every component handle held from before went stale** (`Transform2` None, `IsFixed` False; GOTCHAS §108). The first `SetSuppression2(…, 3, …)` calls straight after it misreported (GOTCHAS §109). A mate made later while a non-template configuration was active came out suppressed in `Default` and on in the others ([assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
 
 ## IConfiguration
 
@@ -242,6 +245,7 @@ result files stay in the Gear-Generator repository.
 | `GetCount` | How many equations, global variables included | Verified, SW 2026 SP1.1 |
 | `Equation[i]` | The raw equation text, in editor order | Verified, SW 2026 SP1.1 |
 | `Add2(-1, text, True)` | Append an equation, `"Name"= expression`; returns its index, or `-1` if refused | Verified, SW 2026 (34.0.0) |
+| `Add2` linking a mate dimension to a global in an assembly with **several configurations** | Returned **−1** (the global itself went in); the same call had linked another mate's `D1` while only `Default` existed. `Add3` was not tried there ([assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
 | `Add3(-1, text, True, 2, None)` | **Returned `-1` on a one-configuration part** | Verified not to work there, SW 2026 (34.0.0) |
 | `GetCount` | How many equations | Verified, SW 2026 (34.0.0) |
 | `Equation(i)` | Read the text. **Indexed put** changes it in place; from Python through `Invoke` | Verified, SW 2026 (34.0.0) |
@@ -261,6 +265,9 @@ result files stay in the Gear-Generator repository.
 | `IDisplayDimension.GetDimension` | The `IDimension` behind the annotation | Verified, SW 2026 SP1.1 |
 | `IDimension.FullName` | Qualified name, as the equation editor spells it | Verified, SW 2026 SP1.1 |
 | `IDimension.GetSystemValue2(config)` | Value **in metres**. `""` is the active configuration | Verified, SW 2026 SP1.1 |
+| `IDimension.SetSystemValue3(value_m, 3, names)` | A distance mate's value in the listed configurations (`3` = `swSetValue_InSpecificConfigurations`, from `swconst.tlb`), **metres**; returned `0` (`swSetValue_Successful`), also for a configuration that was not active; survived a save and reopen ([assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
+| `IDimension.GetSystemValue3(3, names)` | One value per listed configuration, metres, without showing any. **Read 0 for a configuration with no value of its own yet** (GOTCHAS §110); marked nothing on a reopened file | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
+| `IDimension.SystemValue` with several configurations | **Did not follow the configuration shown**: read 30 mm in a configuration whose value was 10 mm. Use `GetSystemValue3` with the name (GOTCHAS §110) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
 
 ## IFeatureManager (from `IModelDoc2.FeatureManager`)
 
@@ -323,6 +330,8 @@ result files stay in the Gear-Generator repository.
 | `GetErrorCode2(ByRef bool)` on a **mate** | `0` on a solved mate; **51** with the warning flag `True` on mates left unsolved after a `Transform2` put and rebuild (GOTCHAS §73) | Verified, SW 2024 SP5 (32.5.0), 2026-10-06 |
 | `SetSuppression2(0, 3, names)` on a **mate** | Suppress it in the **listed** configurations (`3`), leaving it live in the rest: one configuration's position mates ([assemblies/07](entries/assemblies/07-configurations-that-hold-different-positions.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
 | `IsSuppressed2(3, names)` | One suppression flag per listed configuration, without switching configuration | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
+| `SetSuppression2(0 / 1, 3, VARIANT(VT_ARRAY \| VT_BSTR, names))` on a mate, straight after `AddConfiguration2` | **Misreported both ways** with no rebuild between: the first call raised `0x80010105` yet took effect, the second returned False and did nothing. After a top-only rebuild every call returned True and read back as set (GOTCHAS §109, [assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
+| `IsSuppressed2(3, names)` on mates, several configurations | Read back as set unshown, after each show, after deleting `Default`, after a save and reopen; marked no document | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
 | `GetFirstDisplayDimension` / `GetNextDisplayDimension(prev)` | Walk a feature's dimensions; includes its sketch's | Verified, SW 2026 (34.0.0) |
 | `GetFirstSubFeature` / `GetNextSubFeature` | Children, e.g. the mates under `MateGroup`, or the sketch a feature was made from. **Step children with `GetNextSubFeature`**: `GetNextFeature` from a child walked on through the main tree and repeated names | Verified, SW 2026 (34.0.0) |
 | `Name` (put) on a **mate** | Renamed a lock, a gear mate, an axis mate, a distance mate and a suppressed lock; each read back, nothing moved, and each was found by its new name after a reopen | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
@@ -365,11 +374,12 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | Member | Purpose | Status |
 |---|---|---|
 | `InsertSketch(rebuild)` | Open a 2D sketch on the current selection; call again to close | Verified, SW 2026 (34.0.0) |
-| `Insert3DSketch2(rebuild)` | Open a 3D sketch; call again to close | Unverified |
+| `Insert3DSketch(True)` | Open a 3D sketch; call again to close it (a toggle). `ActiveSketch` read a sketch after the first call and `None` after the second; the new feature's type is `3DProfileFeature` ([sketches/02](entries/sketches/02-3d-sketch-as-vba.md)) | Verified, SW 2026 (34.1.1) step by step; SW 2024 SP5 (32.5.0) inside an application build, 2026-11-14 |
+| `Insert3DSketch2(rebuild)` | **Not a member of `ISketchManager`**: a late-bound call raised `AttributeError: <unknown>.Insert3DSketch2`. This ledger first listed it here as the way to open a 3D sketch; use `Insert3DSketch` | Verified absent, SW 2026 (34.1.1), 2026-11-14 |
 | `ActiveSketch` | The sketch being edited, or `Nothing` after closing. The Airfoil Converter refuses to select anything while it is not `None` (GOTCHAS §51) | Verified, SW 2026 (34.0.0) |
 | `AddToDB` / `DisplayWhenAdded` | Set `True` / `False` while drawing, restored after; `AddToDB` read back | Verified, SW 2026 (34.0.0) |
 | `CreatePoint(x, y, z)` | A sketch point, in metres | Verified, SW 2026 (34.0.0) |
-| `CreateLine(x1, y1, z1, x2, y2, z2)` | A line, in metres | Verified, SW 2026 (34.0.0) |
+| `CreateLine(x1, y1, z1, x2, y2, z2)` | A line, in metres. In a 3D sketch too, with real z; the line's segment selected as `"Line1@<sketch>"`, `EXTSKETCHSEGMENT`, made a reference axis with `InsertAxis2(True)` ([sketches/02](entries/sketches/02-3d-sketch-as-vba.md)) | Verified, SW 2026 (34.0.0); in a 3D sketch SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), 2026-11-14 |
 | `CreateLine2(x1, y1, z1, x2, y2, z2)` | A line, in metres | Unverified |
 | `CreateCenterLine(x1, y1, z1, x2, y2, z2)` | A construction line | Verified, SW 2026 (34.0.0) |
 | `CreateArc(cx, cy, cz, sx, sy, sz, ex, ey, ez, dir)` | An arc. `1` counter-clockwise from the start, `-1` clockwise | Verified, SW 2026 (34.0.0) |
@@ -516,6 +526,7 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `AddMate5(1, …)` between two reference axes | **Refused**: returned `None`, status 0 `swAddMateError_ErrorUknown` (GOTCHAS §94). `AddMate5(0, 2, …)` (coincident) between the same axes held | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `AddMate5` status on 2026 | 1 solved; 0 refused; **5 over-defined, the mate made anyway** (as on 2024) | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `UnfixComponent()` | Unfix the selected component; `IsFixed` read `False`; the component did not move. **Call it with parentheses** | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
+| `GetComponentByName(name)` after `AddConfiguration2` or `ShowConfiguration2` | The way to a working handle again: `Transform2`, `IsFixed`, `GetModelDoc2` and `Name2` answered correctly, where held handles did not (GOTCHAS §108). On 2026, in two of four runs, a fresh handle once answered `GetModelDoc2` None and once `Name2` `""`; select by names already held ([assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
 | `GetComponentByName(name)` | A component by its `Name2`, after a reopen | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `AddComponent5(path, …)` of a part that is **not open** | Returned `None`, no error, no component; the same part opened by `OpenDoc6` first went in (GOTCHAS §99) | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 
@@ -527,6 +538,8 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `IsFixed` | `True` for the first component straight after insertion | Verified, SW 2026 (34.0.0) |
 | `Select4(False, null, False)` | Select the component | Verified, SW 2026 (34.0.0) |
 | `Transform2` | Its placement; see Geometry interrogation | Verified, SW 2026 (34.0.0) |
+| `Transform2` / `IsFixed` on a handle held across `AddConfiguration2` or `ShowConfiguration2` | **None** and **False**, a fixed part's included, with no error (GOTCHAS §108) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
+| `Transform2 = transform` (put) with several configurations | Held in the **active configuration only**: a component turned by a put and a top-only rebuild kept its own turn in each configuration, through a save and reopen. Qualifies GOTCHAS §83; a drag and a full rebuild after a show were not tried ([assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
 | `FeatureByName(name)` | A feature of the component, to select for a mate. Called; whether its result or the `SelectByID2` fallback made the selection was not recorded | Partly verified, SW 2026 (34.0.0) |
 | `Transform2 = transform` (put) | Set the component's whole frame from an `IMathTransform`; returned `None`, read back to 2.22e-16 and 0 mm | Verified, SW 2026 (34.0.0), dev runs 2026-09-15 |
 | `GetModelDoc2` | The component's part, to read its origin feature's name | Verified, SW 2026 (34.0.0), dev runs 2026-09-15 |
@@ -570,6 +583,9 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `AccessSelections` | Not there: raised `AttributeError` (`<unknown>.AccessSelections`); `ModifyDefinition` worked without it | Verified absent, Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `Reverse` (what it read) | In the 15 meshing pairs mated by their axes, `Flip` inverted once when the shafts pointed opposite ways and once for a ring; the 3 face-mated pairs fitted too. Not the pair mated by one axis and one face, nor a pinion moved clear of its ring along the axis, nor one placed outside its ring | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `Reverse` with the two `IMateEntity2.EntityParams` directions (items 3–5) | The made gear mate turns its gears as they mesh exactly when `(Reverse == the directions point the same way) == internal`; agreed with the measured turn in 52 of 52 mates on each version, toothed rings included (GOTCHAS §105). Agreed again, 13 gear mates on 3 trains per version, straight after `AddMate5`, after a top-only rebuild, after a remake, after a save and reopen, and under `CommandInProgress` (wrong-to-right remake under it on 2026 only), on further helical, herringbone and shifted-pinion rings, and on 2024-saved trains opened in 2026 (that direction only). The reads (`GetDefinition`, `GetSpecificFeature2`, `MateEntity`, `EntityParams`) changed no document's `GetSaveFlag`. A whole-application run then remade a ring mate after a pinion move and a tooth change (read back wrong, remade with the other `Flip`) and the ring turned right at the new ratio on both versions, also after a save and reopen; on 2024 the `Flip` that ring needed had changed after the move (cause not separated) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), runs 20261114-133014 and 20261114-135104; follow-up runs 20261114-151013 (2024), 20261114-162034 and 20261114-162546 (2026); whole-application run 2026-11-14 on both, fresh sessions |
+| `Reverse` on a gear mate between **non-parallel** axes | The mate turned its two components the same way about their entity directions exactly when `Reverse` was True, in all 40 turned cases (meeting axes 30°–150°, skew 60°–120°, plain cylinders, each entity along its component's own axis); the `Flip` that was right varied with the geometry. With real teeth, three meshes on both versions ([assemblies/04](entries/assemblies/04-mates-between-non-parallel-axes.md#a-gear-mate-between-axes-that-are-not-parallel), GOTCHAS §106) | Verified, SW 2026 (34.1.1), probe tier 9 run 20261114-195608; real teeth SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), 2026-11-14 |
+| `Reverse` on a 1 : 1 gear mate between **collinear** axes | Read the sense the drive found on both versions; the `Flip` that turned the two together was False on 2026 and True on 2024 ([assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-1--1-gear-mate-between-two-components-on-one-axis)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
+| Gear mate with one axis on a turning **carrier** | The ratio held relative to the carrier (the line joining the axes), not the fixed frame; one sun–planet mate per planet plus one planet–ring mate drove a planetary with nothing over-defined ([assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-gear-mate-whose-axis-rides-a-carrier-planetary), GOTCHAS §107) | Verified, SW 2026 (34.1.1) only, planetary probe 2026-11-14 |
 
 ## IDistanceMateFeatureData (from `IFeature.GetDefinition` on a distance mate)
 

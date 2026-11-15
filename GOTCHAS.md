@@ -297,6 +297,12 @@ If swModel.ConfigurationManager.ActiveConfiguration.Name <> cfg Then
 Same shape as §8. A SolidWorks call's return value tells you less than the state
 does.
 
+In an assembly, `ShowConfiguration2` also **marks the assembly modified** (its
+`GetSaveFlag` False → True before any rebuild) and no part, and it makes every
+component handle held from before stale (§108). SolidWorks 2026 (34.1.1) and
+2024 SP5. See
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md).
+
 Two more from the same area, both silent:
 
 - **A design table owns its configurations.** With the table still in place,
@@ -1076,6 +1082,22 @@ coincident with an *exact* point in an assembly sketch solved in every
 configuration. SolidWorks 2024 SP5 (32.5.0). See
 [assemblies/07](entries/assemblies/07-configurations-that-hold-different-positions.md).
 
+**Qualified by a later measurement that found the opposite under another
+procedure.** On SolidWorks 2026 (34.1.1) and 2024 SP5, a component held by an
+axis mate and a distance along it, turned by a `Transform2` put in one
+configuration and followed by a top-only rebuild (`ForceRebuild3(True)`), held
+its own turn in each configuration, read through freshly fetched handles, and
+kept it through a save and reopen; a put held in the active configuration only.
+That was one component with no gear mate and one whose gear mate was
+suppressed in the configuration of the put. The case above was a dragged,
+closed-loop mechanism given a full rebuild (`ForceRebuild3(False)`) after each
+show, and the "same position" sentence has no instrumented reading behind it.
+A drag, a full rebuild after a show, and a put on a component whose gear mate
+is on in every configuration were not tried, so neither statement is known to
+reach the other's case. Stale handles do not explain the later result: a stale
+handle answers `Transform2` with None, not an old position. See
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#where-components-stand-in-each-configuration).
+
 ## 84. Deleted smart-explode-line segments come back
 
 Smart Explode Lines make a 3D sketch (`3DExplode1`, `ExplodeLineProfileFeature`).
@@ -1341,5 +1363,71 @@ mate made straight after its pinion was moved 2 mm along its shaft (a put with
 the other mates suppressed and a top-only rebuild) needed `Flip` True, where the
 same mate made after a reopen, pinion unmoved, needed False; the cause (the
 move, the put and rebuild, or the missing reopen) was not separated. Never
-carry a `Flip` from one make to the next. See
+carry a `Flip` from one make to the next. The same holds for a 1 : 1 gear mate
+between two components on one axis: the `Flip` that turned them together was
+False on 2026 and True on 2024 in the case measured, and the read-back named it
+on both ([assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-1--1-gear-mate-between-two-components-on-one-axis)). See
 [assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#checking-a-gear-mates-sense-after-making-it).
+
+## 106. A gear mate between non-parallel axes: the `Flip` does not tell its sense; read it back
+
+`AddMate5` makes a gear mate between axes that meet at an angle or pass each
+other, and it solves (status 1, nothing moves when it is made). But which way
+it turns cannot be taken from `Flip`: on SolidWorks 2026, `Flip` False gave
+`Reverse` False at 30°–90° between the own axes and True at 120°–150°, and the
+right `Flip` was False for some meeting and skew pairs and True for others.
+What told the sense in all 40 turned cases measured: the mate turns the two
+components the same way about their `IMateEntity2.EntityParams` directions
+exactly when `IGearMateFeatureData.Reverse` is True. Measured for meeting axes
+at 30°–150° and skew axes at 60°–120° on plain cylinders (SolidWorks 2026
+34.1.1), and with real teeth in three meshes on 2026 and 2024 SP5; outside
+those ranges nothing is measured, and each entity pointed along its own
+component's axis in every case. See
+[assemblies/04](entries/assemblies/04-mates-between-non-parallel-axes.md#a-gear-mate-between-axes-that-are-not-parallel).
+
+## 107. A gear mate holds its ratio relative to the line between the axes, not the fixed frame
+
+In a planetary, a sun–planet gear mate is the mesh equation in the carrier's
+frame: with the sun held and the carrier turned 30°, a sun–planet mate of equal
+tooth counts turned the planet +60° in the fixed frame. So give a planet's gear
+mate the **tooth ratio**. Mating each body to the sun at its absolute speed
+ratio instead was accepted, mate by mate, and turned the planets wrong (−3.75°
+where −15° was right) with interferences. One sun–planet mate per planet plus
+one planet–ring mate drove the train with nothing over-defined. SolidWorks 2026
+(34.1.1) only. See
+[assemblies/10](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-gear-mate-whose-axis-rides-a-carrier-planetary).
+
+## 108. Component handles go stale after every `AddConfiguration2` and `ShowConfiguration2`, silently
+
+After each add or show, every `IComponent2` held from before answered
+`Transform2` with **None** and `IsFixed` with **False**, a fixed part's
+included. No exception and no error code: a check such as "fix it unless
+`IsFixed`" acts on a wrong answer. Re-fetch every component with
+`IAssemblyDoc.GetComponentByName` after every add and show; those handles
+answered correctly. Handles held across `DeleteConfiguration2` of a
+configuration that was not active stayed good. SolidWorks 2026 (34.1.1) and
+2024 SP5. See
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#component-handles-go-stale-on-every-add-and-show).
+
+## 109. `SetSuppression2` per configuration straight after `AddConfiguration2` misreports both ways
+
+With no rebuild after adding configurations, the first
+`IFeature.SetSuppression2(0, 3, names)` on a mate **raised `0x80010105` and
+still took effect**, and the second **returned False and did nothing**, in
+every run that reached them (four on 2026, one on 2024 SP5). After a top-only
+rebuild every call returned True and did what it said. Rebuild first, ignore
+the return value, and read each flag back with `IsSuppressed2(3, names)`. See
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#a-mates-suppression-per-configuration).
+
+## 110. A dimension's value per configuration: `GetSystemValue3` reads 0 until set, and `SystemValue` ignores the configuration
+
+`IDimension.SetSystemValue3(m, 3, [name])` sets one configuration's value (it
+returned 0, also for a configuration that was not active), and
+`GetSystemValue3(3, names)` reads each without showing it. But before a
+configuration has a value of its own, `GetSystemValue3` read **0** for it, and
+`IDimension.SystemValue` read another configuration's 30 mm while the shown
+one stood at 10 mm. Set every configuration's value before reading any, and
+read with `GetSystemValue3` and the name. Linking the dimension to a global by
+`IEquationMgr.Add2` instead returned −1 once several configurations existed.
+SolidWorks 2026 (34.1.1) and 2024 SP5. See
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#a-distance-mates-value-per-configuration).
