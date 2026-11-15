@@ -26,7 +26,7 @@ code. You never need to open the projects the entries came from.
 
 ## What's in here
 
-96 entries, grouped twelve ways:
+98 entries, grouped twelve ways:
 
 - **[entries/connect/](entries/connect/)** — reaching a running SolidWorks from
   VBScript, Python, C# and VBA, keeping the connection alive safely, and
@@ -89,7 +89,7 @@ Every entry declares one:
 | `unverified` | Well-formed against the documented API. Nobody has watched it run. |
 | `superseded` | Do not use. The entry links to what replaced it. |
 
-Currently: **83 verified, 10 partly verified, 3 unverified.**
+Currently: **85 verified, 11 partly verified, 2 unverified.**
 
 This distinction is the most valuable thing here, so it is never blurred. An
 entry that guesses says so.

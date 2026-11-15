@@ -255,6 +255,8 @@ result files stay in the Gear-Generator repository.
 | `Status` | `-1` after a refused add | Verified, SW 2026 (34.0.0) |
 | `AngularEquationUnits` | Read `1` in a part whose trig evaluated in degrees | Verified, SW 2026 (34.0.0) |
 | `SetEquationAndConfigurationOption(i, text, 2, None)` | **Returned `-1` and changed nothing** | Verified not to work, SW 2026 (34.0.0) |
+| `SetEquationAndConfigurationOption(i, text, 1 or 3, …)`, `Add3(-1, text, True, 1/2/3, …)`, `Add2(-1, text, True)` on a virtual in-context part with three configurations | **All returned `-1`** ([equations/01](entries/equations/01-global-variables-from-code.md#on-a-virtual-in-context-part)) | Verified not to work, SW 2024 SP5 (32.5.0), 2026-11-15 |
+| `Delete(i)` on that part | Returned `0` and **removed the equation**, which could not then be re-added (GOTCHAS §116) | Verified, SW 2024 SP5 (32.5.0), 2026-11-15 |
 | `EvaluateAll` | Listed by the probe, never called | Unverified |
 
 ## IDisplayDimension and IDimension (from a feature)
@@ -550,6 +552,9 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `Transform2 = transform` (put) on a **fixed** component | Moved it without unfixing it; the frame survived a save and reopen. On a gear of a mated train, turned that gear alone, a lock partner included (GOTCHAS §98) | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `SetTransformAndSolve2(transform)` | First listed by the probe as a fallback and never reached; since reached: returned `True` and turned a gear of a mated train alone, its gear-mate partners not following | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `GetCorresponding(partFeature)` | First listed as a fallback and never reached; since reached: on a part's `Gear Axis` feature it gave the assembly-context object, and `Select4(append, data)` on that (interface not checked; `data.Mark = 1`) selected the axis for a mate | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
+| `ReferencedConfiguration = name` (put) | The part configuration this component uses **in the active assembly configuration**; gives an in-context part its own geometry per assembly configuration ([assemblies/14](entries/assemblies/14-in-context-part-across-configurations.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-11-15 |
+| `SetSuppression2(0)` | Suppress in the active configuration only; returned 2 ([assemblies/07](entries/assemblies/07-configurations-that-hold-different-positions.md#components-suppressed-in-one-configuration-only)) | Verified, SW 2024 SP5 (32.5.0), 2026-11-15 |
+| `GetBodies2(0)` | The component's solid bodies; empty for an in-context part whose sweep had silently produced nothing | Verified, SW 2024 SP5 (32.5.0), 2026-11-15 |
 
 ## IDragOperator (from `IAssemblyDoc.GetDragOperator`)
 
@@ -666,6 +671,9 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `GetVisibleComponents` | Components with something visible in the view; names prefixed `Root-N/` | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
 | `GetVisibleEntities2(component, 1)` | That component's visible edges | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
 | `GetVisibleEntities2(null, 4)` | Silhouette edges: returned, but **no member usable through late binding** (GOTCHAS §89) | Verified not to work, SW 2024 SP5 (32.5.0), 2026-11-09 |
+| `GetSection` | The section view's `IDrSection`; a property get | Verified, SW 2024 SP5 (32.5.0), 2026-11-15 |
+| `IDrSection.SetExcludedComponents(components)` through `Invoke` (`DISPATCH_METHOD`) | Draw those components whole and unhatched; returned `True`. Late binding presents it as a property (GOTCHAS §111) | Verified, SW 2024 SP5 (32.5.0), 2026-11-15 |
+| `IDrSection.GetExcludedComponents` | The excluded components, read back | Verified, SW 2024 SP5 (32.5.0), 2026-11-15 |
 
 ## INote, IAnnotation and ICenterMark (drawing annotations)
 
@@ -713,6 +721,7 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `ITableAnnotation.GetTextFormat` / `SetTextFormat(False, tf)` | Table text height via `tf.CharHeight` (metres) | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
 | `ITableAnnotation.SetColumnWidth(i, w, 0)` / `SetRowHeight(i, h, 0)` / `GetRowHeight(i)` | Metres; a row does not shrink below its text | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
 | `IConfiguration.AlternateName`, `UseAlternateNameInBOM`, `BOMPartNoSource = 8` | The BOM's PART NUMBER for that configuration | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
+| `SetConfigurations(False, bool[], allNames[])` | Show only the flagged configurations: one QTY column, and components suppressed there drop out ([drawings/02](entries/drawings/02-bom-table-and-balloons.md#a-bom-for-one-configuration-of-a-multi-configuration-assembly)) | Verified, SW 2024 SP5 (32.5.0), 2026-11-15 |
 
 ## General tables and dimensions added from code
 
@@ -720,7 +729,7 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 |---|---|---|
 | `IDrawingDoc.InsertTableAnnotation2(False, x, y, 1, "", rows, cols)` | A general table, top-left at (x, y) metres ([drawings/10](entries/drawings/10-general-table.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
 | `IModelDoc2.AddDimension2(x, y, 0)` on a drawing | Dimension the selected edges, text at (x, y) sheet metres: two circles → centre distance, one circle → diameter, two parallel lines → distance ([drawings/09](entries/drawings/09-add-dimensions-and-tolerances.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
-| `IDrawingDoc.CreateSectionViewAt5(x, y, 0, label, options, excludedComponents, 0)` | A section from the selected sketch line; option 4 reverses the direction, 1 unaligned; excluded components drawn unhatched ([drawings/08](entries/drawings/08-section-views-from-code.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
+| `IDrawingDoc.CreateSectionViewAt5(x, y, 0, label, options, excludedComponents, 0)` | A section from the selected sketch line; option 4 reverses the direction, 1 unaligned; excluded components drawn unhatched ([drawings/08](entries/drawings/08-section-views-from-code.md)). **On a four-configuration assembly on 2026-11-15 the exclusion array was ignored** (GOTCHAS §111) | Verified, SW 2024 SP5 (32.5.0), 2026-11-09; exclusion not reproduced 2026-11-15 |
 | `IDrawingDoc.ActivateView(name)` + `ISketchManager.CreateLine` | The cutting line, in the view's sketch coordinates (GOTCHAS §87) | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
 | `IModelDocExtension.CreateBalloonOptions` (property-style) + `InsertBOMBalloon2(options)` | One balloon on the selected edge's component; `ShowQuantity = False` hides the quantity. `None` with a component selected instead of an edge | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
 | `IAnnotation.GetLeaderPointsAtIndex(0)` | Leader points, sheet metres; the last three are the attachment | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |

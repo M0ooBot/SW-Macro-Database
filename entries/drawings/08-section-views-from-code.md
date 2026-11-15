@@ -4,8 +4,8 @@ title: Make a section view from code, pointing the right way, with parts left un
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
 language: [python]
-api: [IDrawingDoc.ActivateView, ISketchManager.CreateLine, IDrawingDoc.CreateSectionViewAt5, IView.GetXform, IView.Angle, IView.Position, IView.GetVisibleComponents]
-keywords: [section view, CreateSectionViewAt5, section line, cutting plane, sketch line in a view, view sketch coordinates, GetXform, section upside down, change direction, NotAligned, ExcludedComponents, shafts not hatched, unsectioned parts, rotated view, IView.Angle, section between spokes, aligned section tilted, swCreateSectionViewAtOptions_e]
+api: [IDrawingDoc.ActivateView, ISketchManager.CreateLine, IDrawingDoc.CreateSectionViewAt5, IView.GetXform, IView.Angle, IView.Position, IView.GetVisibleComponents, IView.GetSection, IDrSection.SetExcludedComponents, IDrSection.GetExcludedComponents, IModelDoc2.ForceRebuild3]
+keywords: [section view, CreateSectionViewAt5, section line, cutting plane, sketch line in a view, view sketch coordinates, GetXform, section upside down, change direction, NotAligned, ExcludedComponents, shafts not hatched, unsectioned parts, rotated view, IView.Angle, section between spokes, aligned section tilted, swCreateSectionViewAtOptions_e, SetExcludedComponents, GetSection, DrSection, excluded components ignored, section not hatched, no hatching in PDF, hatch missing, ForceRebuild3, move section view, aligned section stuck, section direction]
 answers: "How do I make a section view of a part or assembly from code — draw the cutting line where I mean, make it face the right way, and keep shafts unhatched?"
 ---
 
@@ -86,7 +86,8 @@ sec = section(drw, top, x1, y, x2, y, (100, 258), "A", excl, 4)
 ```
 
 The section drew those components whole and unhatched, and hatched the rest.
-For a part drawing pass an empty list.
+For a part drawing pass an empty list. **On a later run this argument was
+ignored**; `IDrSection.SetExcludedComponents` worked instead (below).
 
 ## A cut that has to miss something: rotate the parent, not the line
 
@@ -108,6 +109,71 @@ After a rotation, `GetOutline` is the rotated view's bounding box, which is
 larger than what is drawn: a 117 mm circle rotated 45° reported a box about
 178 mm wide. Place labels from the model's sheet position, not from the
 outline.
+
+## Excluding components after the fact: `IDrSection.SetExcludedComponents`
+
+On a later run the sixth argument of `CreateSectionViewAt5` was **ignored**.
+An array of the assembly's `IComponent2` objects, read with the view's
+configuration active, gave sections in which those parts were still hatched,
+with options 0, 1, 4 and 5 alike. Passing the same array afterwards to the
+view's `IDrSection` worked. `IView.GetSection` returns it, and
+`SetExcludedComponents` is a method that late binding presents as a boolean
+property, so it is reached through `Invoke`:
+
+```python
+def set_excluded(sv, comps):
+    sec = call(sv, "GetSection"); o = sec._oleobj_; did = o.GetIDsOfNames("SetExcludedComponents")
+    return o.Invoke(did, 0, pythoncom.DISPATCH_METHOD, True, VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_DISPATCH, comps))
+```
+
+It returned `True`, and `call(sec, "GetExcludedComponents")` then listed the
+components. After a `ForceRebuild3` (next section) the exported PDF drew them
+whole and unhatched. Calling `sec.SetExcludedComponents(...)` directly raised
+`'bool' object is not callable`.
+
+**Open:** why the argument worked in the run above and not here. The visible
+difference is that this assembly had four configurations and the views showed
+non-default ones; the earlier one had one. Settle it by repeating the argument
+on a one-configuration assembly in the same session.
+
+The drafting convention is for cuts **along** a shaft, pin or fastener. A
+section that cuts across a shaft hatches the shaft like anything else; exclude
+only what the cut runs along.
+
+## Hatching appears only after `ForceRebuild3` on the drawing
+
+Sections created and saved to PDF straight away had **no hatching at all**:
+every cut face was an outline. `IModelDoc2.ForceRebuild3(False)` on the drawing
+before `SaveAs` filled them in; `EditRebuild3` alone did not. On one sheet with
+several sections, only the first one created came out hatched, presumably
+rebuilt by the operations that followed it. Force-rebuild every sheet before
+exporting it.
+
+## Moving a section off its alignment line needs option 1
+
+A section created with option 0 or 4 stays aligned with its parent. Setting
+`IView.Position` moved it along the alignment direction only; the other
+coordinate snapped back to the parent's. Created with option `5` (1, not
+aligned, plus 4) it could be placed anywhere. A section cut in another section
+view, such as a cross-section of a lengthwise section, behaved the same way
+with option 1.
+
+## Which way it looks: the line's direction and option 4 together
+
+On one view with a vertical cutting line, four combinations gave two
+directions:
+
+| Line sketched | Option | Looked toward |
+|---|---|---|
+| bottom to top | 0 | side A |
+| bottom to top | 4 | side B |
+| top to bottom | 0 | side B |
+| top to bottom | 4 | side A |
+
+Reversing the line or adding option 4 each flips the view; doing both cancels.
+`call(view, "GetVisibleComponents")` (property-style through late binding)
+told the two apart without exporting: a component lying wholly on one side of
+the cut was listed only when the section looked toward it.
 
 ## What it does not do
 
@@ -137,6 +203,20 @@ PDFs.
   (see [drawings/09](09-add-dimensions-and-tolerances.md)). On a spoked gear,
   a 45° line with option 1 gave a section drawn at 45°; rotating the parent
   45° and cutting vertically gave an upright section showing the 2.2 mm recess.
+
+Later run, SolidWorks 2024 SP5 (32.5.0), 2026-11-15, an assembly with four
+configurations and section views of two of them:
+
+- The `CreateSectionViewAt5` exclusion array left three components hatched
+  under options 0, 1, 4 and 5; `SetExcludedComponents` through `Invoke`
+  returned `True`, `GetExcludedComponents` listed the three, and the PDF
+  showed them unhatched.
+- PDFs exported without `ForceRebuild3` on the drawing showed no hatching on
+  any section; after it, every cut face was hatched.
+- An aligned section's `Position` put moved it along one axis only; with
+  option 5 the same put placed it freely.
+- The four line-direction and option combinations in the table above, each
+  checked in an exported PDF and by `GetVisibleComponents`.
 
 Names and paths are placeholders here.
 

@@ -5,7 +5,7 @@ status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
 language: [python]
 api: [IModelDoc2.GetEquationMgr, IEquationMgr.Add2, IEquationMgr.Add3, IEquationMgr.GetCount, IEquationMgr.Equation, IEquationMgr.Value, IEquationMgr.GlobalVariable, IEquationMgr.Delete, IEquationMgr.Status, IEquationMgr.SetEquationAndConfigurationOption, IEquationMgr.AngularEquationUnits, IModelDoc2.ForceRebuild3]
-keywords: [equation manager, global variable, IEquationMgr, Add2, Add3, -1, Equation, indexed property, property put, SetEquationAndConfigurationOption, sqr, sqr(0), IIF, precedence, comparison, degrees, radians, sin, pi, parametric, Status, atn, arctan, arcsin, arccos, inverse trig, inverse tangent]
+keywords: [equation manager, global variable, IEquationMgr, Add2, Add3, -1, Equation, indexed property, property put, SetEquationAndConfigurationOption, sqr, sqr(0), IIF, precedence, comparison, degrees, radians, sin, pi, parametric, Status, atn, arctan, arcsin, arccos, inverse trig, inverse tangent, Delete removes equation, Add3 -1 multi configuration, virtual part equation, in-context equation, swInConfigurationOpts_e]
 answers: "How do I add, read and change global variables in the Equation Manager from code?"
 ---
 
@@ -186,10 +186,32 @@ bracketed comparisons, and `( abs ( ( a / b ) ^ 2 - 1 ) ) ^ 0.5`. All 24 were
 accepted, all read back exactly as written, and all 24 values matched an
 independent calculation to 1e-6.
 
+### On a virtual in-context part
+
+On a virtual (in-assembly) part with three configurations, whose one equation
+drives a helix height from an in-context reference dimension, **every**
+equation call returned −1 and changed nothing:
+
+- `SetEquationAndConfigurationOption(0, text, 3, [names])` with the active
+  configuration among the names
+- `SetEquationAndConfigurationOption(0, text, 1, None)`
+- `Add3(-1, text, True, opt, …)` with `opt` 1, 2 and 3
+- `Add2(-1, text, True)`
+
+The values are `swInConfigurationOpts_e`: 1 this configuration, 2 all, 3
+specified. The text was the equation exactly as `Equation(0)` returned it.
+
+**`IEquationMgr.Delete(0)` returned 0 and removed the equation.** So a plan to
+delete an equation and re-add it scoped to some configurations loses it,
+because the re-add is refused. Closing the assembly **without saving** and
+reopening it brought the equation back. Do not delete an equation from code
+until an `Add` has been seen to work on that document.
+
 ## What it does not do
 
-- **Multi-configuration parts were not tried.** Whether `Add3` works there, as
-  its help says, is not observed.
+- **Multi-configuration parts** were tried only as a virtual in-context part
+  (above), where `Add3` was refused too. Whether it works on an ordinary
+  multi-configuration part is not observed.
 - Why `SetEquationAndConfigurationOption` returned `-1` was not investigated;
   only the `(index, text, 2, None)` form was tried.
 - A radian document was never produced, so this entry has not seen trig in
@@ -237,7 +259,14 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
   The tool's helical gears use `atn` for `"Transverse Pressure Angle"`, and probe
   `helical_end_to_end` found every global matching its maths after a change.
 
+Later run, SolidWorks 2024 SP5 (32.5.0), 2026-11-15, a virtual in-context part with
+three configurations: the six calls listed above each returned −1 with
+`GetCount` unchanged; `Delete(0)` returned 0 and `GetCount` went 1 → 0; after
+closing without saving and reopening, `Equation(0)` read the original text.
+
 ## See also
+
+- [assemblies/14 — An in-context part in several configurations](../assemblies/14-in-context-part-across-configurations.md) — the per-configuration size without touching the equation
 
 - [equations/02 — Link a dimension to a global](02-link-a-dimension-to-a-global.md) — making globals drive geometry
 - [connect/02 — Attach from Python](../connect/02-attach-from-python.md) — the indexed property put

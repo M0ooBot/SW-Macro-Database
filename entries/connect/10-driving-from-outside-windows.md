@@ -145,6 +145,15 @@ and wrote its report and JSON back into the ext4 checkout through the UNC
 path. The `.bat` was not the launcher for that run. See
 [connect/11](11-probe-an-api-member-on-a-live-session.md).
 
+### Starting SolidWorks from WSL
+
+`cmd.exe /c start "" "C:\Program Files\SOLIDWORKS Corp\SOLIDWORKS (2)\SLDWORKS.exe"`
+started the visible application (SolidWorks 2024 SP5, 2026-11-15), but the WSL
+command that ran it did not return within 450 s, so the shell call had to be
+moved to the background and stopped afterwards; stopping it left SolidWorks
+running. A script polling `find_candidates()` every few seconds attached once
+the welcome screen was up. Why `start` did not detach here was not looked into.
+
 ## Structuring the output so it can be parsed
 
 The generated script should emit one line per operation with a fixed-width

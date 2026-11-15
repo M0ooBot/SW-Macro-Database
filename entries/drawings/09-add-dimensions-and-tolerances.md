@@ -5,7 +5,7 @@ status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
 language: [python]
 api: [IView.GetVisibleEntities2, IView.SelectEntity, IModelDoc2.AddDimension2, IDisplayDimension.GetDimension2, IDisplayDimension.SetPrecision3, IDisplayDimension.SetText, IDimension.Tolerance, IDimensionTolerance.Type, IDimensionTolerance.SetValues, IDimensionTolerance.SetFitValues, IDimensionTolerance.GetMaxValue, IDimensionTolerance.GetMinValue, IEdge.GetCurveParams2, ICurve.CircleParams, IDrawingDoc.CreateUnfoldedViewAt3]
-keywords: [AddDimension2, add dimension from code, smart dimension, centre distance, diameter dimension, length dimension, face width, symmetric tolerance, plus minus, fit tolerance, H7, g6, p6, SetFitValues, swTolFITWITHTOL, Type 8, Type 4, SetValues, MOD-DIAM prefix, silhouette edge, swViewEntityType_SilhouetteEdge, GetVisibleEntities2 type 4, end view, step shaft, trailing zero]
+keywords: [AddDimension2, add dimension from code, smart dimension, centre distance, diameter dimension, length dimension, face width, symmetric tolerance, plus minus, fit tolerance, H7, g6, p6, SetFitValues, swTolFITWITHTOL, Type 8, Type 4, SetValues, MOD-DIAM prefix, silhouette edge, swViewEntityType_SilhouetteEdge, GetVisibleEntities2 type 4, end view, step shaft, trailing zero, angular dimension, angle between lines, radius prefix R lost, 2X R, suffix, A/F, line to arc centre, hole location from face]
 answers: "How do I add dimensions to a drawing from code — centre distances, diameters, lengths — and give them a ± tolerance or an ISO fit?"
 ---
 
@@ -135,9 +135,38 @@ What worked instead:
   shaft, the end view from the large end showed only the largest diameter; the
   end view from the small end showed all three as nested circles.
 
+## More selections, and prefixes that hold a symbol
+
+Later runs added these to the table above, with the helpers as they ran:
+
+```python
+def dim(S, v, ents, x, y):
+    S.clear()
+    for i, e in enumerate(ents): v.SelectEntity(e, i > 0)
+    d = S.drw.AddDimension2(x / 1000, y / 1000, 0); S.clear(); return d
+```
+
+| Selected | Dimension |
+|---|---|
+| Two straight lines at an angle | An **angular** dimension; `SystemValue` in **radians**. Lines bounding a 30° gap and a 60° finger read 30.0 and 60.0 |
+| A straight line and an arc | The distance from the line to the arc's **centre** (a face to a bore's axis) |
+| A circle seen edge-on (an end face) and a circle seen face-on | The distance from the edge-on circle's plane to the other circle's centre, which locates a hole from an end face |
+
+- **A radius's `R` is its prefix.** `SetText(1, "2X ")` on a radius dimension
+  removed the `R`; `SetText(1, "2X R")` gave `2X R0.5`.
+- `SetText(2, " A/F THRU")` set the suffix: `HEX 6.05 A/F THRU` with prefix
+  `"HEX "`.
+- The trailing-zero rule needs a third decimal for values such as 4.675; cap
+  it at 3, not 2.
+- Before choosing lines by coordinates, read which way the model axes run on
+  the sheet. `ModelToViewTransform` mapped a model point to the sheet (as in
+  [drawings/01](01-new-drawing-and-place-views.md#laying-views-out)), and
+  comparing two points gave the sign.
+
 ## What it does not do
 
-- **Ordinate, angular and chamfer dimensions** were not added.
+- **Ordinate and chamfer dimensions** were not added. Angular dimensions
+  between two lines were (above).
 - **Dimension placement** is by hand-picked points; overlapping text was moved
   by changing the point, not by a rule.
 - **Open:** whether silhouette edges become usable through early binding or
@@ -161,6 +190,13 @@ A3 template, checked in exported PDFs.
   and 11.2; end-view diameters 3.3 g6, 3.5 g6, and 6.3, 6 and 2.3 p6.
 - Silhouette edges: two per shaft returned by type 4, every member call failing
   as described.
+
+Later run, SolidWorks 2024 SP5 (32.5.0), 2026-11-15, four part and assembly
+drawings: two-line angular dimensions read 30.0°, 60.0° and 60.0°; a line to
+a partial bore arc gave the centre distance; an end-face circle seen edge-on to
+a hole circle seen face-on gave the hole's distance from that face; `2X R`
+displayed `2X R0.5` and `2X R1`; prefix `HEX ` with suffix ` A/F THRU`
+displayed as written.
 
 ## See also
 

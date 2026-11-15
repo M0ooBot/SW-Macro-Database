@@ -249,6 +249,15 @@ without a word ([assemblies/11](../assemblies/11-change-a-mated-gear-train.md#th
   two parts with the same `IModelDocExtension.SaveAs3` call before inserting
   them.
 
+- **Open: SolidWorks exited during a `CloseDoc` loop.** On SolidWorks 2024
+  SP5, 2026-11-15, closing every open document in turn with `CloseDoc` (the
+  assembly first, then the parts left over) raised "The remote procedure call
+  failed" (−2147023170) partway through, and the process was gone. The session
+  had shown spurious −2147417851 exceptions before
+  ([GOTCHAS §114](../../GOTCHAS.md)). It happened once; closing the assembly alone
+  and letting it take its parts worked every other time. Save first, and be
+  ready to restart.
+
 ## Evidence
 
 SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run

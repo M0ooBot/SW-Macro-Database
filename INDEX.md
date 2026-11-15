@@ -128,6 +128,7 @@ set in one read should use [manifest.json](manifest.json) instead.
 | Tell which way a gear mate between non-parallel axes (bevel, crossed) turns | [assemblies/04 — Mates between non-parallel axes](entries/assemblies/04-mates-between-non-parallel-axes.md#a-gear-mate-between-axes-that-are-not-parallel) |
 | Gear-mate a planetary: planets on a carrier, sun and ring | [assemblies/10 — Mate a gear train that turns](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-gear-mate-whose-axis-rides-a-carrier-planetary) |
 | Couple two components on one axis with a 1 : 1 gear mate that still lets one slide | [assemblies/10 — Mate a gear train that turns](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-1--1-gear-mate-between-two-components-on-one-axis) |
+| Make an in-context part (a spring between moving parts) draw at its own size in each configuration | [assemblies/14 — An in-context part in several configurations](entries/assemblies/14-in-context-part-across-configurations.md) |
 
 ## Make drawings
 

@@ -1434,3 +1434,53 @@ read with `GetSystemValue3` and the name. Linking the dimension to a global by
 `IEquationMgr.Add2` instead returned −1 once several configurations existed.
 SolidWorks 2026 (34.1.1) and 2024 SP5. See
 [assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#a-distance-mates-value-per-configuration).
+
+## 111. A section view's excluded components can be ignored at creation
+
+`CreateSectionViewAt5`'s excluded-components array left the parts hatched on a
+four-configuration assembly, under every option tried. Passing the same array
+afterwards to `IView.GetSection`'s `SetExcludedComponents`, through `Invoke`
+because late binding sees it as a property, worked. SolidWorks 2024 SP5
+(32.5.0). See
+[drawings/08](entries/drawings/08-section-views-from-code.md#excluding-components-after-the-fact-idrsectionsetexcludedcomponents).
+
+## 112. Section hatching is missing until the drawing is force-rebuilt
+
+Section views saved to PDF straight after creation had no hatching on any cut
+face. `ForceRebuild3(False)` on the drawing before `SaveAs` filled it in;
+`EditRebuild3` did not. SolidWorks 2024 SP5 (32.5.0). See
+[drawings/08](entries/drawings/08-section-views-from-code.md#hatching-appears-only-after-forcerebuild3-on-the-drawing).
+
+## 113. Mate entities read before a configuration switch go stale
+
+Entities from an existing mate, read and then used after `ShowConfiguration2`,
+gave `AddMate5` out code 1 but a mate with **no entities**, error 51, that
+raised −2147417851 when selected. Delete it from a configuration where it is
+suppressed, and read entities after switching. This is the mate-entity side
+of §108. SolidWorks 2024 SP5 (32.5.0). See
+[assemblies/07](entries/assemblies/07-configurations-that-hold-different-positions.md#read-the-entities-after-switching-configuration).
+
+## 114. `ShowConfiguration2` can raise and still switch
+
+On an assembly with an in-context part, `ShowConfiguration2` and the
+`ForceRebuild3` after it raised "The server threw an exception" (−2147417851) on
+some switches while the configuration did change. Catch it and read
+`ActiveConfiguration.Name`. §109 saw the same exception from `SetSuppression2`. SolidWorks 2024 SP5 (32.5.0). See
+[assemblies/07](entries/assemblies/07-configurations-that-hold-different-positions.md#showconfiguration2-and-forcerebuild3-can-raise-and-still-succeed).
+
+## 115. In-context geometry is per part configuration, not per assembly configuration
+
+Drawing views of two assembly configurations drew an in-context part at the
+same size, the last one rebuilt. Give the part a configuration per state and set
+each assembly configuration's `ReferencedConfiguration`. Reading the size from
+the part document reported its own active configuration and hid the problem.
+SolidWorks 2024 SP5 (32.5.0). See
+[assemblies/14](entries/assemblies/14-in-context-part-across-configurations.md).
+
+## 116. Equation calls refuse a virtual in-context part, but `Delete` does not
+
+On a virtual in-context part with several configurations, `Add2`, `Add3` and
+`SetEquationAndConfigurationOption` all returned −1; `Delete(0)` returned 0 and
+removed the equation for good. Close without saving to get it back. Never delete
+before an add has worked on that document. SolidWorks 2024 SP5 (32.5.0). See
+[equations/01](entries/equations/01-global-variables-from-code.md#on-a-virtual-in-context-part).

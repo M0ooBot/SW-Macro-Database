@@ -4,8 +4,8 @@ title: Add a bill of materials and balloons to an assembly drawing
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
 language: [python]
-api: [IView.InsertBomTable5, IBomTableAnnotation.BomFeature, IBomFeature.GetConfigurationCount, IBomFeature.GetConfigurations, IBomFeature.SetConfigurations, IBomFeature.FollowAssemblyOrder2, IBomFeature.TableType, IView.GetTableAnnotations, ITableAnnotation.Type, ITableAnnotation.RowCount, ITableAnnotation.ColumnCount, ITableAnnotation.Text, IDrawingDoc.CreateAutoBalloonOptions, IDrawingDoc.AutoBalloon5, INote.IsBomBalloon, INote.GetText, IAnnotation.SetPosition2, IAnnotation.GetPosition, IModelDocExtension.CustomPropertyManager, ICustomPropertyManager.Add3, ITableAnnotation.Text, ITableAnnotation.InsertColumn2, ITableAnnotation.SetTextFormat, ITableAnnotation.SetColumnWidth, ITableAnnotation.SetRowHeight, IConfiguration.AlternateName, IConfiguration.UseAlternateNameInBOM, IConfiguration.BOMPartNoSource, IModelDocExtension.CreateBalloonOptions, IModelDocExtension.InsertBOMBalloon2, IView.GetVisibleComponents, IAnnotation.GetLeaderPointsAtIndex]
-keywords: [BOM, bill of materials, parts list, InsertBomTable5, empty BOM, BOM shows only header, no QTY column, BomFeature, SetConfigurations, top-level only, bom-standard.sldbomtbt, item number, FollowAssemblyOrder2, balloons, auto balloon, AutoBalloon5, CreateAutoBalloonOptions, missing balloons, hidden parts not ballooned, IsBomBalloon, Description column, custom property, CustomPropertyManager, Add3, swCustomInfoText, BOM cell edit writes to part, description write-back, custom BOM column, InsertColumn2, PART NUMBER alternate name, BOMPartNoSource, balloon quantity, ShowQuantity, InsertBOMBalloon2, CreateBalloonOptions member not found, leader attach point, crossing leaders]
+api: [IView.InsertBomTable5, IBomTableAnnotation.BomFeature, IBomFeature.GetConfigurationCount, IBomFeature.GetConfigurations, IBomFeature.SetConfigurations, IBomFeature.FollowAssemblyOrder2, IBomFeature.TableType, IView.GetTableAnnotations, ITableAnnotation.Type, ITableAnnotation.RowCount, ITableAnnotation.ColumnCount, ITableAnnotation.Text, IDrawingDoc.CreateAutoBalloonOptions, IDrawingDoc.AutoBalloon5, INote.IsBomBalloon, INote.GetText, IAnnotation.SetPosition2, IAnnotation.GetPosition, IModelDocExtension.CustomPropertyManager, ICustomPropertyManager.Add3, ITableAnnotation.Text, ITableAnnotation.InsertColumn2, ITableAnnotation.SetTextFormat, ITableAnnotation.SetColumnWidth, ITableAnnotation.SetRowHeight, IConfiguration.AlternateName, IConfiguration.UseAlternateNameInBOM, IConfiguration.BOMPartNoSource, IModelDocExtension.CreateBalloonOptions, IModelDocExtension.InsertBOMBalloon2, IView.GetVisibleComponents, IAnnotation.GetLeaderPointsAtIndex, IModelDoc2.GetConfigurationByName, IModelDoc2.GetConfigurationNames]
+keywords: [BOM, bill of materials, parts list, InsertBomTable5, empty BOM, BOM shows only header, no QTY column, BomFeature, SetConfigurations, top-level only, bom-standard.sldbomtbt, item number, FollowAssemblyOrder2, balloons, auto balloon, AutoBalloon5, CreateAutoBalloonOptions, missing balloons, hidden parts not ballooned, IsBomBalloon, Description column, custom property, CustomPropertyManager, Add3, swCustomInfoText, BOM cell edit writes to part, description write-back, custom BOM column, InsertColumn2, PART NUMBER alternate name, BOMPartNoSource, balloon quantity, ShowQuantity, InsertBOMBalloon2, CreateBalloonOptions member not found, leader attach point, crossing leaders, one configuration BOM, QTY column per configuration, suppressed components in BOM, SetConfigurations False, virtual component part number, AlternateName every configuration]
 answers: "How do I put a bill of materials on an assembly drawing from code, make it actually list the parts with descriptions, and balloon every part?"
 ---
 
@@ -226,6 +226,45 @@ note = ext.InsertBOMBalloon2(bo); call(drw, "ClearSelection2", True)
   isometric) cannot be ballooned there; balloon it in another view where it
   shows (a section did), or change the explode so it is visible.
 
+## A BOM for one configuration of a multi-configuration assembly
+
+On an assembly with four configurations, `SetConfigurations(True, …)` with
+every flag `True` gave one QTY column per configuration and a row for every
+component of every configuration. To show one configuration, pass `False`
+first, the names of **all** available configurations, and a flag per name:
+
+```python
+feat = call(bom, "BomFeature"); feat.FollowAssemblyOrder2 = True; names = ["Default", "Position A", "Position B", "Exploded"]
+feat.SetConfigurations(False, VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_BOOL, [n == "Exploded" for n in names]), VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_BSTR, names))
+drw.ForceRebuild3(False)
+```
+
+The table then had one QTY column, and the components **suppressed in that
+configuration dropped out of it**: 11 rows became 5. That is a way to give a
+drawing a BOM of only some of an assembly's parts: suppress the rest in a
+configuration made for the drawing. The API help describes the first argument
+this way: `False` means the names are all available configurations and the
+flags choose which show.
+
+### PART NUMBER on a part with several configurations
+
+`AlternateName` with `BOMPartNoSource = 8`
+([above](#part-number-from-the-configuration)) belongs to **one** part
+configuration. Set on the part's default configuration only, the BOM still
+showed the file-derived name when the assembly configuration referenced another
+part configuration. Setting it on every configuration fixed that:
+
+```python
+sm_ = call(comp(PART_PREFIX), "GetModelDoc2")
+for cn in call(sm_, "GetConfigurationNames"):
+    cf = sm_.GetConfigurationByName(cn); cf.AlternateName = PART_NO; cf.UseAlternateNameInBOM = True; cf.BOMPartNoSource = 8
+```
+
+`comp(prefix)` returns the assembly component whose `Name2` starts with the
+prefix; `PART_PREFIX` and `PART_NO` are placeholders here. A virtual
+(in-assembly) component's default part number is
+`<component name>^<assembly name>`, which is worth replacing this way.
+
 ## What it does not do
 
 - **Indented or parts-only BOMs**, and BOMs on a multi-configuration assembly
@@ -265,6 +304,13 @@ each:
   isometric with no quantity shown; the ninth part, hidden there, was ballooned
   in the section view; after a later explode change all 9 were made in the
   isometric.
+
+Later run, SolidWorks 2024 SP5 (32.5.0), 2026-11-15, a BOM on an exploded view of
+a four-configuration assembly: `SetConfigurations(False, flags, names)`
+returned `True` and the table went from 4 QTY columns and 11 rows to 1 QTY
+column and 5 rows, the components suppressed in that configuration gone. A
+virtual component's PART NUMBER cell showed its `name^assembly` text until
+`AlternateName` was set on every one of its three configurations.
 
 ## See also
 
