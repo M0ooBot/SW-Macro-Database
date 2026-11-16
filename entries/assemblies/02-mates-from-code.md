@@ -5,7 +5,7 @@ status: verified
 verified_on: SolidWorks 2026 (revisions 34.0.0 and 34.1.1); failing mates, deleting and renaming also on SolidWorks 2024 SP5 (32.5.0)
 language: [python]
 api: [IAssemblyDoc.AddMate5, IComponent2.FeatureByName, IFeature.Select2, IModelDocExtension.SelectByID2, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IEquationMgr.Add2, IFeature.GetErrorCode2, IComponent2.GetConstrainedStatus, IModelDocExtension.GetWhatsWrongCount, IModelDocExtension.GetWhatsWrong, IModelDoc2.EditDelete, IFeature.Name, IModelDoc2.FeatureByName]
-keywords: [AddMate5, mate, coincident mate, distance mate, angle mate, swMateType_e, swMateCOINCIDENT, swMateDISTANCE, swMateANGLE, swMateAlign_e, MateGroup, MateCoincident, MateDistanceDim, MatePlanarAngleDim, FeatureByName, selection mark 1, drive mate from global, mate refused, AddMate5 status 0, AddMate5 status 5, over-defined assembly, swAddMateError_OverDefinedAssembly, GetErrorCode2 46, GetErrorCode2 47, GetErrorCode2 51, IsWarning, GetWhatsWrong, GetConstrainedStatus 4, delete a mate, EditDelete, DeleteSelection2, rename a mate, find a mate by name, suppressed mate error code 0, unsuppress marks modified]
+keywords: [AddMate5, mate, coincident mate, distance mate, angle mate, swMateType_e, swMateCOINCIDENT, swMateDISTANCE, swMateANGLE, swMateAlign_e, MateGroup, MateCoincident, MateDistanceDim, MatePlanarAngleDim, FeatureByName, selection mark 1, drive mate from global, mate refused, AddMate5 status 0, AddMate5 status 5, over-defined assembly, swAddMateError_OverDefinedAssembly, GetErrorCode2 46, GetErrorCode2 47, GetErrorCode2 51, IsWarning, GetWhatsWrong, GetConstrainedStatus 4, delete a mate, EditDelete, DeleteSelection2, rename a mate, find a mate by name, suppressed mate error code 0, unsuppress marks modified, distance mate wrong side, Flip plane to plane]
 answers: "How do I add coincident, distance and angle mates between assembly components from code?"
 ---
 
@@ -383,6 +383,17 @@ Later observed in [assemblies/10](10-mate-a-gear-train-that-turns.md#one-degree-
 an angle mate between two planes, its `D1` linked to an assembly global, turned
 its component by exactly the change in the global (90° → 120° turned it +30°;
 back to 90° put it back), on SolidWorks 2026 and 2024.
+
+## Which side a distance mate lands: read it back
+
+On SolidWorks 2024 SP5, a distance mate between a component's Front plane and
+a fixed part's Front plane (both normals along +Z), `AddMate5(5, 2, Flip,
+0.0555, 0.0555, 0.0555, 1.0, 1.0, 0, 0, 0, False, False, 0, out)`: with `Flip`
+`True` the component's origin read Z **+55.5 mm**; deleted and made again with
+`Flip` `False`, **−55.5 mm**, as wanted. There is no rule here to carry to the
+next mate ([assemblies/04](04-mates-between-non-parallel-axes.md) has a
+point-to-plane case): read `IComponent2.Transform2.ArrayData[11]` after the
+rebuild, and remake the mate with the other `Flip` if it is on the wrong side.
 
 ## Why it is not obvious
 

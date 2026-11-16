@@ -79,6 +79,19 @@ started fresh for it; an earlier 2024 run (20261114-040636) that shared its
 session with an assembly SolidWorks could not close is superseded by them. The
 result files stay in the Gear-Generator repository.
 
+Rows marked "SW 2024 (32.5.0), 2026-11-16" come from one session on SolidWorks 2024 SP5
+(revision 32.5.0) on 2026-11-15 and 2026-11-16, Windows Python 3.13 with pywin32
+late binding launched from WSL, editing and checking assemblies a person had
+built: a planetary gearbox with sliding dog-clutch sleeves in four
+configurations, a bevel differential with a locking collar in three, and a top
+assembly holding such sub-assemblies, flexible. The evidence is in
+[assemblies/15](entries/assemblies/15-free-a-rotation-without-moving-anything.md),
+[assemblies/16](entries/assemblies/16-turn-a-mechanism-with-a-temporary-drive.md),
+[assemblies/17](entries/assemblies/17-flexible-sub-assemblies.md) and the
+additions to assemblies/01, 02, 03, 05, 09, 10, 12 and 13, features/02 and
+connect/10. Its scripts and their output are not kept in this repo; the
+entries quote them.
+
 ## ISldWorks (the application)
 
 | Member | Purpose | Status |
@@ -115,6 +128,7 @@ result files stay in the Gear-Generator repository.
 | `OpenDoc6(path, 2, 1 + 128 + 64, "", out, out)` | `swOpenDocOptions_LoadLightweight` (128) alone left every component fully resolved; with `swOpenDocOptions_OverrideDefaultLoadLightweight` (64) every component read lightweight, and the SOLIDWORKS CAM add-in raised a modal error box that blocked the call until closed. Lightweight, a train's first drive read one gear at −24.17° where 2.5° was right (possibly a stale transform read); require `GetSuppression2` 2 first (GOTCHAS §102) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `CloseDoc(title)` / `QuitDoc(title)` on an assembly with unsaved changes, its changed parts open in their own windows | Neither asked: the assembly closed in 0.3 s with no window, the parts stayed open and modified and then closed silently one by one; nothing written to disk. On 2024 too | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `CommandInProgress = True` around mating | 18 `AddMate5` calls under it all answered status 1, mate codes 0, nothing moved; a conflicting mate still answered status 5; it read back `True`, then `False` once set back | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
+| `OpenDoc7(spec)` with `GetOpenDocSpec(path)` and `spec.Silent = True` | Open a saved copy silently; returned the document | Verified, SW 2024 (32.5.0), 2026-11-16 |
 
 ## IModelDoc2 (a part, assembly or drawing)
 
@@ -171,6 +185,9 @@ result files stay in the Gear-Generator repository.
 | `GetSaveFlag` (what sets it) | `False` on every document straight after an open from file, a 2024-saved file opened in 2026 included. A `Transform2` put alone did not set it; an interference check set it on the assembly; reading component frames did not | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `EditDelete()` on a mate | After `IFeature.Select2(False, 0)` on the mate, deleted it. **Call it with parentheses** (GOTCHAS §31) | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `FeatureByName(name)` on an assembly | Found a renamed mate by its new name after a reopen | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
+| `ReloadOrReplace(False, "", True)` | Reload from the file, discarding changes (`ReadOnly`, `ReplaceFileName`, `DiscardChanges`, names from `sldworks.tlb`). Returned 0 and the document read `GetSaveFlag` `False`; used to drop the marks a full rebuild left on 20 untouched documents (GOTCHAS §93). **Throws away real changes too** | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `AddConfiguration3(name, "", "", 0)` on an assembly | Added a configuration and made it active; returned a configuration object; mates suppressed in the configuration shown came over suppressed | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `DeleteDesignTable()` / `DeleteConfiguration2(name)` on a Toolbox copy | Left the one configuration a component used ([assemblies/09](entries/assemblies/09-keep-an-edited-toolbox-copy.md#turning-a-toolbox-part-into-a-plain-part-from-code)) | Verified, SW 2024 (32.5.0), 2026-11-16 |
 
 ## IModelDocExtension
 
@@ -210,6 +227,8 @@ result files stay in the Gear-Generator repository.
 | `GetWhatsWrong(out, out, out)` | The features, their codes and warning flags. **Three `VARIANT(VT_BYREF \| VT_VARIANT, None)` outs**; with none passed it raised "Parameter not optional" | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `NeedsRebuild` / `NeedsRebuild2` | Read only (the only zero-argument rebuild-status members `sldworks.tlb` lists). `True` / 1 after an assembly global changed, `False` / 0 after every rebuild route. After a change made in a component's own document: `False` / 0 before any rebuild, so it does not report that ([assemblies/12](entries/assemblies/12-rebuild-scope-and-the-save-flag.md)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `GetVersionHistory` | Raised `<unknown>.GetVersionHistory` through late binding; not pursued | Verified not to work that way, SW 2026 (34.1.1), tier 7/8 2026-11-13/14 |
+| `SaveAs3(path, 0, 1 \| 2, null, null, out, out)` | Silent **copy**: wrote the file; the open source stayed open and unmodified; the copy then opened with `OpenDoc7` | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `GetWhatsWrong(out, out, out)` on a top assembly | Listed a sub-assembly **component** (`GetTypeName2` `"Reference"`, or a flexible sub-assembly) at code 51, warning `True`, with no mate in error (GOTCHAS §118) | Verified, SW 2024 (32.5.0), 2026-11-16 |
 
 ## IConfigurationManager (from `IModelDoc2.ConfigurationManager`)
 
@@ -270,6 +289,9 @@ result files stay in the Gear-Generator repository.
 | `IDimension.SetSystemValue3(value_m, 3, names)` | A distance mate's value in the listed configurations (`3` = `swSetValue_InSpecificConfigurations`, from `swconst.tlb`), **metres**; returned `0` (`swSetValue_Successful`), also for a configuration that was not active; survived a save and reopen ([assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
 | `IDimension.GetSystemValue3(3, names)` | One value per listed configuration, metres, without showing any. **Read 0 for a configuration with no value of its own yet** (GOTCHAS §110); marked nothing on a reopened file | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
 | `IDimension.SystemValue` with several configurations | **Did not follow the configuration shown**: read 30 mm in a configuration whose value was 10 mm. Use `GetSystemValue3` with the name (GOTCHAS §110) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
+| `IDimension.SetSystemValue3(value_m, 1, None)` | The **shown** configuration only (`1` = `swSetValue_InThisConfiguration`); returned 0. Show each configuration, re-fetch the dimension, set, rebuild | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `IDimension.SetSystemValue3(value_m, 2, [name])` | `2` is `swSetValue_InAllConfigurations`; the name list did not narrow it: four calls read back `[0, 40.5, 0, 0]` mm (GOTCHAS §117) | Verified not to set that configuration, SW 2024 (32.5.0), 2026-11-16 |
+| `IDimension.GetSystemValue3(2, names)` / `GetSystemValue3(1, None)` | One value per name, metres or radians; the shown configuration's value | Verified, SW 2024 (32.5.0), 2026-11-16 |
 
 ## IFeatureManager (from `IModelDoc2.FeatureManager`)
 
@@ -300,6 +322,10 @@ result files stay in the Gear-Generator repository.
 | `InsertProtrusionBlend2` (18 arguments) | Also: **a refused solid returns `Nothing` with no feature, no error and no dialog**, after 7–9.5 s. On one wing it refused at 1.30–1.40 mm of inward offset and built at 1.25 and 1.45–1.60, from the same code; one guide curve was responsible ([surfacing/03](entries/surfacing/03-how-a-loft-fills-between-profiles.md)) | Verified, SW 2026 SP0.0, Airfoil Converter 2026-09-22 |
 | `FeatureCut3` | Listed by the probe, never called | Unverified |
 | `FeatureCircularPattern4` | Listed by the probe, never called | Unverified |
+| `FeatureCut4(True, False, False, 6, 0, depth, 0, …)` | Mid-plane cut (`swEndCondMidPlane` 6) from a sketch on an offset plane: `depth` is the whole width, centred on the sketch plane (16 mm about Z 13 gave Z 5–21) ([features/02](entries/features/02-cut-extrude.md#a-mid-plane-cut-from-an-offset-plane)) | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `FeatureCut4(False, False, False, 9, 9, …)` skimming an existing hole | An 8 mm circle in a 7.9375 mm bore: returned `None`, nothing cut | Verified not to cut, SW 2024 (32.5.0), 2026-11-15 |
+| `SetSuppression2(0, 1, None)` then `SetSuppression2(2, 1, None)` on a gear mate | Suppress and unsuppress in the **shown** configuration only, around a `Transform2` put that phased teeth per configuration; action `2` is `swUnSuppressDependent`. `IsSuppressed2(2, names)` read `[True, True, False]` after an unsuppress in the third | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `Select2(False, 0)` + `IModelDoc2.EditDelete()` on a part's `MateReference` (`PosGroupFolder`) | Deleted a Toolbox mate reference at error 51; the component's error in the assembly went with it (GOTCHAS §121) | Verified, SW 2024 (32.5.0), 2026-11-16 |
 
 ## IFeatureFolder (from `GetSpecificFeature2` on an `FtrFolder`)
 
@@ -531,6 +557,9 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `GetComponentByName(name)` after `AddConfiguration2` or `ShowConfiguration2` | The way to a working handle again: `Transform2`, `IsFixed`, `GetModelDoc2` and `Name2` answered correctly, where held handles did not (GOTCHAS §108). On 2026, in two of four runs, a fresh handle once answered `GetModelDoc2` None and once `Name2` `""`; select by names already held ([assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md)) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), configurations probe 2026-11-14 |
 | `GetComponentByName(name)` | A component by its `Name2`, after a reopen | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `AddComponent5(path, …)` of a part that is **not open** | Returned `None`, no error, no component; the same part opened by `OpenDoc6` first went in (GOTCHAS §99) | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
+| `AddMate5(0, 2, False, …)` between `Point1@Origin@<component>@<assembly>` and `Point1@Origin` | A plain coincident (`IMate2.Type` 0), not a coordinate-system mate; held the position and left the rotations ([assemblies/15](entries/assemblies/15-free-a-rotation-without-moving-anything.md)) | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `AddMate5(6, 2, False, 0, 0, 0, 1, 1, a, a, a, …)` at the angle two planes already make | Moved nothing and held the relation; used both as a key and as a temporary drive whose value `SetSystemValue3` then changed ([assemblies/16](entries/assemblies/16-turn-a-mechanism-with-a-temporary-drive.md)). Between parts of two flexible sub-assemblies it moved parts or left errors 51 | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `AddMate5(5, 2, flip, d, d, d, …)` plane to plane | `Flip` `True` put the component at +55.5 mm where `False` put it at −55.5 mm; read `Transform2` back ([assemblies/02](entries/assemblies/02-mates-from-code.md#which-side-a-distance-mate-lands-read-it-back)) | Verified, SW 2024 (32.5.0), 2026-11-16 |
 
 ## IComponent2
 
@@ -555,6 +584,9 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `ReferencedConfiguration = name` (put) | The part configuration this component uses **in the active assembly configuration**; gives an in-context part its own geometry per assembly configuration ([assemblies/14](entries/assemblies/14-in-context-part-across-configurations.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-11-15 |
 | `SetSuppression2(0)` | Suppress in the active configuration only; returned 2 ([assemblies/07](entries/assemblies/07-configurations-that-hold-different-positions.md#components-suppressed-in-one-configuration-only)) | Verified, SW 2024 SP5 (32.5.0), 2026-11-15 |
 | `GetBodies2(0)` | The component's solid bodies; empty for an in-context part whose sweep had silently produced nothing | Verified, SW 2024 SP5 (32.5.0), 2026-11-15 |
+| `Solving` (read; put by assignment) | `swComponentSolvingOption_e`: 0 rigid, 1 flexible. `sldworks.tlb` (2024) lists only a get, but `c.Solving = 0` then `= 1` read back and changed the solve; the toggle cleared a stuck warning and re-solved the sub-assembly's parts ([assemblies/17](entries/assemblies/17-flexible-sub-assemblies.md)) | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `FirstFeature` on a sub-assembly component | Its `MateGroup` walks like a document's; `GetErrorCode2` there read the mates as the top assembly solves them, which differed from the sub-assembly's own document | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `Transform2` put on a nested component (from `GetRootComponent3(True)` and `GetChildren`) | Put a flexible sub-assembly's parts back where a re-solve had moved them | Verified, SW 2024 (32.5.0), 2026-11-16 |
 
 ## IDragOperator (from `IAssemblyDoc.GetDragOperator`)
 
@@ -566,6 +598,7 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `BeginDrag` / `Drag(xform)` / `EndDrag` | Drag in steps; `Drag` returned `True` each step. A free component turned the full amount, a fixed one 0°, and gear mates carried the motion (GOTCHAS §73). Dragging a driving gear did **not** turn its driven gear; open ([assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md)) | Partly verified, SW 2024 SP5 (32.5.0), 2026-10-06 |
 | `DragMode`, `DragAsUI`, `TransformType = 1 / 2` | First listed as never run. Since run on a mated gear train: `DragAsUI` returned `True`; `DragMode` read 3 and was set to 0, 1 and 2, `TransformType` to 1 and 2, each read back as set. **No setting made the gear mates carry the drag** ([assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md#a-third-assembly-a-mated-gear-train-on-2026-and-2024)) | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `BeginDrag` / `Drag(xform)` / `EndDrag`, the recipe above, on a gear train | Repeated call for call on a train held by axis-coincident mates, its driving mates suppressed, 10° per case: only the dragged gear turned, whether the output (1, 10 or 30 steps), the input or a locked compound gear; every `Drag` `True`, no mate error. Not varied against the entry's success: the mate kind (concentric to sketch points there), an internal mesh, a 30° drag (GOTCHAS §101) | Verified not to carry through gear or lock mates on that train, Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
+| `CollisionDetectionEnabled = False`, `DynamicClearanceEnabled = False`, `TransformType` 0–2, `DragMode` 0–2, two `Drag` calls of 5° | On a bevel differential: carried through its gear mates, but turned 1.12° (0.88° with a lock) where 10° was asked, and left warnings 51. On a planetary: every one of nine combinations turned the dragged part exactly 10° and nothing else ([assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md#a-bevel-differential-and-a-planetary-on-2024)) | Verified, SW 2024 (32.5.0), 2026-11-16 |
 
 ## IMate2 (from `IFeature.GetSpecificFeature2` on a mate)
 
@@ -607,6 +640,8 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `ReferenceComponent` | The component the entity is on; `None` for the assembly's own | Verified, SW 2024 SP5 (32.5.0), 2026-10-06 |
 | `ReferenceType2` | 1 edge, 2 face, 24 sketch point were seen. Also 11 (`swSelSKETCHPOINTS`, the assembly's own origin) and 25 (`swSelEXTSKETCHPOINTS`, a sub-assembly's) on coordinate mates; values are `swSelectType_e` ([assemblies/06](entries/assemblies/06-read-every-mate.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-10-06 and 2026-10-28 |
 | `EntityParams` | In **assembly** coordinates, metres: items 0–2 a point on the axis, 3–5 the direction, 6 the radius (0 for a sketch point). Matched `CylinderParams` of the same face carried through the component's `Transform2` | Verified, SW 2024 SP5 (32.5.0), 2026-10-06 |
+| `Reference` | The entity itself; an existing concentric mate's face, then selected with `IFace2.Select4(True, data)` at mark 1 for a gear mate | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `ReferenceComponent.Name2` for a part inside a sub-assembly | The path, `Sub-1/Part-1` | Verified, SW 2024 (32.5.0), 2026-11-16 |
 
 ## IInterferenceDetectionMgr (from `IAssemblyDoc.InterferenceDetectionManager`)
 
@@ -618,6 +653,7 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `GetInterferences` | The interferences, a tuple. **A property get** | Verified, SW 2026 (34.0.0), dev runs 2026-09-15 |
 | `Done` | Release the manager. **A method**: call `manager.Done()`; attribute access fetches it without running it | Verified, SW 2026 (34.0.0), dev runs 2026-09-15 |
 | `IInterference.Volume` | The interference's volume in **cubic metres**, a property get; matched a lens of two circles to 1e-3 | Verified, SW 2026 (34.0.0), dev runs 2026-09-15 |
+| `IInterference.Components` | The two components an interference is between, a tuple of `IComponent2`, by attribute access ([assemblies/03](entries/assemblies/03-interference-detection.md#which-components-an-interference-is-between-in-each-configuration)) | Verified, SW 2024 (32.5.0), 2026-11-16 |
 
 ## IDrawingDoc (a drawing, late-bound)
 
@@ -740,6 +776,8 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 |---|---|---|
 | `IModelDocExtension.ToolboxPartType` (get; put through `Invoke` `DISPATCH_PROPERTYPUT`) | 0 not Toolbox, 1 standard, 2 copied; put 0 and `Save3` cleared the flag ([assemblies/09](entries/assemblies/09-keep-an-edited-toolbox-copy.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
 | `IAssemblyDoc.ReplaceComponents2(path, config, False, 1, True)` | Replace the selected component only, with the named configuration, mates re-attached | Verified, SW 2024 SP5 (32.5.0), 2026-11-09 |
+| `IModelDocExtension.ToolboxPartType = 0` (plain assignment) | Also cleared the flag (1 → 0), as the `Invoke` put does | Verified, SW 2024 (32.5.0), 2026-11-16 |
+| `IAssemblyDoc.ReplaceComponents2(path, config, False, 0, True)` | `0` = `swReplaceComponentsConfiguration_MatchName`: replaced a Toolbox part with a plain copy, and a stock part with an edited copy; returned `True`, mates re-attached and clean | Verified, SW 2024 (32.5.0), 2026-11-16 |
 
 ## ICustomPropertyManager (from `IModelDocExtension.CustomPropertyManager`)
 

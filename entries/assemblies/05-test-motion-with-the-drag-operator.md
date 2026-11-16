@@ -4,8 +4,8 @@ title: Test whether an assembly can move, with the drag operator
 status: partly-verified
 verified_on: SolidWorks 2024 SP5 (32.5.0); the gear-train drags also on SolidWorks 2026 (revisions 34.0.0 and 34.1.1)
 language: [python]
-api: [IAssemblyDoc.GetDragOperator, IDragOperator.AddComponent, IDragOperator.TransformType, IDragOperator.UseAbsoluteTransform, IDragOperator.BeginDrag, IDragOperator.Drag, IDragOperator.EndDrag, IMateEntity2.EntityParams, IFeature.SetSuppression2, IFeature.GetErrorCode2, IComponent2.Transform2, IDragOperator.DragAsUI, IDragOperator.DragMode, IComponent2.SetTransformAndSolve2]
-keywords: [gear mate does not propagate, DragAsUI, TransformType 0 1 2, drag operator, GetDragOperator, IDragOperator, BeginDrag, EndDrag, move component, rotate component, motion test, mechanism will not move, linkage locked, gear mate, mate diagnosis, which mate locks, suppress mate, EntityParams, error 51, Transform2 put, EditRebuild3, DragMode 0 1 2 3, SetTransformAndSolve2, gear train will not turn from code, drag does not carry through gear mate, lock mate drag, axis coincident]
+api: [IAssemblyDoc.GetDragOperator, IDragOperator.AddComponent, IDragOperator.TransformType, IDragOperator.UseAbsoluteTransform, IDragOperator.BeginDrag, IDragOperator.Drag, IDragOperator.EndDrag, IMateEntity2.EntityParams, IFeature.SetSuppression2, IFeature.GetErrorCode2, IComponent2.Transform2, IDragOperator.DragAsUI, IDragOperator.DragMode, IComponent2.SetTransformAndSolve2, IDragOperator.CollisionDetectionEnabled, IDragOperator.DynamicClearanceEnabled]
+keywords: [gear mate does not propagate, DragAsUI, TransformType 0 1 2, drag operator, GetDragOperator, IDragOperator, BeginDrag, EndDrag, move component, rotate component, motion test, mechanism will not move, linkage locked, gear mate, mate diagnosis, which mate locks, suppress mate, EntityParams, error 51, Transform2 put, EditRebuild3, DragMode 0 1 2 3, SetTransformAndSolve2, gear train will not turn from code, drag does not carry through gear mate, lock mate drag, axis coincident, bevel differential drag, drag turns less than asked, CollisionDetectionEnabled, DynamicClearanceEnabled, warning 51 after drag, drag changes other configurations]
 answers: "How do I find out from code whether an assembly can move, and which mate is stopping it?"
 ---
 
@@ -304,6 +304,77 @@ through a global
 ([assemblies/10](10-mate-a-gear-train-that-turns.md#one-degree-of-freedom-and-a-drive)),
 and confirm a drag by hand in the user interface.
 
+### A bevel differential and a planetary, on 2024
+
+Two more assemblies, built by people rather than by this collection's probes,
+dragged on SolidWorks 2024 SP5 (32.5.0) with this script (names replaced by
+placeholders; `mk(t)` makes a turn of `t` radians about the assembly Z through
+`IMathUtility.CreateTransform`, [assemblies/04](04-mates-between-non-parallel-axes.md#setting-a-components-frame)):
+
+```python
+asm.ShowConfiguration2(K); rb()
+base = {n: xf(c) for n, c in comps(asm).items()}
+active_gm = [n for n in GM if not mates(asm)[n].IsSuppressed2(1, None)[0]]
+print(f"[{K}] warnings {len(errors(asm))} | TransformType {TT} DragMode {DM}")
+dop = asm.GetDragOperator
+print("AddComponent", dop.AddComponent(comps(asm)[CAR], False))
+dop.CollisionDetectionEnabled = False
+dop.DynamicClearanceEnabled = False
+dop.TransformType = TT
+dop.DragMode = DM
+print("BeginDrag", dop.BeginDrag)
+for i in range(2):
+    print(f"  Drag #{i + 1}", dop.Drag(mk(math.radians(5.0))))
+print("EndDrag", dop.EndDrag)
+rb()
+for n, c in sorted(comps(asm).items()): print(f"   {n:18} {turned(xf(c), base[n])}")
+print("   warnings/errors:", [e[0] for e in errors(asm)] or "none")
+for n, c in comps(asm).items(): put_xf(c, base[n])
+rb()
+```
+
+`rb()` is `asm.EditRebuild3`; `turned` reports a component's turn about the
+assembly Z, or for a part whose axis is not Z its orbit about Z and its spin
+about its own axis. Afterwards every recorded frame is put back.
+
+**A bevel differential: the drag carried through the gear mates, but not by
+the amount asked.** A carrier freed to turn about Z
+([assemblies/15](15-free-a-rotation-without-moving-anything.md)), two side
+gears and two spiders joined by three gear mates made in the user interface,
+and a lock collar that couples one side gear to the carrier in one
+configuration. `TransformType` 0, `DragMode` 2, two `Drag` calls of +5° each,
+every call `True`:
+
+- Without the lock: the carrier turned **1.1213°**, neither the 10° of two
+  relative steps nor the 5° of one absolute one. The side gears turned 0.9469°
+  and 1.2956°, whose mean is the carrier's turn, the differential's own
+  relation; each spider orbited 1.1213° and spun 0.2615° about its own axis.
+- With the lock: everything turned **0.8814°** as one body.
+- **Afterwards the mates of the moved parts read `GetErrorCode2` 51 with the
+  warning flag `True`**: eleven (the coincident and gear mates) without the
+  lock, twenty with it. Putting every recorded frame back and `EditRebuild3`
+  cleared them all (largest difference from the record 2.2e-16 and 6.7e-16).
+  See [GOTCHAS §118](../../GOTCHAS.md).
+
+**A planetary gearbox: the drag carried nothing.** Its gears were mated by a
+program (axis mates, gear mates, locks), four configurations. Dragging an
+output dog ring 2 × 5° under every combination of `TransformType` 0, 1, 2 and
+`DragMode` 0, 1, 2 (nine runs) turned the dog **exactly 10.0000°** and no other
+component, with no warning; dragging the sun gear, gear-mated to three planets,
+the same. `EditRebuild3` and then `ForceRebuild3(False)` after a drag left the
+dog at 10.0°. A temporary drive mate on the same dog turned everything coupled
+to it ([assemblies/16](16-turn-a-mechanism-with-a-temporary-drive.md)), so the
+gear mates were solving.
+
+So within one session on one version, a drag carried through one assembly's
+gear mates and not another's. Besides the gear kind (bevel against spur), the
+differential's gear mates were made by hand and the gearbox's by a program, and
+its gears were held differently; none of this was varied. Restoring after a
+drag by putting frames back worked in the active configuration, but the drags
+in the planetary also changed its **other** configurations
+([assemblies/16](16-turn-a-mechanism-with-a-temporary-drive.md#putting-every-configuration-back),
+[GOTCHAS §119](../../GOTCHAS.md)): record every configuration before dragging.
+
 ## Evidence
 
 SolidWorks 2024 SP5 (32.5.0), a gear and linkage assembly of a few dozen
@@ -347,6 +418,17 @@ locked follower in 10),
 `restored_after_mm` 2.2e-16. The result files are kept in the Gear-Generator
 repository, not here.
 
+The bevel differential and the planetary: SolidWorks 2024 SP5 (`RevisionNumber`
+32.5.0), 2026-11-16, Python 3.13 with pywin32 launched from WSL. Differential,
+without the lock: `AddComponent True`, `BeginDrag True`, `Drag #1 True`,
+`Drag #2 True`, `EndDrag True`; `Carrier-1 turned 1.1213 about Z`, `Side-1
+turned 0.9469`, `SideF-2 turned 1.2956`, `Spider-1 orbit 1.1213 | spin
+0.2615`; then `restore (transforms): diff 2.22e-16 | warnings 0`. With the
+lock: every part `turned 0.8814`, twenty mates listed, `restore (transforms):
+diff 2.22e-16 | warnings 0`. Planetary, each of the nine combinations:
+`Dog-1 turned 10.0000 deg about world Z | shift 0.0000 mm`, every other
+component in the unmoved list, `warnings/errors after drag: none`.
+
 ## See also
 
 - [assemblies/02 — Mates from code](02-mates-from-code.md) — walking `MateGroup`, `AddMate5`
@@ -360,3 +442,6 @@ repository, not here.
 - [assemblies/10 — Mate a gear train that turns](10-mate-a-gear-train-that-turns.md) — the third assembly, and proving a train by a driven mate
 - [assemblies/11 — Change a mated gear train](11-change-a-mated-gear-train.md) — what a `Transform2` put does to a mated train
 - [GOTCHAS §101](../../GOTCHAS.md) — the drag that did not carry through a gear train
+- [assemblies/16 — Turn a mechanism with a temporary drive](16-turn-a-mechanism-with-a-temporary-drive.md) — what to use where a drag does not carry, and restoring every configuration
+- [assemblies/15 — Free a rotation without moving anything](15-free-a-rotation-without-moving-anything.md) — the differential carrier dragged above
+- [GOTCHAS §118, §119](../../GOTCHAS.md) — warnings 51 after a drag on 2024, and positions that reach other configurations

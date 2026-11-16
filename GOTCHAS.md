@@ -1100,6 +1100,11 @@ whose mates were in error (51). Not tried, so neither statement is known to
 reach the other's case: a drag instead of a put; a full rebuild (`ForceRebuild3(False)`) after a show; a put on a component whose gear mate is on in every configuration; a component free to slide as well as turn. Stale handles do not explain the later
 result: a stale handle answers `Transform2` with None, not an old position. See
 [assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#where-components-stand-in-each-configuration).
+Two later readings on 2024 SP5: a put made with the gear mate suppressed in
+the active configuration only, then unsuppressed, held in that configuration
+([assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#teeth-in-phase-in-every-configuration));
+and with gear mates on in every configuration, a drive or a drag in one
+configuration moved components in the others (§119).
 
 ## 84. Deleted smart-explode-line segments come back
 
@@ -1192,6 +1197,11 @@ assembly global, and returned `False` while a component failed to rebuild. A
 reading component frames does not. SolidWorks 2026 (34.1.1) and 2024 SP5
 (32.5.0). See
 [assemblies/12](entries/assemblies/12-rebuild-scope-and-the-save-flag.md).
+Marks a full rebuild has already left can be thrown away without writing
+anything: `IModelDoc2.ReloadOrReplace(False, "", True)` on each such part
+returned 0 and left it unmodified (20 documents, a sub-assembly among them, on 2024 SP5). It discards real
+changes too, so use it only on documents nothing changed on purpose. See
+[assemblies/12](entries/assemblies/12-rebuild-scope-and-the-save-flag.md#undoing-a-rebuilds-marks-without-saving-reload-from-disk).
 
 ## 94. Two reference axes cannot be mated concentric
 
@@ -1484,3 +1494,67 @@ On a virtual in-context part with several configurations, `Add2`, `Add3` and
 removed the equation for good. Close without saving to get it back. Never delete
 before an add has worked on that document. SolidWorks 2024 SP5 (32.5.0). See
 [equations/01](entries/equations/01-global-variables-from-code.md#on-a-virtual-in-context-part).
+
+## 117. `SetSystemValue3(v, 2, [name])` does not set that configuration
+
+`IDimension.SetSystemValue3`'s second argument `2` is
+`swSetValue_InAllConfigurations`; the name list does not narrow it. A distance
+mate's dimension given four values in turn, each as `SetSystemValue3(v, 2,
+[its configuration])`, read back by `GetSystemValue3(2, names)` as
+`[0, 40.5, 0, 0]` mm: the last value, in the active configuration, and 0 for
+the rest (§110). Use `3` with the names, or show each configuration and use `1`
+with `None`, which put 55.5, 55.5, 48.0 and 40.5 mm where they belonged.
+SolidWorks 2024 SP5 (32.5.0). See
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#a-dimensions-value-in-this-configuration-or-in-all).
+
+## 118. On SolidWorks 2024, mates read warning 51 after a drag, and a flexible sub-assembly can keep one
+
+A drag with the drag operator that did carry through a differential's gear
+mates left every mate of the parts it moved at `GetErrorCode2` 51 with the
+warning flag `True` (eleven mates, and twenty with a lock engaged); putting
+the recorded frames back and `EditRebuild3` cleared them all. In a top
+assembly, a flexible sub-assembly's component stayed in What's Wrong with 51
+(warning) after failed mates near it were deleted; `ForceRebuild3(True)` did
+not clear it, and putting its `IComponent2.Solving` to rigid and back to
+flexible did, **but re-solved its parts to other angles** (175.9°) until their
+frames were put back. As in §95, 51 is the number 2024 gives for many mate
+states; read the warning flag, and record frames before anything that solves.
+SolidWorks 2024 SP5 (32.5.0). See
+[assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md#a-bevel-differential-and-a-planetary-on-2024)
+and [assemblies/17](entries/assemblies/17-flexible-sub-assemblies.md).
+
+## 119. A drive or a drag in one configuration moved components in the others
+
+In an assembly with four configurations and gear mates on in all of them, a
+temporary drive mate turned in one configuration and deleted, and drags undone
+by `Transform2` puts in one configuration, each left components moved in
+**every** configuration, including a gear that the drive did not turn in its
+own configuration; a relative angle that had read 236.6°, 287.9°, 236.6° and
+91.7° across the four read 287.9° in all of them. Re-putting a recorded frame
+for every component in every configuration fixed it, but took two rounds: the
+first round's puts in later configurations disturbed earlier ones once. Which
+step moved the other configurations was not separated. Record every
+configuration's frames before driving or dragging, restore in a loop until a
+verify pass is clean. SolidWorks 2024 SP5 (32.5.0). See
+[assemblies/16](entries/assemblies/16-turn-a-mechanism-with-a-temporary-drive.md#putting-every-configuration-back).
+
+## 120. `cmd.exe /c start "title" …` from WSL puts a "Windows cannot find" box on the screen
+
+The quotes round `start`'s window title did not survive the trip from a WSL
+shell, so `start` took the title for the program, failed, and showed a modal
+"Windows cannot find '<title>'" box on the user's desktop; nothing was
+started. `powershell.exe -NoProfile -Command "Start-Process -FilePath
+python.exe -ArgumentList … -WorkingDirectory … -WindowStyle Hidden"` started
+the same process hidden, with no box. `cmd.exe /c start "" <exe>` (an empty
+title) started SolidWorks but did not return to WSL within 450 s. See
+[connect/10](entries/connect/10-driving-from-outside-windows.md#launching-a-hidden-helper-from-wsl-not-cmdexe-start-title).
+
+## 121. A Toolbox part's own mate reference fails once its face changes, and the component shows error 51
+
+A Toolbox part carries a `MateReference` feature (`GetTypeName2`
+`PosGroupFolder`, in a `MateReferences` folder). After a copy's bore was
+changed, the part's feature walk read it at error 51, and the **assembly's**
+walk read the component itself as a `Reference` feature at error 51, while every
+mate read clean. Deleting the part's `MateReference` (`FeatureByName`,
+`Select2`, `EditDelete()`) cleared both. SolidWorks 2024 SP5 (32.5.0). See
+[assemblies/09](entries/assemblies/09-keep-an-edited-toolbox-copy.md#the-toolbox-mate-reference-that-failed-afterwards).

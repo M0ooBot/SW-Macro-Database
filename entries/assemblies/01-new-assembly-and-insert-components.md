@@ -2,10 +2,10 @@
 id: assemblies-01-new-assembly-and-insert-components
 title: Make an assembly and insert saved parts as components
 status: verified
-verified_on: SolidWorks 2026 (revision 34.0.0); inserting a closed part, a fixed component's put, and the template's effect on fixing also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)
+verified_on: SolidWorks 2026 (revision 34.0.0); inserting a closed part, a fixed component's put, and the template's effect on fixing also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0); replacing a component with an edited copy on SolidWorks 2024 SP5 only
 language: [python]
-api: [ISldWorks.NewDocument, IAssemblyDoc.AddComponent5, IComponent2.Name2, IComponent2.Transform2, IComponent2.IsFixed, IComponent2.Select4, IAssemblyDoc.FixComponent, IAssemblyDoc.GetComponentByName, ISldWorks.OpenDoc6]
-keywords: [assembly, AddComponent5, insert component, component name -1, Name2, Transform2, ArrayData, IsFixed, FixComponent, fixed on insert, first component fixed, asmdot, assembly template, component position, AddComponent5 returns None, insert a closed part, swFileWithSameTitleAlreadyOpen, 65536, same file name, GetComponentByName, move a fixed component]
+api: [ISldWorks.NewDocument, IAssemblyDoc.AddComponent5, IComponent2.Name2, IComponent2.Transform2, IComponent2.IsFixed, IComponent2.Select4, IAssemblyDoc.FixComponent, IAssemblyDoc.GetComponentByName, ISldWorks.OpenDoc6, IAssemblyDoc.ReplaceComponents2, IModelDocExtension.SaveAs3, ISldWorks.OpenDoc7]
+keywords: [assembly, AddComponent5, insert component, component name -1, Name2, Transform2, ArrayData, IsFixed, FixComponent, fixed on insert, first component fixed, asmdot, assembly template, component position, AddComponent5 returns None, insert a closed part, swFileWithSameTitleAlreadyOpen, 65536, same file name, GetComponentByName, move a fixed component, replace component, ReplaceComponents2, keep mates, re-attach mates, swap a part for an edited copy, SaveAs3 copy, swSaveAsOptions_Copy]
 answers: "How do I make a new assembly and insert saved parts into it as components from code?"
 ---
 
@@ -267,6 +267,52 @@ still fixed, and read `GetSuppression2` 2 (`swComponentFullyResolved`).
 `IModelDoc2.FeatureByName` then `GetSpecificFeature2`). **A `Transform2` put
 moved a fixed component without unfixing it**, and the new frames survived a
 save and reopen.
+
+## Replacing a component with an edited copy
+
+A component that should become a changed version of itself (a longer sleeve
+made from a stock one) without its mates being made again: copy the part,
+change the copy, and replace the component with it. On SolidWorks 2024 SP5,
+from the scripts that ran, names replaced by placeholders:
+
+```python
+def copy(src_name, dest_name):
+    src = app.GetOpenDocumentByName(os.path.join(FOLDER, src_name))
+    dest = os.path.join(FOLDER, dest_name)
+    if src is None or src.GetSaveFlag:
+        raise SystemExit(f"STOP: {src_name} not open, or has unsaved changes")
+    e1, e2 = out(), out()
+    call(call(src, "Extension"), "SaveAs3", dest, 0, 1 | 2, swcom._null_dispatch(), swcom._null_dispatch(), e1, e2)
+    spec = app.GetOpenDocSpec(dest); spec.Silent = True
+    doc = app.OpenDoc7(spec)
+    print(f"--- {dest_name} made from {src_name}; opened:", doc is not None, "| source still unsaved-free:", not src.GetSaveFlag)
+    return doc
+```
+
+`IModelDocExtension.SaveAs3` with options `1 | 2` (silent, copy) wrote the
+copy and left the open source as it was (`GetSaveFlag` still `False`);
+`ISldWorks.OpenDoc7` with a silent `GetOpenDocSpec` opened the copy. The copy
+was then changed through its globals ([equations/01](../equations/01-global-variables-from-code.md)):
+a face width from 10 to 26 mm took its volume from 4406.4 to 11456.7 mm³,
+exactly 2.6 times, and another from 5 to 20 mm from 1360.8 to 5443.2 mm³, 4
+times ([reading/10](../reading/10-mass-properties-as-an-oracle.md)). Saved with
+`Save3(1, e1, e2)`, `True`. Then, in the assembly:
+
+```python
+c = comps()["Sleeve-1"]
+cfg = c.ReferencedConfiguration
+call(asm, "ClearSelection2", True)
+c.Select4(False, swcom._null_dispatch(), False)
+ok = asm.ReplaceComponents2(os.path.join(FOLDER, "LongSleeve.SLDPRT"), cfg, False, 0, True)
+asm.EditRebuild3
+print("replace sleeve:", ok, "| now:", [n for n in comps() if "Sleeve" in n], "| errors:", errors() or "none")
+```
+
+It returned `True`; the component was then named after the new file
+(`LongSleeve-1`); its mates, all named, kept their names and read no error. `0` is
+`swReplaceComponentsConfiguration_MatchName`: the copy kept the configuration's
+name. The same call replaced Toolbox parts with plain copies in
+[assemblies/09](09-keep-an-edited-toolbox-copy.md#turning-a-toolbox-part-into-a-plain-part-from-code).
 
 ## What it does not do
 
