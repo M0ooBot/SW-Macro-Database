@@ -1,11 +1,11 @@
 {
   "schema": 1,
   "description": "SolidWorks automation entries. Each answers one question. Check 'status' before trusting an entry: verified means it ran against the named version; unverified means it is well-formed against the documented API but was never executed.",
-  "count": 98,
+  "count": 101,
   "by_status": {
-    "partly-verified": 11,
+    "partly-verified": 12,
     "unverified": 2,
-    "verified": 85
+    "verified": 87
   },
   "entries": [
     {
@@ -70,7 +70,7 @@
       "path": "entries/assemblies/01-new-assembly-and-insert-components.md",
       "category": "assemblies",
       "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0); inserting a closed part, a fixed component's put, and the template's effect on fixing also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0); inserting a closed part, a fixed component's put, and the template's effect on fixing also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0); replacing a component with an edited copy on SolidWorks 2024 SP5 only",
       "language": [
         "python"
       ],
@@ -83,7 +83,10 @@
         "IComponent2.Select4",
         "IAssemblyDoc.FixComponent",
         "IAssemblyDoc.GetComponentByName",
-        "ISldWorks.OpenDoc6"
+        "ISldWorks.OpenDoc6",
+        "IAssemblyDoc.ReplaceComponents2",
+        "IModelDocExtension.SaveAs3",
+        "ISldWorks.OpenDoc7"
       ],
       "keywords": [
         "assembly",
@@ -106,7 +109,14 @@
         "65536",
         "same file name",
         "GetComponentByName",
-        "move a fixed component"
+        "move a fixed component",
+        "replace component",
+        "ReplaceComponents2",
+        "keep mates",
+        "re-attach mates",
+        "swap a part for an edited copy",
+        "SaveAs3 copy",
+        "swSaveAsOptions_Copy"
       ],
       "answers": "How do I make a new assembly and insert saved parts into it as components from code?"
     },
@@ -171,7 +181,9 @@
         "rename a mate",
         "find a mate by name",
         "suppressed mate error code 0",
-        "unsuppress marks modified"
+        "unsuppress marks modified",
+        "distance mate wrong side",
+        "Flip plane to plane"
       ],
       "answers": "How do I add coincident, distance and angle mates between assembly components from code?"
     },
@@ -181,7 +193,7 @@
       "path": "entries/assemblies/03-interference-detection.md",
       "category": "assemblies",
       "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0); which components an interference is between, per configuration, on SolidWorks 2024 SP5 (32.5.0)",
       "language": [
         "python"
       ],
@@ -190,7 +202,8 @@
         "IInterferenceDetectionMgr.GetInterferenceCount",
         "IInterferenceDetectionMgr.GetInterferences",
         "IInterferenceDetectionMgr.Done",
-        "IInterference.Volume"
+        "IInterference.Volume",
+        "IInterference.Components"
       ],
       "keywords": [
         "InterferenceDetectionManager",
@@ -208,7 +221,11 @@
         "property or method",
         "late binding",
         "negative control",
-        "gear mesh check"
+        "gear mesh check",
+        "IInterference.Components",
+        "which components interfere",
+        "interference per configuration",
+        "teeth out of phase"
       ],
       "answers": "How do I check an assembly for interfering components from code and get the interference volume?"
     },
@@ -293,7 +310,9 @@
         "IComponent2.Transform2",
         "IDragOperator.DragAsUI",
         "IDragOperator.DragMode",
-        "IComponent2.SetTransformAndSolve2"
+        "IComponent2.SetTransformAndSolve2",
+        "IDragOperator.CollisionDetectionEnabled",
+        "IDragOperator.DynamicClearanceEnabled"
       ],
       "keywords": [
         "gear mate does not propagate",
@@ -322,7 +341,13 @@
         "gear train will not turn from code",
         "drag does not carry through gear mate",
         "lock mate drag",
-        "axis coincident"
+        "axis coincident",
+        "bevel differential drag",
+        "drag turns less than asked",
+        "CollisionDetectionEnabled",
+        "DynamicClearanceEnabled",
+        "warning 51 after drag",
+        "drag changes other configurations"
       ],
       "answers": "How do I find out from code whether an assembly can move, and which mate is stopping it?"
     },
@@ -519,7 +544,14 @@
         "IComponent2.GetPathName",
         "IComponent2.ReferencedConfiguration",
         "ISldWorks.OpenDoc6",
-        "ISldWorks.CloseDoc"
+        "ISldWorks.CloseDoc",
+        "IModelDocExtension.SaveAs3",
+        "ISldWorks.OpenDoc7",
+        "IModelDoc2.DeleteDesignTable",
+        "IModelDoc2.DeleteConfiguration2",
+        "IModelDoc2.FeatureByName",
+        "IModelDoc2.EditDelete",
+        "IFeature.GetErrorCode2"
       ],
       "keywords": [
         "Toolbox",
@@ -540,7 +572,18 @@
         "replace component",
         "mates lost after reopen",
         "error 51",
-        "read-only toolbox part"
+        "read-only toolbox part",
+        "convert toolbox part to normal part",
+        "standalone copy",
+        "MateReference",
+        "MateReferences",
+        "PosGroupFolder",
+        "Reference error 51",
+        "design table",
+        "one configuration",
+        "DeleteDesignTable",
+        "swReplaceComponentsConfiguration_MatchName",
+        "sprocket"
       ],
       "answers": "I edited a Toolbox part (or a copy of one) and on reopening the assembly my edits are gone and the mates fail — why, and how do I make the edited copy stick?"
     },
@@ -690,7 +733,8 @@
         "ISldWorks.OpenDoc6",
         "ISldWorks.ActivateDoc3",
         "IModelDocExtension.GetWhatsWrongCount",
-        "IComponent2.Transform2"
+        "IComponent2.Transform2",
+        "IModelDoc2.ReloadOrReplace"
       ],
       "keywords": [
         "ForceRebuild3 True",
@@ -717,7 +761,12 @@
         "CommandInProgress mates",
         "origin noise",
         "reading feature data marks nothing",
-        "unsuppress marks modified"
+        "unsuppress marks modified",
+        "ReloadOrReplace",
+        "reload from disk",
+        "discard changes",
+        "undo modified flag",
+        "clear dirty flag without saving"
       ],
       "answers": "Which rebuild should I call on an assembly after changing it from code, so that SolidWorks only asks to save the documents I actually changed — and what marks a document modified in the first place?"
     },
@@ -733,6 +782,7 @@
       ],
       "api": [
         "IConfigurationManager.AddConfiguration2",
+        "IModelDoc2.AddConfiguration3",
         "IConfigurationManager.ActiveConfiguration",
         "IModelDoc2.ShowConfiguration2",
         "IModelDoc2.DeleteConfiguration2",
@@ -774,7 +824,17 @@
         "positions per configuration",
         "component position per configuration",
         "put per configuration",
-        "ShowConfiguration2 marks modified"
+        "ShowConfiguration2 marks modified",
+        "swSetValue_InThisConfiguration 1",
+        "swSetValue_InAllConfigurations 2",
+        "SetSystemValue3 wrong configuration",
+        "per configuration value read back wrong",
+        "AddConfiguration3",
+        "tooth phase per configuration",
+        "align teeth in every configuration",
+        "gear mate suppressed in this configuration",
+        "swUnSuppressDependent 2",
+        "SetSuppression2 this configuration"
       ],
       "answers": "How do I add, show and delete assembly configurations from code, and give a mate's suppression or a distance mate's value per configuration, without stale component handles misleading me?"
     },
@@ -812,6 +872,140 @@
         "GetFaceCount 0"
       ],
       "answers": "My in-context part (a spring whose length follows the parts around it) draws at the same size in every configuration's drawing view. How do I make each assembly configuration keep its own size?"
+    },
+    {
+      "id": "assemblies-15-free-a-rotation-without-moving-anything",
+      "title": "Replace the mates that hold a component so it can turn, without moving anything",
+      "path": "entries/assemblies/15-free-a-rotation-without-moving-anything.md",
+      "category": "assemblies",
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "language": [
+        "python"
+      ],
+      "api": [
+        "IModelDocExtension.SelectByID2",
+        "IAssemblyDoc.AddMate5",
+        "IFeature.GetSpecificFeature2",
+        "IMate2.Type",
+        "IMate2.Alignment",
+        "IFeature.Select2",
+        "IModelDoc2.EditDelete",
+        "IModelDoc2.EditRebuild3",
+        "IComponent2.Transform2",
+        "IFeature.GetErrorCode2",
+        "IDimension.GetSystemValue3"
+      ],
+      "keywords": [
+        "coordinate system mate",
+        "swMateCOORDINATE",
+        "mate type 20",
+        "free a rotation",
+        "release one degree of freedom",
+        "unlock rotation",
+        "carrier will not turn",
+        "component locked",
+        "replace mate",
+        "origin to origin coincident",
+        "Point1@Origin",
+        "EXTSKETCHPOINT",
+        "plane coincident",
+        "angle mate at current angle",
+        "key two parts",
+        "keyed",
+        "nothing moved",
+        "transform snapshot",
+        "differential carrier",
+        "delete mate"
+      ],
+      "answers": "A component is held by a mate that fixes all six degrees of freedom (a coordinate-system mate), and it needs to turn about one axis. How do I swap that mate for ones that leave the rotation free, and key another part to it, without anything moving?"
+    },
+    {
+      "id": "assemblies-16-turn-a-mechanism-with-a-temporary-drive",
+      "title": "Turn a mechanism in an existing assembly with a temporary drive mate, and put every configuration back",
+      "path": "entries/assemblies/16-turn-a-mechanism-with-a-temporary-drive.md",
+      "category": "assemblies",
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "language": [
+        "python"
+      ],
+      "api": [
+        "IAssemblyDoc.AddMate5",
+        "IFeature.GetFirstDisplayDimension",
+        "IDisplayDimension.GetDimension2",
+        "IDimension.GetSystemValue3",
+        "IDimension.SetSystemValue3",
+        "IModelDoc2.EditRebuild3",
+        "IComponent2.Transform2",
+        "IModelDoc2.ShowConfiguration2",
+        "IModelDoc2.GetConfigurationNames",
+        "IModelDoc2.EditDelete",
+        "IMathUtility.CreateTransform"
+      ],
+      "keywords": [
+        "drive a mechanism",
+        "motion test",
+        "temporary angle mate",
+        "drive mate",
+        "what turns with what",
+        "clutch engaged",
+        "coupling check",
+        "turn a gear train from code",
+        "angle mate at current angle",
+        "SetSystemValue3 this configuration",
+        "restore positions",
+        "transform snapshot",
+        "positions changed in other configurations",
+        "configuration positions spread",
+        "re-put per configuration",
+        "drag does not carry through gear mate",
+        "IDragOperator alternative"
+      ],
+      "answers": "How do I turn one part of an existing assembly from code and see which other parts follow (does this clutch couple these shafts?), without a drive mate of my own already in it, and put everything back afterwards in every configuration?"
+    },
+    {
+      "id": "assemblies-17-flexible-sub-assemblies",
+      "title": "Read and set whether a sub-assembly solves as flexible, and check the mates inside it from the top",
+      "path": "entries/assemblies/17-flexible-sub-assemblies.md",
+      "category": "assemblies",
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0), for reading and putting Solving, reading nested mates, and clearing a stuck warning; motion through a flexible sub-assembly was not demonstrated",
+      "language": [
+        "python"
+      ],
+      "api": [
+        "IComponent2.Solving",
+        "IComponent2.FirstFeature",
+        "IComponent2.GetChildren",
+        "IConfiguration.GetRootComponent3",
+        "IModelDocExtension.GetWhatsWrong",
+        "IModelDocExtension.GetWhatsWrongCount",
+        "IFeature.GetErrorCode2",
+        "IMateEntity2.ReferenceComponent",
+        "IComponent2.ReferencedConfiguration",
+        "IComponent2.Transform2"
+      ],
+      "keywords": [
+        "flexible sub-assembly",
+        "rigid sub-assembly",
+        "Solving",
+        "swComponentSolvingOption_e",
+        "swComponentFlexibleSolving",
+        "swComponentRigidSolving",
+        "make flexible from code",
+        "nested component",
+        "sub-assembly mates from the top assembly",
+        "What's Wrong sub-assembly",
+        "error 51 warning stuck",
+        "Reference",
+        "GetRootComponent3",
+        "GetChildren",
+        "nested Name2 path",
+        "mate between sub-assemblies",
+        "ReferencedConfiguration changed"
+      ],
+      "answers": "How do I make a sub-assembly flexible (or rigid) from code, check the mates inside it as the top assembly solves them, and clear a warning that sticks to it?"
     },
     {
       "id": "connect-01-attach-vbscript",
@@ -1095,7 +1289,7 @@
       "path": "entries/connect/10-driving-from-outside-windows.md",
       "category": "connect",
       "status": "verified",
-      "verified_on": "WSL2 to SolidWorks 2026",
+      "verified_on": "WSL2 to SolidWorks 2026; launching hidden processes and a file-queue worker, WSL2 to SolidWorks 2024 SP5 (32.5.0)",
       "language": [
         "shell",
         "typescript",
@@ -1103,7 +1297,8 @@
       ],
       "api": [
         "cscript",
-        "wslpath"
+        "wslpath",
+        "powershell Start-Process"
       ],
       "keywords": [
         "wsl",
@@ -1119,7 +1314,20 @@
         "\\\\wsl.localhost",
         "UNC path",
         "carriage return",
-        "tr -d"
+        "tr -d",
+        "Start-Process",
+        "WindowStyle Hidden",
+        "PassThru",
+        "cmd.exe start title",
+        "Windows cannot find",
+        "127.0.0.1 from WSL",
+        "localhost unreachable",
+        "NAT mode",
+        "connection refused",
+        "file queue",
+        "persistent worker",
+        "hidden launch",
+        "dialog from WSL launch"
       ],
       "answers": "My code runs on Linux or a Mac. How do I still drive SolidWorks?"
     },
@@ -2352,7 +2560,7 @@
       "path": "entries/features/02-cut-extrude.md",
       "category": "features",
       "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0); a mid-plane cut from an offset plane on SolidWorks 2024 SP5 (32.5.0)",
       "language": [
         "python"
       ],
@@ -2370,7 +2578,14 @@
         "cut removed nothing",
         "returns None",
         "hole",
-        "27 arguments"
+        "27 arguments",
+        "mid plane",
+        "swEndCondMidPlane",
+        "6",
+        "cut from an offset plane",
+        "relief groove",
+        "internal groove",
+        "cut a sliver returns None"
       ],
       "answers": "How do I cut-extrude a sketch through a part from code, and be sure it removed material?"
     },

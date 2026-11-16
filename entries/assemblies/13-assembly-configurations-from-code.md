@@ -4,8 +4,8 @@ title: Add, show and delete assembly configurations from code, with mates and di
 status: verified
 verified_on: SolidWorks 2026 (34.1.1) and SolidWorks 2024 SP5 (32.5.0)
 language: [python]
-api: [IConfigurationManager.AddConfiguration2, IConfigurationManager.ActiveConfiguration, IModelDoc2.ShowConfiguration2, IModelDoc2.DeleteConfiguration2, IModelDoc2.GetConfigurationNames, IFeature.SetSuppression2, IFeature.IsSuppressed2, IDimension.SetSystemValue3, IDimension.GetSystemValue3, IDimension.SystemValue, IAssemblyDoc.GetComponentByName, IComponent2.Transform2, IComponent2.IsFixed, IEquationMgr.Add2, IModelDoc2.GetSaveFlag]
-keywords: [assembly configuration, AddConfiguration2, ShowConfiguration2, DeleteConfiguration2, configuration from code, stale component handle, Transform2 None, IsFixed False, GetComponentByName after configuration change, SetSuppression2 configuration, swSpecifyConfiguration 3, SetSuppression2 0x80010105, SetSuppression2 returns False, IsSuppressed2, mate made in another configuration, SetSystemValue3, GetSystemValue3, swSetValue_InSpecificConfigurations, distance per configuration, SystemValue does not follow configuration, GetSystemValue3 reads 0, Add2 returns -1, positions per configuration, component position per configuration, put per configuration, ShowConfiguration2 marks modified]
+api: [IConfigurationManager.AddConfiguration2, IModelDoc2.AddConfiguration3, IConfigurationManager.ActiveConfiguration, IModelDoc2.ShowConfiguration2, IModelDoc2.DeleteConfiguration2, IModelDoc2.GetConfigurationNames, IFeature.SetSuppression2, IFeature.IsSuppressed2, IDimension.SetSystemValue3, IDimension.GetSystemValue3, IDimension.SystemValue, IAssemblyDoc.GetComponentByName, IComponent2.Transform2, IComponent2.IsFixed, IEquationMgr.Add2, IModelDoc2.GetSaveFlag]
+keywords: [assembly configuration, AddConfiguration2, ShowConfiguration2, DeleteConfiguration2, configuration from code, stale component handle, Transform2 None, IsFixed False, GetComponentByName after configuration change, SetSuppression2 configuration, swSpecifyConfiguration 3, SetSuppression2 0x80010105, SetSuppression2 returns False, IsSuppressed2, mate made in another configuration, SetSystemValue3, GetSystemValue3, swSetValue_InSpecificConfigurations, distance per configuration, SystemValue does not follow configuration, GetSystemValue3 reads 0, Add2 returns -1, positions per configuration, component position per configuration, put per configuration, ShowConfiguration2 marks modified, swSetValue_InThisConfiguration 1, swSetValue_InAllConfigurations 2, SetSystemValue3 wrong configuration, per configuration value read back wrong, AddConfiguration3, tooth phase per configuration, align teeth in every configuration, gear mate suppressed in this configuration, swUnSuppressDependent 2, SetSuppression2 this configuration]
 answers: "How do I add, show and delete assembly configurations from code, and give a mate's suppression or a distance mate's value per configuration, without stale component handles misleading me?"
 ---
 
@@ -193,10 +193,142 @@ mates per configuration; its one instrumented "same position" was of an
 attempt whose added mates left others in error (51), a different case.
 
 **Not tried, and needed to reconcile the two:** a drag instead of a put; a full rebuild (`ForceRebuild3(False)`) after a show; a put on a component whose gear mate is on in every configuration; a component free to slide as well as turn.
-Until one of these is run, do not rely on either statement beyond its own
-procedure. A macro that needs a position in a configuration can still give that
+Two later readings, on SolidWorks 2024 SP5: the per-configuration tooth
+phasing [above](#teeth-in-phase-in-every-configuration) (a put with the gear
+mate suppressed in that configuration only held there), and the drives and
+drags of [assemblies/16](16-turn-a-mechanism-with-a-temporary-drive.md#putting-every-configuration-back)
+(with the gear mates on everywhere, a solver move in one configuration reached
+the others, and so did a drag undone by a put; which step did it was not
+separated). Until the cases listed as not tried are run, do not rely on
+either statement beyond its own procedure. A macro that needs a position in a configuration can still give that
 configuration its own mates ([assemblies/07](07-configurations-that-hold-different-positions.md)),
 which holds whichever way the open question falls.
+
+## A dimension's value in this configuration, or in all
+
+The other two values of `WhichConfigurations` were met on a 2024 SP5 assembly
+with four configurations (`swSetValueInConfiguration_e`, read from
+`swconst.tlb`: `1` `swSetValue_InThisConfiguration`, `2`
+`swSetValue_InAllConfigurations`, `3` `swSetValue_InSpecificConfigurations`).
+
+- **`2` with a one-name list does not set that configuration.** A distance
+  mate's dimension was given four values in turn, each with its configuration's
+  name, `dim.SetSystemValue3(v / M, 2, [k])`, then read back with
+  `dim.GetSystemValue3(2, CFGS)`: **`[0.0, 40.5, 0.0, 0.0]`** mm for the four
+  configurations, the second being the active one. The last value had landed
+  in the active configuration and the others read 0 (no value of their own,
+  [GOTCHAS §110](../../GOTCHAS.md)). `2` means all configurations; the name
+  list is no limit. See [GOTCHAS §117](../../GOTCHAS.md).
+- **Show each configuration and set it with `1` and `None`.** What put the
+  right value in each:
+
+  ```python
+  for k in CFGS:
+      asm.ShowConfiguration2(k)
+      dim = mates()["Sleeve along Axis"].GetFirstDisplayDimension.GetDimension2(0)
+      dim.SetSystemValue3(SLEEVE_D[k] / M, 1, None)
+      asm.EditRebuild3
+      zs = comps()["Sleeve-1"].Transform2.ArrayData[11] * M
+      print(f"  [{k}] sleeve distance {dim.SystemValue * M:.3f} -> origin Z {zs:.3f} (want {-SLEEVE_D[k]})")
+  ```
+
+  (`mates()` and `comps()` walk the `MateGroup` and `GetComponents(True)`
+  afresh, so the dimension and component handles are fetched after each show.)
+  Each configuration's sleeve stood at its own distance, 55.5, 55.5, 48.0 and
+  40.5 mm, and showing each configuration again read the same four.
+- In a second assembly, the same `SetSystemValue3(v, 1, None)` with one
+  configuration shown returned 0, and `GetSystemValue3(2, names)` then read
+  `[41.75, 41.75, 35.75]` mm for its three configurations: the shown one read
+  the new value and the other two the old 41.75 mm. Before the set, the same
+  read had given `[0.0, 0.0, 41.75]`: only the configuration shown (one just
+  added) read a value, and the other two read 0 ([GOTCHAS §110](../../GOTCHAS.md)).
+- `GetSystemValue3(2, names)` (all configurations, with the list of names)
+  read one value per name, as `3` does.
+
+## Adding a configuration with `AddConfiguration3`
+
+`IModelDoc2.AddConfiguration3(name, "", "", 0)`, called on the assembly's
+document with `Default` shown, returned a configuration object, and the new
+configuration became the active one (`ActiveConfiguration.Name` read it);
+`GetConfigurationNames` listed it after the others. Its mates' suppression
+came over from `Default` (a mate suppressed there read suppressed in the new
+configurations too). Re-fetch every handle
+afterwards ([GOTCHAS §108](../../GOTCHAS.md)); the scripts here walked the
+components and mates again after every add and show.
+
+## Teeth in phase in every configuration
+
+A sliding toothed sleeve rides a toothed hub through a 1 : 1 gear mate
+([assemblies/10](10-mate-a-gear-train-that-turns.md#a-1--1-gear-mate-between-two-components-on-one-axis));
+each configuration puts the sleeve somewhere else along the axis. The gear
+mate holds the two at whatever relative angle it was made at, so in
+configurations where the teeth sat half a tooth out of phase they interfered.
+Each configuration was put right on its own: suppress the gear mate **in this
+configuration**, turn the hub by the error, rebuild, unsuppress it **in this
+configuration**:
+
+```python
+P17 = 2 * math.pi / 17
+def ang(c):
+    a = c.Transform2.ArrayData
+    return math.atan2(a[1], a[0])
+def put_rot(c, theta, z):
+    data = [math.cos(theta), math.sin(theta), 0.0, -math.sin(theta), math.cos(theta), 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, z / M, 1.0, 0.0, 0.0, 0.0]
+    util = call(app, "GetMathUtility"); ole = util._oleobj_
+    raw = ole.Invoke(ole.GetIDsOfNames("CreateTransform"), 0, pythoncom.DISPATCH_METHOD, True, VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_R8, data))
+    swcom._put(c, "Transform2", raw if hasattr(raw, "ArrayData") else _dynamic.Dispatch(raw))
+asm.ShowConfiguration2("C2"); asm.EditRebuild3
+cs = comps()
+delta = ang(cs["Hub-1"]) - ang(cs["Sleeve-1"])
+print(f"C2: hub - sleeve = {math.degrees(delta):.3f} deg (aligned there)")
+gm = mates()["Sleeve rides Hub"]
+for k in ("C1", "C3", "C4"):
+    asm.ShowConfiguration2(k); asm.EditRebuild3
+    cs = comps()
+    cur = ang(cs["Hub-1"]) - ang(cs["Sleeve-1"])
+    off = (cur - delta) % P17
+    if off > P17 / 2: off -= P17
+    print(f"[{k}] hub - sleeve = {math.degrees(cur):.3f} deg; off by {math.degrees(off):.3f} deg (mod one tooth)")
+    gm = mates()["Sleeve rides Hub"]
+    gm.SetSuppression2(0, 1, None); asm.EditRebuild3
+    put_rot(cs["Hub-1"], ang(cs["Hub-1"]) - off, -55.5); asm.EditRebuild3
+    gm = mates()["Sleeve rides Hub"]
+    gm.SetSuppression2(2, 1, None); asm.EditRebuild3
+    cs = comps()
+    cur = ang(cs["Hub-1"]) - ang(cs["Sleeve-1"])
+    off2 = (cur - delta) % P17
+    if off2 > P17 / 2: off2 -= P17
+    print(f"     now off by {math.degrees(off2):.4f} deg; hub Z {cs['Hub-1'].Transform2.ArrayData[11]*M:.3f}; mate suppressed here: {gm.IsSuppressed2(1, None)[0]}")
+```
+
+`P17` is one tooth of the 17-tooth pair; the phase that was right is the one
+in `C2`, where the teeth were known to mesh. `SetSuppression2(0, 1, None)`
+suppresses in the active configuration (`swInConfigurationOpts_e` `1`); the
+unsuppress was given action `2`, `swUnSuppressDependent` in
+`swFeatureSuppressionAction_e` (0 suppress, 1 unsuppress, 2 unsuppress with
+dependents), and it unsuppressed the mate in that configuration
+(`IsSuppressed2(1, None)` read `False`). The hub's axial position is put back
+at its known Z in the same transform.
+
+- The three configurations were off by 8.742°, 5.579° and 8.983°; after the
+  step each read 0.0000° off, the hub still at its distance.
+- **Each configuration kept its own phase.** Every configuration was then shown
+  again in turn and checked for interference: before the step the sleeve and
+  hub interfered in three of the four (17 interferences each, one per tooth,
+  13.679, 8.054 and 13.971 mm³ apiece); after it, none in any, and no mate
+  error in any. The gear mate was on in every configuration by then.
+- A second assembly did the same with two pairs (a collar on a hub, and in one
+  configuration the same collar engaging a dog), and also unsuppressed a mate
+  in one configuration only with `SetSuppression2(2, 1, None)` (it returned
+  `True`): `IsSuppressed2(2, names)` read `[True, True, False]`, on only in the
+  configuration that was shown.
+
+This is one more reading on the open question below: a put made while the
+gear mate was suppressed **in the active configuration only** stayed in that
+configuration, and the mate, unsuppressed, held it. Against it,
+[assemblies/16](16-turn-a-mechanism-with-a-temporary-drive.md#putting-every-configuration-back)
+saw a solver move in one configuration reach every other one, with the gear
+mates on everywhere.
 
 ## What it does not do
 
@@ -253,6 +385,27 @@ marked:
   `relative_in_Y_after_put: -1.0`, `relative_in_X_after_show: -6.0`,
   `D_turn_from_put: 0.0`.
 
+The per-configuration values with `1` and `2`, `AddConfiguration3` and the
+tooth phasing come from two assemblies edited on SolidWorks 2024 SP5
+(`RevisionNumber` 32.5.0) on 2026-11-16, Python over pywin32 launched from
+WSL. From their output:
+
+- `Sleeve along Axis now: [0.0, 40.5, 0.0, 0.0]` after the four calls with
+  `2`; then, with `1` after each show, `[C1] sleeve distance 55.500 -> origin Z
+  -55.500 (want -55.5)`, the same for `C2`, `[C3] … 48.000 -> origin Z -48.000`,
+  `[C4] … 40.500 -> origin Z -40.500`, and the re-read after showing each again
+  `-55.500`, `-55.500`, `-48.000`, `-40.500`.
+- `AddConfiguration3(Open) -> <COMObject <unknown>> | active now Open | configs
+  ['Default', 'Open']`, then the same for `Locked`; `before Locked edits: collar distance [0.0, 0.0, 41.75]
+  | engage suppressed [True, True, True]`, `SetSystemValue3 35.75 -> 0`,
+  `unsuppress engage -> True`, `after: collar distance [41.75, 41.75, 35.75] |
+  engage suppressed [True, True, False]`.
+- `C2: hub - sleeve = -10.588 deg (aligned there)`; `[C1] … off by 8.742 deg`,
+  `now off by -0.0000 deg; hub Z -55.500; mate suppressed here: False`; `[C3]
+  … 5.579`, `0.0000`; `[C4] … 8.983`, `-0.0000`; then for each configuration
+  `mate errors none | interferences with sleeve/hub: none`, where before the
+  step three configurations had listed 17 each.
+
 Component and configuration names are placeholders here.
 
 ## See also
@@ -263,4 +416,6 @@ Component and configuration names are placeholders here.
 - [assemblies/12 — Rebuild scope and the save flag](12-rebuild-scope-and-the-save-flag.md) — what marks a document
 - [files/02 — Explode configurations](../files/02-explode-configurations.md) — configurations of a part
 - [equations/02 — Link a dimension to a global](../equations/02-link-a-dimension-to-a-global.md)
-- [GOTCHAS §23, §83, §108, §109, §110](../../GOTCHAS.md)
+- [assemblies/16 — Turn a mechanism with a temporary drive](16-turn-a-mechanism-with-a-temporary-drive.md) — positions that a drive changed in every configuration
+- [assemblies/03 — Interference detection](03-interference-detection.md#which-components-an-interference-is-between) — the per-configuration phase check
+- [GOTCHAS §23, §83, §108, §109, §110, §117, §119](../../GOTCHAS.md)

@@ -26,7 +26,7 @@ code. You never need to open the projects the entries came from.
 
 ## What's in here
 
-98 entries, grouped twelve ways:
+101 entries, grouped twelve ways:
 
 - **[entries/connect/](entries/connect/)** — reaching a running SolidWorks from
   VBScript, Python, C# and VBA, keeping the connection alive safely, and
@@ -55,7 +55,10 @@ code. You never need to open the projects the entries came from.
   mating them, with a mate driven by a global, on parallel axes and on axes at
   an angle, checking the result for interference, and testing whether it can
   move and which mate stops it; gear trains mated to turn and changed in place,
-  and which rebuild leaves untouched parts unmodified.
+  and which rebuild leaves untouched parts unmodified; freeing a held
+  component's rotation without moving anything, turning an existing mechanism
+  with a temporary drive and putting every configuration back, and flexible
+  sub-assemblies.
 - **[entries/reading/](entries/reading/)** — interrogating a model: a closed
   file's references, reference trees, what the user has selected, sketch to
   model coordinates, and reading dimensions, equations and sizes back out.
@@ -89,7 +92,7 @@ Every entry declares one:
 | `unverified` | Well-formed against the documented API. Nobody has watched it run. |
 | `superseded` | Do not use. The entry links to what replaced it. |
 
-Currently: **85 verified, 11 partly verified, 2 unverified.**
+Currently: **87 verified, 12 partly verified, 2 unverified.**
 
 This distinction is the most valuable thing here, so it is never blurred. An
 entry that guesses says so.

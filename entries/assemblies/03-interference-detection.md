@@ -2,10 +2,10 @@
 id: assemblies-03-interference-detection
 title: Check an assembly for interference and read the volumes
 status: verified
-verified_on: SolidWorks 2026 (revision 34.0.0)
+verified_on: SolidWorks 2026 (revision 34.0.0); which components an interference is between, per configuration, on SolidWorks 2024 SP5 (32.5.0)
 language: [python]
-api: [IAssemblyDoc.InterferenceDetectionManager, IInterferenceDetectionMgr.GetInterferenceCount, IInterferenceDetectionMgr.GetInterferences, IInterferenceDetectionMgr.Done, IInterference.Volume]
-keywords: [InterferenceDetectionManager, interference detection, clash detection, collision, GetInterferenceCount, GetInterferences, IInterference, Volume, Done, TreatCoincidenceAsInterference, IgnoreHiddenBodies, UseTransform, property or method, late binding, negative control, gear mesh check]
+api: [IAssemblyDoc.InterferenceDetectionManager, IInterferenceDetectionMgr.GetInterferenceCount, IInterferenceDetectionMgr.GetInterferences, IInterferenceDetectionMgr.Done, IInterference.Volume, IInterference.Components]
+keywords: [InterferenceDetectionManager, interference detection, clash detection, collision, GetInterferenceCount, GetInterferences, IInterference, Volume, Done, TreatCoincidenceAsInterference, IgnoreHiddenBodies, UseTransform, property or method, late binding, negative control, gear mesh check, IInterference.Components, which components interfere, interference per configuration, teeth out of phase]
 answers: "How do I check an assembly for interfering components from code and get the interference volume?"
 ---
 
@@ -143,17 +143,55 @@ def interferences(px: Px, asm: Any, label: str) -> Dict[str, Any]:
 
 (`OPTIONS` there is the same tuple as `INTERFERENCE_OPTIONS` above.)
 
+## Which components an interference is between, in each configuration
+
+`IInterference.Components` names the components. On SolidWorks 2024 SP5, the
+check was run once per configuration of a four-configuration assembly and
+filtered to the two components of interest (names replaced by placeholders):
+
+```python
+for k in CFGS:
+    asm.ShowConfiguration2(k); asm.EditRebuild3
+    cs = comps()
+    zs = {n: round(cs[n].Transform2.ArrayData[11] * M, 3) for n in ("Sleeve-1", "Hub-1")}
+    mgr = call(asm, "InterferenceDetectionManager")
+    for n, v in OPTS: setattr(mgr, n, v)
+    hits = []
+    try:
+        items = mgr.GetInterferences
+        items = items() if type(items).__name__ == "method" else items
+        for it in items or ():
+            cn = [str(x.Name2) for x in (it.Components or ())]
+            if any("Sleeve" in x or "Hub" in x for x in cn):
+                hits.append((round(float(it.Volume) * 1e9, 3), cn))
+    finally:
+        mgr.Done()
+    print(f"[{k}] origins {zs} | mate errors {errors() or 'none'} | interferences with sleeve/hub: {hits or 'none'}")
+```
+
+`OPTS` is the options tuple above with `TreatSubAssembliesAsComponents`
+`False`. `Components` was read by attribute access and gave a tuple of
+`IComponent2`, two per interference, whose `Name2` named the pair. A sliding
+toothed sleeve on a toothed hub, coupled by a 1 : 1 gear mate, read **17
+interferences between exactly those two** (one per tooth, 13.679, 8.054 and
+13.971 mm³ each) in three configurations and none in the fourth, where the
+teeth had been put in phase; after each configuration was phased
+([assemblies/13](13-assembly-configurations-from-code.md#teeth-in-phase-in-every-configuration)),
+none in any. The configuration that read none from the start is the half-pitch
+control of [GOTCHAS §104](../../GOTCHAS.md) in another form: the same check saw
+the out-of-phase teeth in the others.
+
 ## What it does not do
 
 - The options were set once, to the values above, and never varied. What each
   one changes is not observed; in particular `TreatCoincidenceAsInterference`
   false means faces merely touching were not tested either way.
 - Only whole-assembly detection was run. Checking a chosen subset of
-  components, and reading which components an interference is between, were
-  not tried.
+  components was not tried; which components an interference is between was
+  read afterwards, [above](#which-components-an-interference-is-between-in-each-configuration).
 - `Volume` was read only through the probe's `member` helper and the tool's
-  `float(call(item, "Volume"))`; both worked. Other members of `IInterference`
-  were not read.
+  `float(call(item, "Volume"))`; both worked. Of the other members of
+  `IInterference` only `Components` was read.
 - How long detection takes on large assemblies was not measured.
 
 ## Evidence
@@ -195,5 +233,6 @@ facts in both. Excerpts:
 - [connect/02 — Attach from Python](../connect/02-attach-from-python.md) — attribute access versus a call
 - [reading/10 — Mass properties as an oracle](../reading/10-mass-properties-as-an-oracle.md) — checking by a volume you can compute
 - [connect/11 — Probe an API member on a live session](../connect/11-probe-an-api-member-on-a-live-session.md) — the negative control
-- [GOTCHAS §31, §40](../../GOTCHAS.md)
+- [GOTCHAS §31, §40, §104](../../GOTCHAS.md)
+- [assemblies/13 — Assembly configurations from code](13-assembly-configurations-from-code.md#teeth-in-phase-in-every-configuration) — the teeth put in phase per configuration
 - [assemblies/12 — Rebuild an assembly without marking every part modified](12-rebuild-scope-and-the-save-flag.md) — running this check marks the assembly modified

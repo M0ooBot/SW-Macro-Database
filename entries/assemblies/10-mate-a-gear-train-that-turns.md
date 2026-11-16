@@ -451,6 +451,23 @@ axis mate, so free to turn and slide.
   the drive still turned it 1 : 1. Set back after each drive, every frame
   returned within 1.4e-14 mm.
 
+Two more on SolidWorks 2024 SP5 (32.5.0), 2026-11-16, in a gearbox built
+earlier, both 1 : 1 with both entity directions +Z:
+
+- **Axis to axis** (a toothed hub's axis and a sliding sleeve's): `Flip`
+  False read `Reverse` False and `Flip` True read `Reverse` True; the second was
+  kept, matching the anchor-to-sleeve case above on 2024. Its sense was not
+  driven.
+- **A reference axis to a cylindrical face** (a dog ring's axis and a
+  sprocket's bore, the face taken from the entity of an existing concentric
+  mate, `IMateEntity2.Reference`, and selected with `IFace2.Select4(True,
+  data)` at mark 1): the mate kept read ratio 1 : 1, `Reverse` True,
+  `ReferenceType2` 5 for the axis and 2 for the face, and moved nothing in any of four configurations. Which `Flip`
+  made it is not in the log (the script tried `False` first and kept the first
+  that read `Reverse` True; `IMate2.Flipped` read False). Driven later with a
+  temporary drive mate, the dog and the sprocket turned −10.0000° together
+  ([assemblies/16](16-turn-a-mechanism-with-a-temporary-drive.md)).
+
 So here too no fixed `Flip` is right on both versions: make it, read it back,
 and remake it with the other `Flip` if wrong. Not covered: an entity pointing
 against its component's own axis (both pointed along +Z in every case); a

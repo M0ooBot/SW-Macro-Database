@@ -4,8 +4,8 @@ title: Rebuild an assembly without marking every part modified, and what sets Ge
 status: verified
 verified_on: SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0), each in a session started fresh for the run
 language: [python]
-api: [IModelDoc2.ForceRebuild3, IModelDoc2.EditRebuild3, IModelDoc2.GetSaveFlag, ISldWorks.CommandInProgress, IFeature.GetDefinition, IModelDocExtension.NeedsRebuild, IModelDocExtension.NeedsRebuild2, ISldWorks.OpenDoc6, ISldWorks.ActivateDoc3, IModelDocExtension.GetWhatsWrongCount, IComponent2.Transform2]
-keywords: [ForceRebuild3 True, ForceRebuild3 False, top only, EditRebuild3, rebuild marks parts modified, save prompt for parts not changed, GetSaveFlag, unsaved changes, dirty flag, modified flag, NeedsRebuild, NeedsRebuild2, rebuild returns False, failed component, interference check marks modified, OpenDoc6 warning 128, swFileLoadWarning_AlreadyOpen, ActivateDoc3, skeleton part, layout part, opened from file reads unmodified, CommandInProgress mates, origin noise, reading feature data marks nothing, unsuppress marks modified]
+api: [IModelDoc2.ForceRebuild3, IModelDoc2.EditRebuild3, IModelDoc2.GetSaveFlag, ISldWorks.CommandInProgress, IFeature.GetDefinition, IModelDocExtension.NeedsRebuild, IModelDocExtension.NeedsRebuild2, ISldWorks.OpenDoc6, ISldWorks.ActivateDoc3, IModelDocExtension.GetWhatsWrongCount, IComponent2.Transform2, IModelDoc2.ReloadOrReplace]
+keywords: [ForceRebuild3 True, ForceRebuild3 False, top only, EditRebuild3, rebuild marks parts modified, save prompt for parts not changed, GetSaveFlag, unsaved changes, dirty flag, modified flag, NeedsRebuild, NeedsRebuild2, rebuild returns False, failed component, interference check marks modified, OpenDoc6 warning 128, swFileLoadWarning_AlreadyOpen, ActivateDoc3, skeleton part, layout part, opened from file reads unmodified, CommandInProgress mates, origin noise, reading feature data marks nothing, unsuppress marks modified, ReloadOrReplace, reload from disk, discard changes, undo modified flag, clear dirty flag without saving]
 answers: "Which rebuild should I call on an assembly after changing it from code, so that SolidWorks only asks to save the documents I actually changed — and what marks a document modified in the first place?"
 ---
 
@@ -252,6 +252,36 @@ active, the way a tool edits a part that is already loaded as a component:
   ([connect/07](../connect/07-find-the-open-document.md)), which did. Both
   versions.
 
+## Undoing a rebuild's marks without saving: reload from disk
+
+When a full rebuild has already marked parts that nothing changed, the marks
+can be thrown away without writing anything: reload each such part from its
+file. On SolidWorks 2024 SP5 (32.5.0), 2026-11-16, after full rebuilds
+(`ForceRebuild3(False)`) had marked parts that were unmodified when the session
+started (names replaced by placeholders):
+
+```python
+for stem in ("Side", "Spider"):
+    d = app.GetOpenDocumentByName(os.path.join(FOLDER, stem + ".SLDPRT"))
+    if d is None or not d.GetSaveFlag:
+        print(stem, "not dirty / not open"); continue
+    em = d.GetEquationMgr; bore = [em.Equation(i) for i in range(em.GetCount) if "Bore" in em.Equation(i)]
+    r = d.ReloadOrReplace(False, "", True)
+    d = app.GetOpenDocumentByName(os.path.join(FOLDER, stem + ".SLDPRT"))
+    print(f"{stem}: ReloadOrReplace -> {r} | unsaved now {bool(d.GetSaveFlag)} | bore eq before {bore}")
+```
+
+`IModelDoc2.ReloadOrReplace(ReadOnly, ReplaceFileName, DiscardChanges)`
+(parameter names from `sldworks.tlb`), given `False, "", True`, returned **0**
+and the part read `GetSaveFlag` `False` straight after, fetched again by path.
+The equation read beforehand is the check that the file on disk held the same
+values. In a second pass the same call cleared 17 parts and a chain
+sub-assembly (`.SLDASM`) marked by a `ForceRebuild3(False)`, every one
+returning 0 and reading unmodified. It was used only on documents whose marks
+came from rebuilds: **reloading throws away any real change too**. The
+assemblies that had been changed on purpose, and a virtual part (whose path is
+in the session's temporary folder), were left alone and stayed marked.
+
 ## Why it is not obvious
 
 - `ForceRebuild3(False)` is the call most code uses, and it looks harmless
@@ -341,3 +371,4 @@ The result files are kept in the Gear-Generator repository, not here.
 - [reading/16 — Measure between two selections](../reading/16-measure-between-two-selections.md)
 - [connect/07 — Find the open document](../connect/07-find-the-open-document.md)
 - [GOTCHAS §58, §93, §100, §103](../../GOTCHAS.md)
+- [assemblies/16 — Turn a mechanism with a temporary drive](16-turn-a-mechanism-with-a-temporary-drive.md) — a session in which these marks were reloaded away

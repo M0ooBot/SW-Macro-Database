@@ -2,10 +2,10 @@
 id: connect-10-driving-from-outside-windows
 title: Driving Windows SolidWorks from WSL or another host
 status: verified
-verified_on: WSL2 to SolidWorks 2026
+verified_on: WSL2 to SolidWorks 2026; launching hidden processes and a file-queue worker, WSL2 to SolidWorks 2024 SP5 (32.5.0)
 language: [shell, typescript, python]
-api: [cscript, wslpath]
-keywords: [wsl, cross platform, cscript, wslpath, path translation, remote drive, python.exe, windows python from wsl, pywin32 from wsl, ext4, \\wsl.localhost, UNC path, carriage return, tr -d]
+api: [cscript, wslpath, powershell Start-Process]
+keywords: [wsl, cross platform, cscript, wslpath, path translation, remote drive, python.exe, windows python from wsl, pywin32 from wsl, ext4, \\wsl.localhost, UNC path, carriage return, tr -d, Start-Process, WindowStyle Hidden, PassThru, cmd.exe start title, Windows cannot find, 127.0.0.1 from WSL, localhost unreachable, NAT mode, connection refused, file queue, persistent worker, hidden launch, dialog from WSL launch]
 answers: "My code runs on Linux or a Mac. How do I still drive SolidWorks?"
 ---
 
@@ -154,6 +154,93 @@ moved to the background and stopped afterwards; stopping it left SolidWorks
 running. A script polling `find_candidates()` every few seconds attached once
 the welcome screen was up. Why `start` did not detach here was not looked into.
 
+PowerShell's `Start-Process` with `-PassThru` returned, unlike `start` above,
+and printed the new process's id, which is what an attach by process id needs:
+
+```bash
+powershell.exe -NoProfile -Command "\$p = Start-Process -FilePath 'C:\Program Files\SOLIDWORKS Corp\SOLIDWORKS (2)\SLDWORKS.exe' -PassThru; \$p.Id" | tr -d '\r'
+```
+
+It printed the id; a script polling `find_candidates()` for that id every 5 s
+found the session (revision 32.5.0) on its second try, 5 s in, with the welcome
+screen up. SolidWorks 2024 SP5, 2026-11-15.
+
+### Launching a hidden helper from WSL: not `cmd.exe start "title"`
+
+`cmd.exe /c start "worker" /min python.exe worker.py …`, run from a WSL
+shell, put up a Windows error box on the user's screen: **"Windows cannot find
+'worker'. Make sure you typed the name correctly"**. The quotes round the
+window title did not survive the trip from WSL to `cmd.exe`, so `start` took
+the title for the program to run. The process never started.
+What replaced it, from Python in WSL (paths are placeholders):
+
+```python
+ps = ("Start-Process -FilePath python.exe -ArgumentList 'worker.py','%s','%d' "
+      "-WorkingDirectory '%s' -WindowStyle Hidden" % (SRC, PID, WINHERE))
+subprocess.run(["powershell.exe", "-NoProfile", "-Command", ps],
+               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+```
+
+It started the worker with no console window and no dialog (tried first on a
+harmless `python.exe -c pass`), and the WSL call returned. See
+[GOTCHAS §120](../../GOTCHAS.md).
+
+## A persistent worker on the Windows side, and why it is a file queue
+
+Every `python.exe script.py` from WSL starts a Windows Python, imports pywin32
+and attaches again. A worker that stays attached and runs jobs sent to it was
+tried on SolidWorks 2024 SP5 (2026-11-16), with these findings:
+
+- **WSL could not reach a socket on Windows.** A Windows Python listening on
+  `127.0.0.1` refused the connection from WSL (`[Errno 111] Connection
+  refused`; WSL2 with a private 172.18.x address behind the Windows host, the
+  networking mode itself not read). Listening on the WSL default gateway's
+  address instead, the
+  connection from WSL timed out. The Windows firewall is the likely cause; it
+  was not checked.
+- **So the transport is files** in a folder both sides see (`/mnt/c/...`).
+  The client writes `jobs/<id>.json` through a temporary name and
+  `os.replace`, so the worker never reads half a file; the worker polls the
+  folder every 30 ms, runs the job on its one COM thread, and writes
+  `results/<id>.json` the same way:
+
+  ```python
+  def submit(job, timeout):
+      os.makedirs(JOBS, exist_ok=True); os.makedirs(RESULTS, exist_ok=True)
+      jid = "%d-%s" % (time.time() * 1000, uuid.uuid4().hex[:6])
+      tmp = os.path.join(JOBS, jid + ".tmp")
+      with open(tmp, "w", encoding="utf-8") as f:
+          json.dump(job, f)
+      os.replace(tmp, os.path.join(JOBS, jid + ".json"))
+      rp = os.path.join(RESULTS, jid + ".json")
+      end = time.time() + timeout
+      while time.time() < end:
+          if os.path.exists(rp):
+              try:
+                  with open(rp, encoding="utf-8") as f:
+                      r = json.load(f)
+              except Exception:
+                  time.sleep(0.01); continue
+              os.remove(rp)
+              return r
+          time.sleep(0.01)
+  ```
+
+  A ping (the worker reading `ISldWorks.RevisionNumber`) took 0.08–0.10 s from
+  WSL and back.
+- **It was not faster for the job measured.** One small read (an 18-component
+  assembly's components and every mate's error code), five runs each way:
+  a fresh `python.exe` per run took a median of 0.72 s (0.33–1.73 s); through
+  the worker, medians of 1.48 s, then 4.21 s and 3.24 s in two later sets. The
+  job's own time inside the worker was 1.1–3.4 s, so the COM work, not the
+  start-up, dominated, and it varied with another program using the same
+  SolidWorks at the time. A Windows Python started quickly on this machine.
+  Measure before building one.
+- The worker kept every SolidWorks call on its own thread
+  ([connect/06](06-one-apartment-thread.md)) and returned only plain data,
+  never COM objects; a job that raised (a deliberate division by zero) came
+  back as an error and the worker carried on.
+
 ## Structuring the output so it can be parsed
 
 The generated script should emit one line per operation with a fixed-width
@@ -189,3 +276,5 @@ is the point of keeping the automation textual.
 - [documents/02 — Save as, and close](../documents/02-save-as-and-close.md) — saving under `C:\`
 - [connect/12 — Read the API help offline](12-read-the-api-help-offline.md) — `hh.exe` from WSL
 - [appearance/01 — Read and remove a part's appearance](../appearance/01-read-and-remove-a-part-appearance.md) — another run launched this way, on SolidWorks 2024
+- [connect/06 — One apartment thread](06-one-apartment-thread.md) — why the worker keeps every call on one thread
+- [GOTCHAS §120](../../GOTCHAS.md) — `cmd.exe start "title"` from WSL

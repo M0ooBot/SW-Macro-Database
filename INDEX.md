@@ -18,6 +18,8 @@ set in one read should use [manifest.json](manifest.json) instead.
 | Walk every feature, sketches under features included | [connect/08 — Find a feature by name](entries/connect/08-find-a-feature-by-name.md) |
 | Start SolidWorks if it isn't running | [connect/09 — Launch versus attach](entries/connect/09-launch-versus-attach.md) |
 | Drive Windows SolidWorks from WSL or a Mac | [connect/10 — Driving from outside Windows](entries/connect/10-driving-from-outside-windows.md) |
+| Launch a hidden helper or SolidWorks itself from WSL without a dialog, and get its process id | [connect/10 — Driving from outside Windows](entries/connect/10-driving-from-outside-windows.md#launching-a-hidden-helper-from-wsl-not-cmdexe-start-title) |
+| Keep one Windows-side worker attached and send it jobs from WSL (and whether it is faster) | [connect/10 — Driving from outside Windows](entries/connect/10-driving-from-outside-windows.md#a-persistent-worker-on-the-windows-side-and-why-it-is-a-file-queue) |
 | Find out whether an API call really works before depending on it | [connect/11 — Probe an API member on a live session](entries/connect/11-probe-an-api-member-on-a-live-session.md) |
 | Read a member's signature or an enum's values when the online help comes back empty | [connect/12 — Read the API help offline](entries/connect/12-read-the-api-help-offline.md) |
 | Attach when `GetActiveObject` says `MK_E_UNAVAILABLE` with SolidWorks open | [connect/02 — Attach from Python](entries/connect/02-attach-from-python.md), and [GOTCHAS §1](GOTCHAS.md) |
@@ -90,6 +92,7 @@ set in one read should use [manifest.json](manifest.json) instead.
 |---|---|
 | Extrude a closed sketch into a boss | [features/01 — Boss extrude](entries/features/01-boss-extrude.md) |
 | Cut a sketch through the part | [features/02 — Cut extrude](entries/features/02-cut-extrude.md) |
+| Cut a groove centred on a plane (mid-plane), from an offset plane | [features/02 — Cut extrude](entries/features/02-cut-extrude.md#a-mid-plane-cut-from-an-offset-plane) |
 | Repeat a feature around an axis | [features/03 — Circular pattern](entries/features/03-circular-pattern.md) |
 | Find an extrusion's depth or a pattern's count to name or link | [features/04 — Read a feature's dimensions](entries/features/04-read-a-features-dimensions.md) |
 | Revolve a profile about a centreline, choosing the axis line | [features/05 — Revolve](entries/features/05-revolve.md) |
@@ -129,6 +132,19 @@ set in one read should use [manifest.json](manifest.json) instead.
 | Gear-mate a planetary: planets on a carrier, sun and ring | [assemblies/10 — Mate a gear train that turns](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-gear-mate-whose-axis-rides-a-carrier-planetary) |
 | Couple two components on one axis with a 1 : 1 gear mate that still lets one slide | [assemblies/10 — Mate a gear train that turns](entries/assemblies/10-mate-a-gear-train-that-turns.md#a-1--1-gear-mate-between-two-components-on-one-axis) |
 | Make an in-context part (a spring between moving parts) draw at its own size in each configuration | [assemblies/14 — An in-context part in several configurations](entries/assemblies/14-in-context-part-across-configurations.md) |
+| Free a component held by a coordinate-system mate to turn about one axis, with nothing moving | [assemblies/15 — Free a rotation without moving anything](entries/assemblies/15-free-a-rotation-without-moving-anything.md) |
+| Key one part to another at the angle they already stand at | [assemblies/15 — Free a rotation without moving anything](entries/assemblies/15-free-a-rotation-without-moving-anything.md#keying-a-second-part-to-the-freed-one-at-its-current-angle) |
+| Turn one part of an existing assembly from code and see which parts follow (a temporary drive mate) | [assemblies/16 — Turn a mechanism with a temporary drive](entries/assemblies/16-turn-a-mechanism-with-a-temporary-drive.md) |
+| Put every configuration's component positions back after a drive or a drag | [assemblies/16 — Turn a mechanism with a temporary drive](entries/assemblies/16-turn-a-mechanism-with-a-temporary-drive.md#putting-every-configuration-back) |
+| Make a sub-assembly flexible or rigid from code, and read its mates as the top assembly solves them | [assemblies/17 — Flexible sub-assemblies](entries/assemblies/17-flexible-sub-assemblies.md) |
+| Clear a warning 51 that sticks to a flexible sub-assembly in What's Wrong | [assemblies/17 — Flexible sub-assemblies](entries/assemblies/17-flexible-sub-assemblies.md#a-warning-that-stuck-and-what-clearing-it-did) |
+| Set a mate's distance in one configuration only (and why `SetSystemValue3(v, 2, [name])` does not) | [assemblies/13 — Assembly configurations from code](entries/assemblies/13-assembly-configurations-from-code.md#a-dimensions-value-in-this-configuration-or-in-all) |
+| Put meshing or clutch teeth in phase in every configuration | [assemblies/13 — Assembly configurations from code](entries/assemblies/13-assembly-configurations-from-code.md#teeth-in-phase-in-every-configuration) |
+| Replace a component with an edited copy of its part and keep its mates | [assemblies/01 — New assembly and insert components](entries/assemblies/01-new-assembly-and-insert-components.md#replacing-a-component-with-an-edited-copy) |
+| Turn a Toolbox part into a plain part from code, and clear its mate reference at error 51 | [assemblies/09 — Keep an edited Toolbox copy](entries/assemblies/09-keep-an-edited-toolbox-copy.md#turning-a-toolbox-part-into-a-plain-part-from-code) |
+| See which components an interference is between, in each configuration | [assemblies/03 — Interference detection](entries/assemblies/03-interference-detection.md#which-components-an-interference-is-between-in-each-configuration) |
+| Throw away the modified marks a rebuild left, without saving (reload from disk) | [assemblies/12 — Rebuild scope and the save flag](entries/assemblies/12-rebuild-scope-and-the-save-flag.md#undoing-a-rebuilds-marks-without-saving-reload-from-disk) |
+| Put a distance mate on the side I meant | [assemblies/02 — Mates from code](entries/assemblies/02-mates-from-code.md#which-side-a-distance-mate-lands-read-it-back) |
 
 ## Make drawings
 
@@ -192,7 +208,7 @@ set in one read should use [manifest.json](manifest.json) instead.
 ## Index by language
 
 - **VBScript** — connect/01, connect/07, connect/08, connect/09, curves/02, curves/04, curves/07, curves/08, reading/07
-- **Python (pywin32)** — connect/02, connect/05, connect/06, connect/10, connect/11, appearance/01, curves/02, curves/04, curves/05, curves/06, curves/10, curves/11, curves/12, documents/01, documents/02, equations/01, equations/02, sketches/02, sketches/03, sketches/04, sketches/07, sketches/10, features/01 through 12, assemblies/01 through 13, drawings/01 through 10, reading/04, reading/05, reading/10, reading/11, reading/12, reading/13, reading/15, reading/16, surfacing/04, files/04, files/05
+- **Python (pywin32)** — connect/02, connect/05, connect/06, connect/10, connect/11, appearance/01, curves/02, curves/04, curves/05, curves/06, curves/10, curves/11, curves/12, documents/01, documents/02, equations/01, equations/02, sketches/02, sketches/03, sketches/04, sketches/07, sketches/10, features/01 through 12, assemblies/01 through 17, drawings/01 through 10, reading/04, reading/05, reading/10, reading/11, reading/12, reading/13, reading/15, reading/16, surfacing/04, files/04, files/05
 - **VBA** — connect/04, sketches/01 through 06, curves/03, files/01, files/02
 - **C# (.NET 8)** — connect/03, connect/06, connect/09, reading/01, reading/02, reading/03, reading/06, reading/08, reading/09, files/01, files/02, files/03
 
