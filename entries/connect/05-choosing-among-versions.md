@@ -140,6 +140,14 @@ lofts, curve reloads) are verified on 2026 only. Note the order above puts a
 session with a document open ahead of a newer empty one, the reverse of
 `choose()`; for a tool that reads the open assembly that is the right call.
 
+Both orderings are deliberate, and both stay. SW-Agent, the local bridge that
+runs this database's scripts and C# recipes, states its own instance ranking in
+its design document (`docs/DESIGN.md` §7.2, in the SW-Agent repository): a
+session with an active document first, then the highest revision, then the
+longest-running process. That is the second ordering above, with process age as
+the last key; it is SW-Agent's choice, recorded there, and changes nothing in
+this entry.
+
 Not tried: 2025 (major 33), and anything older than 2024.
 
 ## Report the ones you could not reach
