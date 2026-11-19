@@ -1,4 +1,4 @@
-"""The one reader (and writer) of frontmatter in this repo.
+"""The one reader of frontmatter in this repo.
 
 Entries (entries/**/NN-slug.md), gotchas (gotchas/NNN-slug.md) and skills
 (skills/*/SKILL.md) start with a block between two `---` lines. Everything that
@@ -64,27 +64,3 @@ def parse_value(raw: str):
 def parse_frontmatter(text: str):
     """The frontmatter as a dict, or None when there is none (problems ignored)."""
     return read_frontmatter(text)[0]
-
-
-def format_value(value) -> str:
-    """The frontmatter text for a value, so that parse_value reads it back unchanged."""
-    if value is None:
-        return "null"
-    if isinstance(value, bool):
-        return "true" if value else "false"
-    if isinstance(value, int):
-        return str(value)
-    if isinstance(value, list):
-        items = [format_value(v) if not isinstance(v, str) else v for v in value]
-        for v in items:
-            if not v or "," in v or v != v.strip() or v[0] in "\"'[" or v[-1] in "\"']":
-                raise ValueError(f"list item {v!r} cannot be written in an inline list")
-        return "[" + ", ".join(items) + "]"
-    text = str(value)
-    if "\n" in text:
-        raise ValueError(f"{text!r}: frontmatter values are one line")
-    plain = (text and text == text.strip() and text not in ("null", "~", "true", "false")
-             and text[0] not in "\"'[" and text[-1] not in "\"'")
-    if plain:
-        return text
-    return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'

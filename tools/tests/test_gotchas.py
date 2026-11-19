@@ -18,14 +18,12 @@ class GotchaTests(unittest.TestCase):
         self.assertIn("\n## 1. `Foo` is *odd*\n\nSee [connect/01](entries/connect/01-a.md) and [§2](#2-bar).\n", md)
         self.assertTrue(md.endswith("\n## 2. Bar\n\nText.\n\n```python\n## not a heading\n```\n"))
 
-    def test_links_round_trip(self):
-        body = G[0]["body"]
-        self.assertEqual(gotchas.file_links(gotchas.root_links(body, G), G), body)
+    def test_root_links(self):
+        self.assertEqual(gotchas.root_links(G[0]["body"], G),
+                         "See [connect/01](entries/connect/01-a.md) and [§2](#2-bar).\n")
 
-    def test_anchor_and_slug(self):
+    def test_anchor(self):
         self.assertEqual(gotchas.anchor("55. A member *or an array* comes back"), "55-a-member-or-an-array-comes-back")
-        self.assertEqual(gotchas.slug("`InsertCurveFile` is on the document, not the feature manager"),
-                         "insertcurvefile-is-on-the-document-not-the")
 
     def test_json(self):
         data = gotchas.to_json(G)

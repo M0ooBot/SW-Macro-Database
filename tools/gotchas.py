@@ -49,18 +49,6 @@ def heading(number: int, title: str) -> str:
     return f"{number}. {title}"
 
 
-def slug(title: str, limit: int = 48) -> str:
-    """A file-name slug from a title: ASCII words, hyphenated, cut at a word end."""
-    words = re.sub(r"[^a-z0-9]+", " ", title.lower()).split()
-    out = ""
-    for w in words:
-        nxt = f"{out}-{w}" if out else w
-        if len(nxt) > limit and out:
-            break
-        out = nxt
-    return out[:limit] or "gotcha"
-
-
 def outside_fences(lines: list[str]) -> list[bool]:
     out, fence = [], None
     for line in lines:
@@ -203,24 +191,6 @@ def root_links(body: str, gotchas: list[dict]) -> str:
         if target.startswith("../"):
             return m.group(1) + target[3:] + m.group(3)
         return m.group(0)
-
-    return LINK.sub(fix, body)
-
-
-def file_links(body: str, gotchas: list[dict]) -> str:
-    """The inverse of root_links: GOTCHAS.md's links as a gotcha file needs them."""
-    by_anchor = {anchor(heading(g["number"], g["title"])): g for g in gotchas}
-
-    def fix(m):
-        target = m.group(2)
-        if target.startswith(EXTERNAL):
-            return m.group(0)
-        if target.startswith("#"):
-            g = by_anchor.get(target[1:])
-            if g is None:
-                raise ValueError(f"link to {target} matches no gotcha heading")
-            return m.group(1) + pathlib.PurePosixPath(g["path"]).name + m.group(3)
-        return m.group(1) + "../" + target + m.group(3)
 
     return LINK.sub(fix, body)
 

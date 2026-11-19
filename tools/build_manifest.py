@@ -26,7 +26,7 @@ import gotchas as gotchas_mod
 import ledger as ledger_mod
 import recipes
 import textfile
-from frontmatter import format_value, parse_frontmatter, read_frontmatter  # noqa: F401 (re-exported)
+from frontmatter import parse_frontmatter, read_frontmatter  # noqa: F401 (parse_frontmatter is re-exported)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
