@@ -8,7 +8,7 @@ api: [ISldWorks.RevisionNumber, ISldWorks.ActiveDoc]
 language: [python]
 status: verified
 verified_on: SolidWorks 2024, 2025 and 2026 side by side
-majors: [32, 33, 34]
+majors: [32, 34]
 evidence: []
 recipe_status: null
 recipe_evidence: []

@@ -66,6 +66,10 @@ NO_RUN = {
 
 # Majors that the main clause alone does not settle.
 MAJORS_OVERRIDE = {
+    "connect-02-attach-python": (
+        [32, 34],
+        "\"side by side\" describes the machine, as connect-05's \"a machine carrying SolidWorks 2024, 2025 and 2026\" does. The body records runs on 2026 (\"SolidWorks 2026 (revision 34.0.0), three development runs on 2026-09-15\") and on 2024 SP5 (revision 32.5.0), and none on 2025; connect-05, on that machine, says \"Not tried: 2025 (major 33)\". Proposed [32, 34]; flag it to restore 33.",
+    ),
     "connect-05-choosing-among-versions": (
         [32, 34],
         "The main clause names a machine that carried three versions, not three runs. The body "
