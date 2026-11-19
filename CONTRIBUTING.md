@@ -265,17 +265,28 @@ passing `full` record with `method: smoke` in `recipe_evidence`.
 python3 tools/build_manifest.py
 ```
 
-It rebuilds [`manifest.json`](manifest.json) from the frontmatter and fails if
+It rebuilds [`manifest.json`](manifest.json), `gotchas.json` and `GOTCHAS.md` from
+the frontmatter and the gotcha files, and fails if
 an entry is missing a key or has an unknown one, has a duplicate `id`, lists a
 major its `verified_on` does not name, claims `verified` with no observation,
 or names an evidence record that does not exist or is about something else.
-Commit the regenerated file.
+Commit the regenerated files.
+
+### Gotchas are one file each
+
+Each gotcha is `gotchas/NNN-slug.md`, numbered as `GOTCHAS §N` is cited, with a
+small frontmatter (`id`, `title`, `always`, `members`, `languages`) and a
+free-form body. [GOTCHAS.md](GOTCHAS.md) and `gotchas.json` are generated from
+them by `python3 tools/build_manifest.py`: never edit those two by hand. A new
+gotcha takes the next free number; a retired one stays, as a stub pointing to
+its replacement, so no number is reused. Start from
+[`gotchas/_TEMPLATE.md`](gotchas/_TEMPLATE.md), which says what each key holds.
 
 ### Update the cross-references
 
 - [INDEX.md](INDEX.md) — add the row to the right task table
 - [API-LEDGER.md](API-LEDGER.md) — add any new API member, with its status
-- [GOTCHAS.md](GOTCHAS.md) — add anything that cost you an hour
+- [`gotchas/`](gotchas/) — add anything that cost you an hour, as a new file (below)
 - The **See also** section of every entry the new one relates to, both directions
 
 An entry nothing links to will not be found.
@@ -326,7 +337,7 @@ asks before installing one that does.
 - [ ] Code copied or generated, not recalled; complete enough to run
 - [ ] Searched the manifest; not a duplicate
 - [ ] Entry stands alone, with no dependency on an external repo
-- [ ] `manifest.json` regenerated
-- [ ] INDEX, API-LEDGER, GOTCHAS and See-also links updated
+- [ ] `manifest.json`, `gotchas.json` and `GOTCHAS.md` regenerated
+- [ ] INDEX, API-LEDGER, gotchas and See-also links updated
 - [ ] Scripts: effects declared truthfully, only `ctx.Sw`, nothing closed that the script did not open, preferences restored
 - [ ] `python3 tools/validate.py` passes

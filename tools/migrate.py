@@ -20,6 +20,7 @@ import re
 import sys
 
 import build_manifest
+import gotchas as gotchas_mod
 from frontmatter import format_value, read_frontmatter
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -197,10 +198,326 @@ def migrate_entries() -> int:
     print(f"entries: {len(changed)} status changes, {len(judged)} judged, {len(copied)} copied")
     return 0
 
+# ==========================================================================
+# step 4: gotchas
+
+# The always-list: the silent, destructive and most common failure modes,
+# proposed for the owner to confirm (P§14 Q2).
+ALWAYS = {
+    2: "Most common and silent: every length is metres and every angle radians, whatever the document says.",
+    8: "Silent: a name set on collision becomes another name, and records point at nothing.",
+    22: "Destructive: closing an upgraded older file can rewrite it in the new format, behind a misleading prompt.",
+    25: "Silent: a new part can come out in inches from another year's template, and equations follow the units.",
+    26: "Silent: Equation Manager calls fail by returning -1, never by raising.",
+    34: "Destructive: SaveAs3 overwrites an existing file and reports success.",
+    62: "Destructive and silent: suppression cascades, and unsuppressing does not bring the rest back.",
+    93: "Common and costly: a full assembly rebuild marks every component modified, which turns closes into save prompts.",
+    100: "Hangs: closing an assembly can raise a modal dialog (CAM add-in, older files) that blocks the script.",
+    108: "Silent: every component handle goes stale after a configuration add or show, and answers wrongly instead of failing.",
+}
+NOT_ALWAYS = {
+    9: "Rebuild once at the end: important, but about speed and transient errors, not silent damage.",
+    10: "Transform rotation by columns: silent, but only for code that reads transform arrays.",
+    23: "ShowConfiguration2 returning False: a false failure, not damage; G108 covers the dangerous part of configuration work.",
+    51: "Clearing the selection during a user's pick crashed SolidWorks: severe, but only for code that polls the selection while the user works.",
+    58: "EditRebuild3 returning False on any error: a misread that stops code, not silent damage.",
+    95: "An over-defining mate is made anyway: silent, but specific to mate code.",
+}
+
+# Bindings, where a gotcha bites only some; every other gotcha is [all].
+GOTCHA_LANGUAGES = {
+    4: (["pywin32"], "Python: \"In Python, passing None fails\"; the fix is a pywin32 VARIANT."),
+    5: (["pywin32","late-bound"], "Titled late-bound COM; observed through pywin32's dynamic dispatch. Early-bound C# calls methods as methods."),
+    6: (["pywin32","late-bound"], "Late binding needs IDispatch; the code is pywin32."),
+    7: (["csharp"], ".NET only: Marshal.GetActiveObject is gone on modern .NET."),
+    21: (["late-bound","pywin32"], "VBScript and PowerShell (late-bound) fail; Python needs a typed VARIANT; VBA and early-bound C# work."),
+    31: (["pywin32"], "pywin32 attribute access (the \"call\" helper); \"That pywin32 exposes…\"."),
+    39: (["pywin32","late-bound"], "Titled late binding; observed through pywin32's dynamic dispatch."),
+    40: (["pywin32","late-bound"], "\"through late binding\", Python method objects."),
+    55: (["pywin32"], "\"a pywin32 late-binding point rather than a SolidWorks one\"."),
+    74: (["pywin32"], "About swcom.py, this repo's Python attach module."),
+    89: (["pywin32","late-bound"], "Titled late binding; observed through pywin32."),
+}
+
+# Member tags as chosen from the proposal (every backticked API name in the
+# gotcha), with why, where the choice differs from the proposal.
+GOTCHA_MEMBERS = {
+    1: (["GetObject","GetActiveObject"], None),
+    2: ([], None),
+    3: (["InsertCurveFile"], None),
+    4: (["ModifyDefinition","GetObjectByPersistReference3"], None),
+    5: (["RevisionNumber","ActiveDoc","IAssemblyDoc.FixComponent","IBody2.GetEdges","IFace2.GetTessTriangles"], None),
+    6: ([], None),
+    7: (["GetActiveObject"], "GetRunningObjectTable and CreateBindCtx are the way round it, not the trap."),
+    8: (["Name"], None),
+    9: ([], None),
+    10: (["IMathTransform.ArrayData"], None),
+    11: (["InsertCurveFile"], None),
+    12: (["InsertCompositeCurve"], None),
+    13: (["InsertCurveFileBegin","LoadPointsFromFile"], None),
+    14: (["InsertCurveFile"], None),
+    15: ([], None),
+    16: (["ReplaceReferencedDocument"], "GetOpenDocumentByName is the check it recommends, not the trap."),
+    17: ([], None),
+    18: (["IFeatureManager.MoveToFolder","InsertFeatureTreeFolder2"], None),
+    19: (["FirstFeature","GetNextFeature","IFeatureFolder.GetFeatures","GetFirstSubFeature"], None),
+    20: (["ISldWorks.OpenDoc6","ISldWorks.LoadFile4","OpenDoc7","GetOpenDocSpec"], "OpenDoc7 added: the text names it as no way out for STEP (it was not in the ledger, so the proposal missed it)."),
+    21: (["OpenDoc6","LoadFile4"], None),
+    22: (["ISldWorks.CloseDoc","QuitDoc","CloseAllDocuments"], "CloseAllDocuments added: the text names it as raising the prompt (not in the ledger, so the proposal missed it)."),
+    23: (["ShowConfiguration2","DeleteConfiguration2","DeleteDesignTable","GetConfigurationNames"], "GetSaveFlag is how the side effect was observed, in passing."),
+    24: (["IPartDoc.GetPartBox"], None),
+    25: (["ISldWorks.GetDocumentTemplate"], "SetUserPreferenceInteger is the fix (set the units), not the trap."),
+    26: (["IEquationMgr.Add3","Add2","IEquationMgr.SetEquationAndConfigurationOption"], "Equation(i) is the working alternative; Invoke is pywin32, not the API; Status is how -1 was read."),
+    27: ([], None),
+    28: ([], None),
+    29: (["ISketchManager.CreateEquationSpline2"], None),
+    30: (["sgEQUAL"], "sgEQUAL added: the backticked relation constant the gotcha is about (a constant, so not in the proposal)."),
+    31: (["IAssemblyDoc.FixComponent"], "IsFixed is how the effect was checked, in passing."),
+    32: (["IFeatureManager.FeatureCut4"], None),
+    33: ([], None),
+    34: (["IModelDocExtension.SaveAs3","IModelDoc2.SaveAs3"], None),
+    35: (["GetStartPoint2","GetSelectedObjectCount2"], None),
+    36: (["ISketchPoint.Select4"], "An observation, not a rule: SelectByID2 and GetSelectedObjectCount2 are the fallback and the check, and tagging them would show a one-off on every selection."),
+    37: (["GetNextFeature","IFeature.GetFirstSubFeature","IFeature.GetNextSubFeature"], None),
+    38: (["IFeatureManager.FeatureRevolve2"], "SelectByID2 is how the axis was selected (mark 16), in passing."),
+    39: (["IMathUtility.CreateTransform"], "DISPATCH_METHOD is pywin32, not the API; IComponent2.Transform2 is where the result goes, in passing."),
+    40: (["Done","GetInterferenceCount","GetInterferences","IInterference.Volume"], None),
+    41: (["AddComponent5"], "Transform2 is the fix (set every frame), not the trap."),
+    42: (["AddMate5"], None),
+    43: (["IModelDoc2.AddDimension2"], None),
+    44: (["IFeatureManager.InsertMoveCopyBody2"], "IBody2.Select2 is how the body was selected, in passing."),
+    45: (["D1ReverseTwistDir","IFeatureManager.InsertProtrusionSwept4","InsertCutSwept5"], "GetDefinition, AccessSelections and ModifyDefinition are the ordinary route to the flag, not the trap."),
+    46: (["IEquationMgr.Add2"], None),
+    47: (["IFeatureManager.InsertMirrorFeature2","IBody2.Select2","ISelectionMgr.CreateSelectData"], None),
+    48: ([], None),
+    49: ([], None),
+    50: ([], None),
+    51: (["IModelDoc2.ClearSelection2"], "ISketchManager.ActiveSketch is the guard it recommends, not the trap."),
+    52: ([], None),
+    53: ([], None),
+    54: (["FirstFeature","GetNextFeature"], "GetFeatureCount and GetUpdateStamp are the cheap alternative, not the trap."),
+    55: (["ReleaseSelectionAccess","IBody2.GetEdges","IFace2.GetTessTriangles","IAssemblyDoc.FixComponent","IMassProperty.AddBodies","IModelDocExtension.DeleteDisplayStateSpecificRenderMaterial","IModelDocExtension.CreateBalloonOptions","IEdge.GetCurveParams2","IModelDoc2.EditRebuild3","INote.GetBalloonStyle","IMeasure.Calculate","ISldWorks.ExitApp"], "Dropped the members it lists as observed not to need this (GetFaces, GetBody, GetCurve, GetCurveParams2 on 2026, GetMassProperties, IsRolledBack, Name, GetTypeName2, GetNextFeature, InsertPlanarRefSurface) and DISPATCH_METHOD (pywin32)."),
+    56: (["IFeature.ModifyDefinition","LoadPointsFromFile","ISldWorks.CommandInProgress","IFeatureManager.EditRollback"], None),
+    57: (["IFeatureManager.EditRollback","IFeatureManager.GetRollbackBarPosition"], "FeatureByPositionReverse and IsRolledBack are the check it recommends."),
+    58: (["EditRebuild3","ForceRebuild3"], None),
+    59: (["AccessSelections","ReleaseSelectionAccess"], None),
+    60: (["IModelDoc2.InsertPlanarRefSurface"], "IFace2.GetArea is the check it recommends."),
+    61: (["IFeatureManager.InsertSewRefSurface"], "GetMassProperties and GetBodies2 are how it was detected."),
+    62: (["IFeature.SetSuppression2"], "IsSuppressed is the snapshot it recommends."),
+    63: (["InsertProtrusionBlend2"], None),
+    64: ([], None),
+    65: ([], None),
+    66: (["InsertCurveFile","IModelDocExtension.GetLastFeatureAdded"], "GetFeatureCount and FeatureByName are named only as quick alternatives."),
+    67: ([], None),
+    68: (["IFeature.GetDefinition"], None),
+    69: ([], "About the journal: Select2, Name, SaveAs and Save3 are examples of what it records, and tagging them would show this on every rename and save."),
+    70: (["IModelDocExtension.DeleteDisplayStateSpecificRenderMaterial","IRenderMaterial.GetMaterialIds"], None),
+    71: (["GetRenderMaterialsCount2"], None),
+    72: ([], None),
+    73: (["Transform2","EditRebuild3"], "GetErrorCode2 is how errors were read, in passing."),
+    74: ([], None),
+    75: (["GearRatioNumerator","IMate2.MateEntity","EntityParams"], None),
+    76: (["GetFirstSubFeature","GetNextSubFeature","IMate2.Type"], None),
+    77: (["IDrawingDoc.CreateDrawViewFromModelView3","ISheet.SetScale"], "UseSheetScale and ScaleDecimal are the fix and the check."),
+    78: (["IView.InsertBomTable5","SetConfigurations"], "GetConfigurationCount is how the cause was read."),
+    79: (["IModelDoc2.InsertNote"], "EditSheet and ClearSelection2 are the fix."),
+    80: (["IAnnotation.Select3","EditDelete"], "GetAnnotation is how it was reached; SelectByID2 is the fix; ICenterMark.Select is a contrast."),
+    81: (["IDrawingDoc.AutoBalloon5"], None),
+    82: (["ReferencedConfiguration"], "ForceRebuild3 and ShowConfiguration2 are the fix."),
+    83: (["AddMate5","Transform2"], "ForceRebuild3 is how a later measurement rebuilt, in passing."),
+    84: (["EditDelete","InsertExplodeLineSketch"], None),
+    85: (["UnblankSketch"], "SelectByID2 is how the sketch was selected, in passing."),
+    86: (["IView.Position"], "ArrayData is the fix (read the model origin), in passing."),
+    87: (["ISketchManager.CreateLine"], "IView.GetXform and IView.Angle are the conversion it recommends."),
+    88: (["CreateSectionViewAt5"], "IView.Angle is the fix."),
+    89: (["IView.GetVisibleEntities2","GetCurve","Select2"], None),
+    90: (["ReplaceComponents2"], None),
+    91: (["Text"], "Description is a custom property name, not a member; InsertColumn2 is the alternative."),
+    92: (["AutoBalloon5","CreateBalloonOptions"], "InsertBOMBalloon2 and IBalloonOptions.ShowQuantity are the alternative that works."),
+    93: (["ForceRebuild3"], "EditRebuild3 and Transform2 are the contrast (they did not mark everything); GetSaveFlag is how it was read."),
+    94: (["AddMate5"], None),
+    95: (["AddMate5","ForceRebuild3","GetErrorCode2"], "GetConstrainedStatus and GetWhatsWrongCount are the checks it recommends."),
+    96: (["AddMate5","GearRatioNumerator","MateEntity"], None),
+    97: (["IFeature.ModifyDefinition","CloseDoc"], None),
+    98: (["Transform2","SetTransformAndSolve2","Drag","DragAsUI"], None),
+    99: (["AddComponent5","OpenDoc6"], None),
+    100: (["CloseDoc","QuitDoc"], "GetSaveFlag is how the state was read, in passing."),
+    101: (["Drag"], "AddComponent, TransformType, UseAbsoluteTransform, DragMode and EndDrag are the recipe repeated, not the trap; a bare AddComponent would also match IAssemblyDoc.AddComponent."),
+    102: (["OpenDoc6"], "GetSuppression2 is the check it recommends."),
+    103: (["GetErrorCode2","SetSuppression2"], "GetSaveFlag is how the side effect was read."),
+    104: ([], None),
+    105: (["AddMate5","IGearMateFeatureData.Reverse","IMateEntity2.EntityParams"], "CommandInProgress is one condition tried, in passing."),
+    106: (["AddMate5","IMateEntity2.EntityParams","IGearMateFeatureData.Reverse"], None),
+    107: ([], None),
+    108: (["AddConfiguration2","ShowConfiguration2","Transform2","IsFixed"], "GetComponentByName is the fix; DeleteConfiguration2 is the contrast (handles stayed good)."),
+    109: (["IFeature.SetSuppression2","AddConfiguration2"], "IsSuppressed2 is the check it recommends."),
+    110: (["GetSystemValue3","IDimension.SetSystemValue3","IDimension.SystemValue","IEquationMgr.Add2"], None),
+    111: (["CreateSectionViewAt5","IView.GetSection","SetExcludedComponents"], "Invoke is pywin32, not the API."),
+    112: (["ForceRebuild3","EditRebuild3"], "SaveAs is the export that showed it, in passing."),
+    113: (["ShowConfiguration2","AddMate5"], None),
+    114: (["ShowConfiguration2","ForceRebuild3"], "Name is the check; SetSuppression2 is a cross-reference."),
+    115: (["ReferencedConfiguration"], None),
+    116: (["Delete","Add2","Add3","SetEquationAndConfigurationOption"], None),
+}
+
+CODE_SPAN = re.compile(r"(?<!\x60)(\x60+)(?!\x60)(.+?)(?<!\x60)\1(?!\x60)", re.S)
+LEADING_PATH = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*")
+QUALIFIED = re.compile(r"(?<![A-Za-z0-9_.\x60])(I[A-Z][A-Za-z0-9_]*)\.([A-Za-z_][A-Za-z0-9_]*)(?![A-Za-z0-9_])")
+
+
+def code_spans(md: str) -> list[str]:
+    lines = md.split("\n")
+    text = "\n".join(l if o else "" for l, o in zip(lines, gotchas_mod.outside_fences(lines)))
+    return [m.group(2).strip() for m in CODE_SPAN.finditer(text)]
+
+
+def known_members() -> set[str]:
+    """Lower-cased member names the database knows: the ledger's Member cells and every entry's api."""
+    known = set()
+    for e in build_manifest.collect(ROOT)[1]["entries"]:
+        known |= {a.split(".")[-1].lower() for a in e["api"]}
+    for line in (ROOT / "API-LEDGER.md").read_text(encoding="utf-8").split("\n"):
+        if line.startswith("| ") and not line.startswith("| Member"):
+            cell = re.split(r"(?<!\\)\|", line)[1]
+            for span in code_spans(cell):
+                m = LEADING_PATH.match(span)
+                if m:
+                    known.add(m.group(0).split(".")[-1].lower())
+    return known
+
+
+def propose_members(text: str, known: set[str]) -> list[str]:
+    """Every backticked API name, Interface.Member where the text qualifies it, else Member."""
+    found: list[str] = []
+    for span in code_spans(text):
+        m = LEADING_PATH.match(span)
+        if not m:
+            continue
+        parts = m.group(0).split(".")
+        qualified = len(parts) == 2 and re.match(r"^I[A-Z]", parts[0])
+        if qualified or parts[-1].lower() in known:
+            name = m.group(0) if qualified else parts[-1]
+            if name not in found:
+                found.append(name)
+    for m in QUALIFIED.finditer(text):
+        if m.group(0) not in found:
+            found.append(m.group(0))
+    # A bare name the text also gives with its interface is that qualified name.
+    qualified_members = {f.split(".")[1] for f in found if "." in f}
+    return [f for f in found if "." in f or f not in qualified_members]
+
+
+def split_gotchas(text: str) -> list[dict]:
+    if not text.startswith(gotchas_mod.PREAMBLE):
+        raise ValueError("GOTCHAS.md does not start with the preamble gotchas.py holds")
+    lines = text.split("\n")
+    outside = gotchas_mod.outside_fences(lines)
+    heads = [(i, int(m.group(1)), m.group(2)) for i, l in enumerate(lines) if outside[i]
+             for m in [re.match(r"^## (\d+)\. (.+)$", l)] if m]
+    found = []
+    for k, (i, n, title) in enumerate(heads):
+        end = heads[k + 1][0] if k + 1 < len(heads) else len(lines)
+        if lines[i + 1] != "":
+            raise ValueError(f"gotcha {n}: no blank line after its heading")
+        body = "\n".join(lines[i + 2:end]).rstrip("\n") + "\n"
+        found.append({"number": n, "id": f"G{n}", "title": title, "always": n in ALWAYS,
+                      "path": f"gotchas/{n:03d}-{gotchas_mod.slug(title)}.md", "body": body})
+    return found
+
+
+def migrate_gotchas() -> int:
+    source = (ROOT / "GOTCHAS.md").read_text(encoding="utf-8")
+    found = split_gotchas(source)
+    if [g["number"] for g in found] != list(range(1, len(found) + 1)) or set(GOTCHA_MEMBERS) != {g["number"] for g in found}:
+        print("GOTCHAS.md numbers and the GOTCHA_MEMBERS table do not match 1..N", file=sys.stderr)
+        return 1
+    known = known_members()
+    rows = []
+    for g in found:
+        n = g["number"]
+        proposed = propose_members(g["title"] + "\n\n" + g["body"], known)
+        g["members"], why = GOTCHA_MEMBERS[n]
+        g["languages"] = GOTCHA_LANGUAGES.get(n, (["all"], None))[0]
+        rows.append((g, proposed, why))
+    for g in found:
+        g["body"] = gotchas_mod.file_links(g["body"], found)
+    if gotchas_mod.render_md(found) != source:
+        print("the generated GOTCHAS.md would differ from the original; nothing written", file=sys.stderr)
+        return 1
+    (ROOT / "gotchas").mkdir(exist_ok=True)
+    for g in found:
+        front = "\n".join(f"{k}: {format_value(g[k])}" for k in gotchas_mod.KEYS)
+        (ROOT / g["path"]).write_text(f"---\n{front}\n---\n\n{g['body']}", encoding="utf-8")
+    problems, loaded = gotchas_mod.load(ROOT)
+    if problems or gotchas_mod.render_md(loaded) != source:
+        print("the written files do not read back to the original:", *problems, sep="\n  ", file=sys.stderr)
+        return 1
+
+    def link(g):
+        return f"[G{g['number']}](../{g['path']})"
+
+    out = [
+        "# Review list: gotchas (step 4)",
+        "",
+        "GOTCHAS.md is now generated from one file per gotcha, `gotchas/NNN-slug.md`, numbers",
+        "kept; the generated file was checked equal to the original before it was replaced.",
+        "Three things are new and need your eye: the always-list, the bindings a gotcha is",
+        "tagged with, and the member tags. Flag only the rows you disagree with.",
+        "Written by `tools/migrate.py gotchas` from its ALWAYS, GOTCHA_LANGUAGES and GOTCHA_MEMBERS tables.",
+        "",
+        f"## The always-list: please confirm ({len(ALWAYS)})",
+        "",
+        "Rendered into the `sw-macro-database` skill and SW-Agent's own skill, and returned by",
+        "`gotchas_for(topic: \"always\")`. Chosen for silent, destructive or most common failure modes.",
+        "",
+        "| Gotcha | Title | Why always |",
+        "|---|---|---|",
+    ]
+    by_n = {g["number"]: g for g in found}
+    out += [f"| {link(by_n[n])} | {md_cell(by_n[n]['title'])} | {md_cell(why)} |" for n, why in sorted(ALWAYS.items())]
+    out += ["", "Considered and not proposed:", "", "| Gotcha | Title | Why not |", "|---|---|---|"]
+    out += [f"| {link(by_n[n])} | {md_cell(by_n[n]['title'])} | {md_cell(why)} |" for n, why in sorted(NOT_ALWAYS.items())]
+    out += [
+        "",
+        f"## Bindings other than `all` ({len(GOTCHA_LANGUAGES)})",
+        "",
+        "`languages` says how the API must be bound for the gotcha to bite: `all`, `csharp`, `pywin32`",
+        "or `late-bound`. Every gotcha not listed here is `[all]`: when the text does not limit it, it",
+        "is shown to everyone. SW-Agent's `gotchas_for` filters on this (C# by default).",
+        "",
+        "| Gotcha | Title | Chosen | Why |",
+        "|---|---|---|---|",
+    ]
+    out += [f"| {link(by_n[n])} | {md_cell(by_n[n]['title'])} | {majors_text(langs)} | {md_cell(why)} |"
+            for n, (langs, why) in sorted(GOTCHA_LANGUAGES.items())]
+    changed = [r for r in rows if r[0]["members"] != r[1]]
+    out += [
+        "",
+        f"## Member tags ({len(rows)}; {len(changed)} differ from the proposal)",
+        "",
+        "Proposed: every backticked API name in the gotcha (a name the ledger or an entry's `api`",
+        "knows, or one written `Interface.Member`), qualified where the gotcha writes the interface.",
+        "Chosen: the proposal less the names the gotcha only mentions in passing (the check it",
+        "recommends, the fix, a contrast), so `gotchas_for` on a common member does not return every",
+        "gotcha that happens to name it. When in doubt a tag was kept: a missing tag hides a warning.",
+        "",
+        "| Gotcha | Proposed (from the text) | Chosen | Why |",
+        "|---|---|---|---|",
+    ]
+    for g, proposed, why in rows:
+        same = g["members"] == proposed
+        out.append(f"| {link(g)} | {md_cell(', '.join(proposed)) if proposed else '*(none)*'} | "
+                   f"{'same' if same else ('**' + md_cell(', '.join(g['members'])) + '**' if g['members'] else '**(none)**')} | "
+                   f"{md_cell(why) if why else ''} |")
+    REVIEW.mkdir(exist_ok=True)
+    (REVIEW / "review-gotchas.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+    print(f"gotchas: {len(found)} files written, {len(ALWAYS)} always, {len(changed)} member lists changed from the proposal")
+    return 0
+
 
 # ==========================================================================
 
-COMMANDS = {"entries": migrate_entries}
+COMMANDS = {"entries": migrate_entries, "gotchas": migrate_gotchas}
 
 
 def main(argv: list[str]) -> int:

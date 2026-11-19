@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Rebuild manifest.json from every entry's frontmatter.
+"""Rebuild the generated files from their sources.
 
-Run from the repo root after adding or changing an entry:
+Run from the repo root after adding or changing an entry or a gotcha:
 
     python3 tools/build_manifest.py
 
-Exits non-zero and prints the problems if any entry is malformed. That is the
-one automated quality gate this repo has, so it is deliberately strict.
+It writes manifest.json (from every entry's frontmatter), gotchas.json and
+GOTCHAS.md (from gotchas/). Exits non-zero and writes nothing if any source
+is malformed. That is the one automated quality gate this repo has, so it is
+deliberately strict.
 
-`collect()` and `render()` do the work without touching the disk, so
-tools/validate.py can run the same checks and compare the result with the
-committed manifest.json.
+`outputs()` does the work without touching the disk, so tools/validate.py can
+run the same checks and compare the result with the committed files.
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ import re
 import sys
 
 import evidence as evidence_mod
+import gotchas as gotchas_mod
 import recipes
 from frontmatter import format_value, parse_frontmatter, read_frontmatter  # noqa: F401 (re-exported)
 
@@ -282,15 +284,32 @@ def render(manifest: dict) -> str:
     return json.dumps(manifest, indent=2, ensure_ascii=False) + "\n"
 
 
+def outputs(root: pathlib.Path = ROOT):
+    """(problems, {repo-relative path: text}) for every generated file; no files when any problem."""
+    problems, manifest = collect(root)
+    gotcha_problems, gotchas = gotchas_mod.load(root)
+    problems = problems + gotcha_problems
+    if problems:
+        return problems, {}
+    return [], {
+        "manifest.json": render(manifest),
+        "gotchas.json": gotchas_mod.render_json(gotchas),
+        "GOTCHAS.md": gotchas_mod.render_md(gotchas),
+    }
+
+
 def main() -> int:
-    problems, manifest = collect(ROOT)
-    if manifest is None:
-        print("manifest not written; fix these first:\n", file=sys.stderr)
+    problems, files = outputs(ROOT)
+    if problems:
+        print("nothing written; fix these first:\n", file=sys.stderr)
         for p in problems:
             print(f"  {p}", file=sys.stderr)
         return 1
-    (ROOT / "manifest.json").write_text(render(manifest), encoding="utf-8")
+    for rel, text in files.items():
+        (ROOT / rel).write_text(text, encoding="utf-8")
+    manifest = json.loads(files["manifest.json"])
     print(f"manifest.json: {manifest['count']} entries, {manifest['by_status']}")
+    print(f"gotchas.json, GOTCHAS.md: {len(json.loads(files['gotchas.json'])['gotchas'])} gotchas")
     return 0
 
 

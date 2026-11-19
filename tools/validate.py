@@ -5,8 +5,9 @@
 
 Exits non-zero and lists every problem found. It checks, in order:
 
-  1. every entry, with the same checks tools/build_manifest.py applies, and that
-     the committed manifest.json is exactly what build_manifest.py would write;
+  1. every entry and gotcha, with the same checks tools/build_manifest.py
+     applies, and that the committed manifest.json, gotchas.json and GOTCHAS.md
+     are exactly what build_manifest.py would write;
   2. every scripts/<id>/ folder: script.json shape (strict, no unknown keys) and
      a lint of script.csx;
   3. every skills/<name>/ folder: SKILL.md frontmatter, and the template's
@@ -313,12 +314,12 @@ def validate(root: pathlib.Path) -> tuple[list[str], list[str]]:
     problems: list[str] = []
     warnings: list[str] = []
 
-    entry_problems, manifest = build_manifest.collect(root)
-    problems.extend(entry_problems)
-    if manifest is not None:
-        committed = root / "manifest.json"
-        if not committed.is_file() or committed.read_bytes() != build_manifest.render(manifest).encode("utf-8"):
-            problems.append("manifest.json is stale: run python3 tools/build_manifest.py")
+    source_problems, generated = build_manifest.outputs(root)
+    problems.extend(source_problems)
+    for rel, text in generated.items():
+        committed = root / rel
+        if not committed.is_file() or committed.read_bytes() != text.encode("utf-8"):
+            problems.append(f"{rel} is stale: run python3 tools/build_manifest.py")
 
     problems.extend(check_scripts(root))
     problems.extend(check_skills(root))
