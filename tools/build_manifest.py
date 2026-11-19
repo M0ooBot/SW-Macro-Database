@@ -228,25 +228,36 @@ def collect(root: pathlib.Path = ROOT):
         if answers and not answers.rstrip().endswith("?"):
             problems.append(f"{rel}: 'answers' should be a question ending in '?'")
 
+        ev_ids = fm.get("evidence") if isinstance(fm.get("evidence"), list) else []
+        rec_ids = fm.get("recipe_evidence") if isinstance(fm.get("recipe_evidence"), list) else []
+        recipe = None
+        if extra["sidecar"] is not None:
+            recipe = {
+                "path": extra["sidecar"].relative_to(root).as_posix(),
+                "status": fm.get("recipe_status"),
+                "majors": sorted(evidence_mod.passing_majors(rec_ids, evidence_records)),
+                "evidence": rec_ids,
+            }
+        superseded_by = fm.get("superseded_by")
         records.append({
             "id": entry_id,
             "title": fm.get("title"),
             "path": rel,
             "category": path.parent.name,
-            "status": status,
-            "verified_on": fm.get("verified_on"),
-            "language": fm.get("language", []),
-            "api": fm.get("api", []),
-            "keywords": fm.get("keywords", []),
             "answers": answers,
+            "keywords": fm.get("keywords") or [],
+            "api": fm.get("api") or [],
+            "language": fm.get("language") or [],
+            "status": "superseded" if superseded_by is not None else status,
+            "verified_on": fm.get("verified_on"),
+            "majors": sorted(set(extra["majors"]) | evidence_mod.passing_majors(ev_ids, evidence_records)),
+            "evidence": ev_ids,
+            "recipe": recipe,
+            "superseded_by": superseded_by,
         })
-        superseded_by = fm.get("superseded_by")
-        if superseded_by is not None:
-            records[-1]["status"] = "superseded"
-        records[-1]["_superseded_by"] = superseded_by
 
     for r in records:
-        target = r.pop("_superseded_by", None)
+        target = r["superseded_by"]
         if target is not None and (target not in seen_ids or target == r["id"]):
             problems.append(f"{r['path']}: 'superseded_by' {target!r} is not another entry's id")
 
@@ -261,12 +272,15 @@ def collect(root: pathlib.Path = ROOT):
         by_status[r["status"]] = by_status.get(r["status"], 0) + 1
 
     manifest = {
-        "schema": 1,
+        "schema": 2,
         "description": (
             "SolidWorks automation entries. Each answers one question. Check "
             "'status' before trusting an entry: verified means it ran against "
-            "the named version; unverified means it is well-formed against the "
-            "documented API but was never executed."
+            "the named version ('verified_on' says what was run; 'majors' are "
+            "the SolidWorks revision majors it ran on, 32 = 2024, 34 = 2026); "
+            "unverified means it is well-formed against the documented API but "
+            "was never executed. 'recipe' is the entry's C# recipe, the code "
+            "SW-Agent runs, with a status of its own."
         ),
         "count": len(records),
         "by_status": dict(sorted(by_status.items())),

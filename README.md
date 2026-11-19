@@ -17,14 +17,14 @@ code. You never need to open the projects the entries came from.
 
 | If you are… | Read |
 |---|---|
-| An AI agent looking something up | [AGENTS.md](AGENTS.md), then [manifest.json](manifest.json) |
+| An AI agent looking something up | [AGENTS.md](AGENTS.md), then [`lookup.py`](skills/sw-macro-database/lookup.py) |
 | An AI agent adding an entry | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | A person browsing by task | [INDEX.md](INDEX.md) |
-| Checking whether one API call is proven | [API-LEDGER.md](API-LEDGER.md) |
-| About to write any automation at all | [GOTCHAS.md](GOTCHAS.md) |
+| Checking whether one API call is proven | [API-LEDGER.md](API-LEDGER.md) (generated from [`api-ledger.json`](api-ledger.json)) |
+| About to write any automation at all | [GOTCHAS.md](GOTCHAS.md) (generated from [`gotchas/`](gotchas/)) |
 | After working code to copy | [`code/`](code/) |
 | After a ready-to-run script for a common task | [`scripts/`](scripts/) |
-| Using the collection from SolidWorks File Manager, Claude Code or Codex | the latest [release](https://github.com/MoZ200701/SW-Macro-Database/releases/latest) |
+| Using the collection from SW-Agent, Claude Code or Codex | the latest [release](https://github.com/MoZ200701/SW-Macro-Database/releases/latest) |
 
 ## What's in here
 
@@ -119,17 +119,33 @@ entry that guesses says so.
 python3 tools/build_manifest.py
 ```
 
-Rebuilds [`manifest.json`](manifest.json) from each entry's frontmatter, and
-refuses to write if an entry is missing a field, duplicates an `id`, or claims
-`verified` without naming a version. Run it after any change and commit the
-result. Then:
+Rebuilds the generated files: [`manifest.json`](manifest.json) from each entry's
+frontmatter, `gotchas.json` and [GOTCHAS.md](GOTCHAS.md) from [`gotchas/`](gotchas/),
+and [API-LEDGER.md](API-LEDGER.md) from [`api-ledger.json`](api-ledger.json). It
+refuses to write if an entry is missing a field, duplicates an `id`, claims
+`verified` without an observation, or names evidence that does not exist. Run it
+after any change and commit the result. Then:
 
 ```
 python3 tools/validate.py
 ```
 
-The same check every pull request runs: the manifest checks, a stale-manifest
-check, every script's header and forbidden calls, and one package build.
+The same check every pull request runs: the source checks, a stale check of
+every generated file, every script's header and forbidden calls, one package
+build, the search self-test on that package, the release notes, and the unit
+tests in `tools/tests/`.
+
+## Search without SW-Agent
+
+```
+python3 skills/sw-macro-database/lookup.py "export one body to STEP"
+python3 skills/sw-macro-database/lookup.py --gotchas "rebuild"
+```
+
+Ranks entries (or gotchas) the way SW-Agent's `db_search` does, from
+`search.sql` beside it, with an index it builds in memory. It needs Python 3.9
+or later whose SQLite has FTS5 (python.org and Ubuntu builds do). The released
+skill folder carries it too.
 
 ## Scripts and releases
 
@@ -138,11 +154,12 @@ check, every script's header and forbidden calls, and one package build.
 version). Each links to the entry that explains its method and carries its own
 `status`: a script is `unverified` until that exact script has run.
 
-Tagging `main` as `vX.Y.Z` publishes a release: one zip with two skills —
-`sw-macro-database` (this collection, with a generated index) and
+Tagging `main` as `vX.Y.Z` publishes a release: one zip,
+`sw-macro-database-X.Y.Z.zip`, with two skills — `sw-macro-database` (this
+collection, with a generated index and the always-list of gotchas) and
 `sw-macro-contribute` (how to write results back) — and the scripts. Claude Code
-and Codex both read the skills; SolidWorks File Manager installs releases
-itself and runs the scripts. Rules for both are in
+and Codex both read the skills; SW-Agent installs releases itself, checks every
+file's hash, and runs the scripts. Rules for both are in
 [CONTRIBUTING.md](CONTRIBUTING.md); changes from anyone but the owner arrive as
 pull requests or Verification report issues.
 

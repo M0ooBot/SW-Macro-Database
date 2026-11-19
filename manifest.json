@@ -1,6 +1,6 @@
 {
-  "schema": 1,
-  "description": "SolidWorks automation entries. Each answers one question. Check 'status' before trusting an entry: verified means it ran against the named version; unverified means it is well-formed against the documented API but was never executed.",
+  "schema": 2,
+  "description": "SolidWorks automation entries. Each answers one question. Check 'status' before trusting an entry: verified means it ran against the named version ('verified_on' says what was run; 'majors' are the SolidWorks revision majors it ran on, 32 = 2024, 34 = 2026); unverified means it is well-formed against the documented API but was never executed. 'recipe' is the entry's C# recipe, the code SW-Agent runs, with a status of its own.",
   "count": 98,
   "by_status": {
     "partly-verified": 11,
@@ -13,26 +13,7 @@
       "title": "Read a part's appearance, and remove one applied at the part level",
       "path": "entries/appearance/01-read-and-remove-a-part-appearance.md",
       "category": "appearance",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (revision 32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDoc2.MaterialPropertyValues",
-        "IModelDocExtension.GetRenderMaterials2",
-        "IModelDocExtension.GetRenderMaterialsCount2",
-        "IRenderMaterial.FileName",
-        "IRenderMaterial.Specular",
-        "IRenderMaterial.Reflectivity",
-        "IRenderMaterial.Transparency",
-        "IRenderMaterial.GetEntitiesCount",
-        "IRenderMaterial.GetMaterialIds",
-        "IRenderMaterial.MaterialID",
-        "IModelDocExtension.DeleteDisplayStateSpecificRenderMaterial",
-        "IBody2.MaterialPropertyValues2",
-        "IModelView.DisplayMode"
-      ],
+      "answers": "Why does my whole part look transparent or glossy, and how do I find and remove the appearance doing it from code?",
       "keywords": [
         "appearance",
         "transparent",
@@ -62,29 +43,39 @@
         "returns False",
         "bool object is not callable"
       ],
-      "answers": "Why does my whole part look transparent or glossy, and how do I find and remove the appearance doing it from code?"
+      "api": [
+        "IModelDoc2.MaterialPropertyValues",
+        "IModelDocExtension.GetRenderMaterials2",
+        "IModelDocExtension.GetRenderMaterialsCount2",
+        "IRenderMaterial.FileName",
+        "IRenderMaterial.Specular",
+        "IRenderMaterial.Reflectivity",
+        "IRenderMaterial.Transparency",
+        "IRenderMaterial.GetEntitiesCount",
+        "IRenderMaterial.GetMaterialIds",
+        "IRenderMaterial.MaterialID",
+        "IModelDocExtension.DeleteDisplayStateSpecificRenderMaterial",
+        "IBody2.MaterialPropertyValues2",
+        "IModelView.DisplayMode"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (revision 32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-01-new-assembly-and-insert-components",
       "title": "Make an assembly and insert saved parts as components",
       "path": "entries/assemblies/01-new-assembly-and-insert-components.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0); inserting a closed part, a fixed component's put, and the template's effect on fixing also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "ISldWorks.NewDocument",
-        "IAssemblyDoc.AddComponent5",
-        "IComponent2.Name2",
-        "IComponent2.Transform2",
-        "IComponent2.IsFixed",
-        "IComponent2.Select4",
-        "IAssemblyDoc.FixComponent",
-        "IAssemblyDoc.GetComponentByName",
-        "ISldWorks.OpenDoc6"
-      ],
+      "answers": "How do I make a new assembly and insert saved parts into it as components from code?",
       "keywords": [
         "assembly",
         "AddComponent5",
@@ -108,34 +99,35 @@
         "GetComponentByName",
         "move a fixed component"
       ],
-      "answers": "How do I make a new assembly and insert saved parts into it as components from code?"
+      "api": [
+        "ISldWorks.NewDocument",
+        "IAssemblyDoc.AddComponent5",
+        "IComponent2.Name2",
+        "IComponent2.Transform2",
+        "IComponent2.IsFixed",
+        "IComponent2.Select4",
+        "IAssemblyDoc.FixComponent",
+        "IAssemblyDoc.GetComponentByName",
+        "ISldWorks.OpenDoc6"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0); inserting a closed part, a fixed component's put, and the template's effect on fixing also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-02-mates-from-code",
       "title": "Add coincident, distance and angle mates",
       "path": "entries/assemblies/02-mates-from-code.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1); failing mates, deleting and renaming also on SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IAssemblyDoc.AddMate5",
-        "IComponent2.FeatureByName",
-        "IFeature.Select2",
-        "IModelDocExtension.SelectByID2",
-        "IFeature.GetFirstSubFeature",
-        "IFeature.GetNextSubFeature",
-        "IEquationMgr.Add2",
-        "IFeature.GetErrorCode2",
-        "IComponent2.GetConstrainedStatus",
-        "IModelDocExtension.GetWhatsWrongCount",
-        "IModelDocExtension.GetWhatsWrong",
-        "IModelDoc2.EditDelete",
-        "IFeature.Name",
-        "IModelDoc2.FeatureByName"
-      ],
+      "answers": "How do I add coincident, distance and angle mates between assembly components from code?",
       "keywords": [
         "AddMate5",
         "mate",
@@ -173,25 +165,40 @@
         "suppressed mate error code 0",
         "unsuppress marks modified"
       ],
-      "answers": "How do I add coincident, distance and angle mates between assembly components from code?"
+      "api": [
+        "IAssemblyDoc.AddMate5",
+        "IComponent2.FeatureByName",
+        "IFeature.Select2",
+        "IModelDocExtension.SelectByID2",
+        "IFeature.GetFirstSubFeature",
+        "IFeature.GetNextSubFeature",
+        "IEquationMgr.Add2",
+        "IFeature.GetErrorCode2",
+        "IComponent2.GetConstrainedStatus",
+        "IModelDocExtension.GetWhatsWrongCount",
+        "IModelDocExtension.GetWhatsWrong",
+        "IModelDoc2.EditDelete",
+        "IFeature.Name",
+        "IModelDoc2.FeatureByName"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1); failing mates, deleting and renaming also on SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-03-interference-detection",
       "title": "Check an assembly for interference and read the volumes",
       "path": "entries/assemblies/03-interference-detection.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IAssemblyDoc.InterferenceDetectionManager",
-        "IInterferenceDetectionMgr.GetInterferenceCount",
-        "IInterferenceDetectionMgr.GetInterferences",
-        "IInterferenceDetectionMgr.Done",
-        "IInterference.Volume"
-      ],
+      "answers": "How do I check an assembly for interfering components from code and get the interference volume?",
       "keywords": [
         "InterferenceDetectionManager",
         "interference detection",
@@ -210,28 +217,31 @@
         "negative control",
         "gear mesh check"
       ],
-      "answers": "How do I check an assembly for interfering components from code and get the interference volume?"
+      "api": [
+        "IAssemblyDoc.InterferenceDetectionManager",
+        "IInterferenceDetectionMgr.GetInterferenceCount",
+        "IInterferenceDetectionMgr.GetInterferences",
+        "IInterferenceDetectionMgr.Done",
+        "IInterference.Volume"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-04-mates-between-non-parallel-axes",
       "title": "Place and mate components whose axes are not parallel",
       "path": "entries/assemblies/04-mates-between-non-parallel-axes.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1); the gear mate sense also on SolidWorks 2024 SP5 (32.5.0), three meshes",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "ISldWorks.GetMathUtility",
-        "IMathUtility.CreateTransform",
-        "IComponent2.Transform2",
-        "IComponent2.GetModelDoc2",
-        "IModelDocExtension.SelectByID2",
-        "IAssemblyDoc.AddMate5",
-        "IGearMateFeatureData.Reverse",
-        "IMateEntity2.EntityParams"
-      ],
+      "answers": "How do I set a component's rotation from code and mate it so its axis sits at an angle to another component's, such as bevel or crossed gears?",
       "keywords": [
         "gear mate between non-parallel axes",
         "bevel gear mate",
@@ -267,34 +277,34 @@
         "skew axes",
         "shaft angle"
       ],
-      "answers": "How do I set a component's rotation from code and mate it so its axis sits at an angle to another component's, such as bevel or crossed gears?"
+      "api": [
+        "ISldWorks.GetMathUtility",
+        "IMathUtility.CreateTransform",
+        "IComponent2.Transform2",
+        "IComponent2.GetModelDoc2",
+        "IModelDocExtension.SelectByID2",
+        "IAssemblyDoc.AddMate5",
+        "IGearMateFeatureData.Reverse",
+        "IMateEntity2.EntityParams"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1); the gear mate sense also on SolidWorks 2024 SP5 (32.5.0), three meshes",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-05-test-motion-with-the-drag-operator",
       "title": "Test whether an assembly can move, with the drag operator",
       "path": "entries/assemblies/05-test-motion-with-the-drag-operator.md",
       "category": "assemblies",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0); the gear-train drags also on SolidWorks 2026 (revisions 34.0.0 and 34.1.1)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IAssemblyDoc.GetDragOperator",
-        "IDragOperator.AddComponent",
-        "IDragOperator.TransformType",
-        "IDragOperator.UseAbsoluteTransform",
-        "IDragOperator.BeginDrag",
-        "IDragOperator.Drag",
-        "IDragOperator.EndDrag",
-        "IMateEntity2.EntityParams",
-        "IFeature.SetSuppression2",
-        "IFeature.GetErrorCode2",
-        "IComponent2.Transform2",
-        "IDragOperator.DragAsUI",
-        "IDragOperator.DragMode",
-        "IComponent2.SetTransformAndSolve2"
-      ],
+      "answers": "How do I find out from code whether an assembly can move, and which mate is stopping it?",
       "keywords": [
         "gear mate does not propagate",
         "DragAsUI",
@@ -324,43 +334,40 @@
         "lock mate drag",
         "axis coincident"
       ],
-      "answers": "How do I find out from code whether an assembly can move, and which mate is stopping it?"
+      "api": [
+        "IAssemblyDoc.GetDragOperator",
+        "IDragOperator.AddComponent",
+        "IDragOperator.TransformType",
+        "IDragOperator.UseAbsoluteTransform",
+        "IDragOperator.BeginDrag",
+        "IDragOperator.Drag",
+        "IDragOperator.EndDrag",
+        "IMateEntity2.EntityParams",
+        "IFeature.SetSuppression2",
+        "IFeature.GetErrorCode2",
+        "IComponent2.Transform2",
+        "IDragOperator.DragAsUI",
+        "IDragOperator.DragMode",
+        "IComponent2.SetTransformAndSolve2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0); the gear-train drags also on SolidWorks 2026 (revisions 34.0.0 and 34.1.1)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-06-read-every-mate",
       "title": "Read every mate in an assembly, with its entities, gear ratio and folder",
       "path": "entries/assemblies/06-read-every-mate.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates and code-made mate folders also SolidWorks 2026 (34.1.1)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.InsertFeatureTreeFolder2",
-        "IFeature.GetFirstSubFeature",
-        "IFeature.GetNextSubFeature",
-        "IFeature.GetTypeName2",
-        "IFeature.GetSpecificFeature2",
-        "IFeature.GetDefinition",
-        "IFeature.IsSuppressed",
-        "IFeature.GetErrorCode2",
-        "IMate2.Type",
-        "IMate2.Alignment",
-        "IMate2.Flipped",
-        "IMate2.MaximumVariation",
-        "IMate2.MinimumVariation",
-        "IMate2.GetMateEntityCount",
-        "IMate2.MateEntity",
-        "IMateEntity2.ReferenceComponent",
-        "IMateEntity2.ReferenceType2",
-        "IMateEntity2.EntityParams",
-        "IGearMateFeatureData.GearRatioNumerator",
-        "IGearMateFeatureData.GearRatioDenominator",
-        "IGearMateFeatureData.Reverse",
-        "IDistanceMateFeatureData.Distance",
-        "IDistanceMateFeatureData.MateAlignment"
-      ],
+      "answers": "How do I read every mate in an existing assembly — its type, the components and faces it joins, a gear mate's ratio, and which folder it is in?",
       "keywords": [
         "read mates",
         "list mates",
@@ -390,38 +397,49 @@
         "suppressed mates",
         "mechanism from mates"
       ],
-      "answers": "How do I read every mate in an existing assembly — its type, the components and faces it joins, a gear mate's ratio, and which folder it is in?"
+      "api": [
+        "IFeatureManager.InsertFeatureTreeFolder2",
+        "IFeature.GetFirstSubFeature",
+        "IFeature.GetNextSubFeature",
+        "IFeature.GetTypeName2",
+        "IFeature.GetSpecificFeature2",
+        "IFeature.GetDefinition",
+        "IFeature.IsSuppressed",
+        "IFeature.GetErrorCode2",
+        "IMate2.Type",
+        "IMate2.Alignment",
+        "IMate2.Flipped",
+        "IMate2.MaximumVariation",
+        "IMate2.MinimumVariation",
+        "IMate2.GetMateEntityCount",
+        "IMate2.MateEntity",
+        "IMateEntity2.ReferenceComponent",
+        "IMateEntity2.ReferenceType2",
+        "IMateEntity2.EntityParams",
+        "IGearMateFeatureData.GearRatioNumerator",
+        "IGearMateFeatureData.GearRatioDenominator",
+        "IGearMateFeatureData.Reverse",
+        "IDistanceMateFeatureData.Distance",
+        "IDistanceMateFeatureData.MateAlignment"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates and code-made mate folders also SolidWorks 2026 (34.1.1)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-07-configurations-that-hold-different-positions",
       "title": "Make assembly configurations that each hold a mechanism in a different position",
       "path": "entries/assemblies/07-configurations-that-hold-different-positions.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IConfigurationManager.AddConfiguration2",
-        "IModelDoc2.ShowConfiguration2",
-        "IModelDoc2.GetConfigurationNames",
-        "IAssemblyDoc.AddMate5",
-        "IFeature.SetSuppression2",
-        "IFeature.IsSuppressed2",
-        "IFeature.IsSuppressed",
-        "IFeature.GetErrorCode2",
-        "ISketchManager.InsertSketch",
-        "ISketchManager.CreatePoint",
-        "ISketchManager.AddToDB",
-        "ISketch.GetSketchPoints2",
-        "IModelDoc2.BlankSketch",
-        "IMate2.MateEntity",
-        "IMateEntity2.Reference",
-        "IMateEntity2.EntityParams",
-        "IComponent2.SetSuppression2",
-        "IModelDocExtension.DeleteSelection2"
-      ],
+      "answers": "How do I make configurations of an assembly that each put a mechanism in a different position, so switching configuration moves it and each position is exact?",
       "keywords": [
         "configuration",
         "positions",
@@ -454,30 +472,44 @@
         "ShowConfiguration2 raises",
         "suppress component in one configuration"
       ],
-      "answers": "How do I make configurations of an assembly that each put a mechanism in a different position, so switching configuration moves it and each position is exact?"
+      "api": [
+        "IConfigurationManager.AddConfiguration2",
+        "IModelDoc2.ShowConfiguration2",
+        "IModelDoc2.GetConfigurationNames",
+        "IAssemblyDoc.AddMate5",
+        "IFeature.SetSuppression2",
+        "IFeature.IsSuppressed2",
+        "IFeature.IsSuppressed",
+        "IFeature.GetErrorCode2",
+        "ISketchManager.InsertSketch",
+        "ISketchManager.CreatePoint",
+        "ISketchManager.AddToDB",
+        "ISketch.GetSketchPoints2",
+        "IModelDoc2.BlankSketch",
+        "IMate2.MateEntity",
+        "IMateEntity2.Reference",
+        "IMateEntity2.EntityParams",
+        "IComponent2.SetSuppression2",
+        "IModelDocExtension.DeleteSelection2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-08-exploded-view-from-code",
       "title": "Build an assembly's exploded view step by step from code, and check each step moved",
       "path": "entries/assemblies/08-exploded-view-from-code.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IAssemblyDoc.GetExplodedViewNames2",
-        "IAssemblyDoc.ShowExploded2",
-        "IConfiguration.AddExplodeStep2",
-        "IConfiguration.GetNumberOfExplodeSteps",
-        "IConfiguration.GetExplodeStep",
-        "IConfiguration.DeleteExplodeStep",
-        "IExplodeStep.Name",
-        "IComponent2.Select4",
-        "ISelectionMgr.CreateSelectData",
-        "IComponent2.Transform2"
-      ],
+      "answers": "How do I make an exploded view of an assembly from code — which parts move, how far and which way — and confirm each step went where I meant?",
       "keywords": [
         "CreateExplodedView",
         "Chain1",
@@ -499,28 +531,36 @@
         "Chain1",
         "check component moved"
       ],
-      "answers": "How do I make an exploded view of an assembly from code — which parts move, how far and which way — and confirm each step went where I meant?"
+      "api": [
+        "IAssemblyDoc.GetExplodedViewNames2",
+        "IAssemblyDoc.ShowExploded2",
+        "IConfiguration.AddExplodeStep2",
+        "IConfiguration.GetNumberOfExplodeSteps",
+        "IConfiguration.GetExplodeStep",
+        "IConfiguration.DeleteExplodeStep",
+        "IExplodeStep.Name",
+        "IComponent2.Select4",
+        "ISelectionMgr.CreateSelectData",
+        "IComponent2.Transform2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-09-keep-an-edited-toolbox-copy",
       "title": "Use an edited copy of a Toolbox part in an assembly without it reverting to the library part",
       "path": "entries/assemblies/09-keep-an-edited-toolbox-copy.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDocExtension.ToolboxPartType",
-        "IModelDoc2.Save3",
-        "IComponent2.Select4",
-        "IAssemblyDoc.ReplaceComponents2",
-        "IComponent2.GetPathName",
-        "IComponent2.ReferencedConfiguration",
-        "ISldWorks.OpenDoc6",
-        "ISldWorks.CloseDoc"
-      ],
+      "answers": "I edited a Toolbox part (or a copy of one) and on reopening the assembly my edits are gone and the mates fail — why, and how do I make the edited copy stick?",
       "keywords": [
         "Toolbox",
         "toolbox part",
@@ -542,33 +582,34 @@
         "error 51",
         "read-only toolbox part"
       ],
-      "answers": "I edited a Toolbox part (or a copy of one) and on reopening the assembly my edits are gone and the mates fail — why, and how do I make the edited copy stick?"
+      "api": [
+        "IModelDocExtension.ToolboxPartType",
+        "IModelDoc2.Save3",
+        "IComponent2.Select4",
+        "IAssemblyDoc.ReplaceComponents2",
+        "IComponent2.GetPathName",
+        "IComponent2.ReferencedConfiguration",
+        "ISldWorks.OpenDoc6",
+        "ISldWorks.CloseDoc"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-10-mate-a-gear-train-that-turns",
       "title": "Mate gears on their shafts into a train that turns, with gear mates and lock mates",
       "path": "entries/assemblies/10-mate-a-gear-train-that-turns.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1) and SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IAssemblyDoc.AddMate5",
-        "IAssemblyDoc.UnfixComponent",
-        "IComponent2.Select4",
-        "ISelectionMgr.CreateSelectData",
-        "IComponent2.GetCorresponding",
-        "IComponent2.GetConstrainedStatus",
-        "IFeature.GetDefinition",
-        "IGearMateFeatureData.GearRatioNumerator",
-        "IGearMateFeatureData.GearRatioDenominator",
-        "IGearMateFeatureData.Reverse",
-        "IMate2.Alignment",
-        "IMate2.MateEntity",
-        "IMateEntity2.ReferenceComponent"
-      ],
+      "answers": "How do I mate gears to their shafts and to each other from code so the whole gear train turns together at the right ratio and in the right direction?",
       "keywords": [
         "gear train",
         "gear mate",
@@ -607,33 +648,40 @@
         "CreateSelectData Mark",
         "Select4 component"
       ],
-      "answers": "How do I mate gears to their shafts and to each other from code so the whole gear train turns together at the right ratio and in the right direction?"
+      "api": [
+        "IAssemblyDoc.AddMate5",
+        "IAssemblyDoc.UnfixComponent",
+        "IComponent2.Select4",
+        "ISelectionMgr.CreateSelectData",
+        "IComponent2.GetCorresponding",
+        "IComponent2.GetConstrainedStatus",
+        "IFeature.GetDefinition",
+        "IGearMateFeatureData.GearRatioNumerator",
+        "IGearMateFeatureData.GearRatioDenominator",
+        "IGearMateFeatureData.Reverse",
+        "IMate2.Alignment",
+        "IMate2.MateEntity",
+        "IMateEntity2.ReferenceComponent"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1) and SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32,
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-11-change-a-mated-gear-train",
       "title": "Change a mated gear train in place — re-phase a gear, move a shaft, re-take a lock, change a gear mate's ratio",
       "path": "entries/assemblies/11-change-a-mated-gear-train.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1) and SolidWorks 2024 SP5 (32.5.0), each in a session started fresh for the run",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IComponent2.Transform2",
-        "IFeature.SetSuppression2",
-        "IFeature.IsSuppressed2",
-        "IFeature.GetDefinition",
-        "IFeature.ModifyDefinition",
-        "IGearMateFeatureData.GearRatioNumerator",
-        "IGearMateFeatureData.GearRatioDenominator",
-        "IModelDoc2.EditDelete",
-        "IAssemblyDoc.GetComponentByName",
-        "IAssemblyDoc.AddMate5",
-        "ISldWorks.CloseDoc",
-        "ISldWorks.OpenDoc6",
-        "IComponent2.GetSuppression2"
-      ],
+      "answers": "My gear train is mated and turns; how do I change it from code afterwards — turn one gear to a new phase, move a shaft, change a compound gear's angle or position, or give a gear mate a new ratio — without breaking the mates?",
       "keywords": [
         "change gear ratio",
         "gear mate ratio",
@@ -667,31 +715,40 @@
         "OverrideDefaultLoadLightweight",
         "SOLIDWORKS CAM Error"
       ],
-      "answers": "My gear train is mated and turns; how do I change it from code afterwards — turn one gear to a new phase, move a shaft, change a compound gear's angle or position, or give a gear mate a new ratio — without breaking the mates?"
+      "api": [
+        "IComponent2.Transform2",
+        "IFeature.SetSuppression2",
+        "IFeature.IsSuppressed2",
+        "IFeature.GetDefinition",
+        "IFeature.ModifyDefinition",
+        "IGearMateFeatureData.GearRatioNumerator",
+        "IGearMateFeatureData.GearRatioDenominator",
+        "IModelDoc2.EditDelete",
+        "IAssemblyDoc.GetComponentByName",
+        "IAssemblyDoc.AddMate5",
+        "ISldWorks.CloseDoc",
+        "ISldWorks.OpenDoc6",
+        "IComponent2.GetSuppression2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revisions 34.0.0 and 34.1.1) and SolidWorks 2024 SP5 (32.5.0), each in a session started fresh for the run",
+      "majors": [
+        32,
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-12-rebuild-scope-and-the-save-flag",
       "title": "Rebuild an assembly without marking every part modified, and what sets GetSaveFlag",
       "path": "entries/assemblies/12-rebuild-scope-and-the-save-flag.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0), each in a session started fresh for the run",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDoc2.ForceRebuild3",
-        "IModelDoc2.EditRebuild3",
-        "IModelDoc2.GetSaveFlag",
-        "ISldWorks.CommandInProgress",
-        "IFeature.GetDefinition",
-        "IModelDocExtension.NeedsRebuild",
-        "IModelDocExtension.NeedsRebuild2",
-        "ISldWorks.OpenDoc6",
-        "ISldWorks.ActivateDoc3",
-        "IModelDocExtension.GetWhatsWrongCount",
-        "IComponent2.Transform2"
-      ],
+      "answers": "Which rebuild should I call on an assembly after changing it from code, so that SolidWorks only asks to save the documents I actually changed — and what marks a document modified in the first place?",
       "keywords": [
         "ForceRebuild3 True",
         "ForceRebuild3 False",
@@ -719,35 +776,38 @@
         "reading feature data marks nothing",
         "unsuppress marks modified"
       ],
-      "answers": "Which rebuild should I call on an assembly after changing it from code, so that SolidWorks only asks to save the documents I actually changed — and what marks a document modified in the first place?"
+      "api": [
+        "IModelDoc2.ForceRebuild3",
+        "IModelDoc2.EditRebuild3",
+        "IModelDoc2.GetSaveFlag",
+        "ISldWorks.CommandInProgress",
+        "IFeature.GetDefinition",
+        "IModelDocExtension.NeedsRebuild",
+        "IModelDocExtension.NeedsRebuild2",
+        "ISldWorks.OpenDoc6",
+        "ISldWorks.ActivateDoc3",
+        "IModelDocExtension.GetWhatsWrongCount",
+        "IComponent2.Transform2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0), each in a session started fresh for the run",
+      "majors": [
+        32,
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-13-assembly-configurations-from-code",
       "title": "Add, show and delete assembly configurations from code, with mates and distances set per configuration",
       "path": "entries/assemblies/13-assembly-configurations-from-code.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (34.1.1) and SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IConfigurationManager.AddConfiguration2",
-        "IConfigurationManager.ActiveConfiguration",
-        "IModelDoc2.ShowConfiguration2",
-        "IModelDoc2.DeleteConfiguration2",
-        "IModelDoc2.GetConfigurationNames",
-        "IFeature.SetSuppression2",
-        "IFeature.IsSuppressed2",
-        "IDimension.SetSystemValue3",
-        "IDimension.GetSystemValue3",
-        "IDimension.SystemValue",
-        "IAssemblyDoc.GetComponentByName",
-        "IComponent2.Transform2",
-        "IComponent2.IsFixed",
-        "IEquationMgr.Add2",
-        "IModelDoc2.GetSaveFlag"
-      ],
+      "answers": "How do I add, show and delete assembly configurations from code, and give a mate's suppression or a distance mate's value per configuration, without stale component handles misleading me?",
       "keywords": [
         "assembly configuration",
         "AddConfiguration2",
@@ -776,27 +836,42 @@
         "put per configuration",
         "ShowConfiguration2 marks modified"
       ],
-      "answers": "How do I add, show and delete assembly configurations from code, and give a mate's suppression or a distance mate's value per configuration, without stale component handles misleading me?"
+      "api": [
+        "IConfigurationManager.AddConfiguration2",
+        "IConfigurationManager.ActiveConfiguration",
+        "IModelDoc2.ShowConfiguration2",
+        "IModelDoc2.DeleteConfiguration2",
+        "IModelDoc2.GetConfigurationNames",
+        "IFeature.SetSuppression2",
+        "IFeature.IsSuppressed2",
+        "IDimension.SetSystemValue3",
+        "IDimension.GetSystemValue3",
+        "IDimension.SystemValue",
+        "IAssemblyDoc.GetComponentByName",
+        "IComponent2.Transform2",
+        "IComponent2.IsFixed",
+        "IEquationMgr.Add2",
+        "IModelDoc2.GetSaveFlag"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (34.1.1) and SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32,
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "assemblies-14-in-context-part-across-configurations",
       "title": "Show an in-context part at a different size in each assembly configuration",
       "path": "entries/assemblies/14-in-context-part-across-configurations.md",
       "category": "assemblies",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IConfigurationManager.AddConfiguration2",
-        "IComponent2.ReferencedConfiguration",
-        "IComponent2.GetModelDoc2",
-        "IModelDoc2.GetConfigurationNames",
-        "IModelDoc2.Parameter",
-        "IFeature.GetFaceCount",
-        "IComponent2.GetBodies2"
-      ],
+      "answers": "My in-context part (a spring whose length follows the parts around it) draws at the same size in every configuration's drawing view. How do I make each assembly configuration keep its own size?",
       "keywords": [
         "in-context",
         "virtual component",
@@ -811,23 +886,33 @@
         "sweep lost body",
         "GetFaceCount 0"
       ],
-      "answers": "My in-context part (a spring whose length follows the parts around it) draws at the same size in every configuration's drawing view. How do I make each assembly configuration keep its own size?"
+      "api": [
+        "IConfigurationManager.AddConfiguration2",
+        "IComponent2.ReferencedConfiguration",
+        "IComponent2.GetModelDoc2",
+        "IModelDoc2.GetConfigurationNames",
+        "IModelDoc2.Parameter",
+        "IFeature.GetFaceCount",
+        "IComponent2.GetBodies2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-01-attach-vbscript",
       "title": "Attach to a running SolidWorks from VBScript",
       "path": "entries/connect/01-attach-from-vbscript.md",
       "category": "connect",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "vbscript"
-      ],
-      "api": [
-        "GetObject",
-        "CreateObject",
-        "ISldWorks.Visible"
-      ],
+      "answers": "How do I reach an already-open SolidWorks from a standalone script?",
       "keywords": [
         "attach",
         "connect",
@@ -838,22 +923,29 @@
         "cscript",
         "generated script"
       ],
-      "answers": "How do I reach an already-open SolidWorks from a standalone script?"
+      "api": [
+        "GetObject",
+        "CreateObject",
+        "ISldWorks.Visible"
+      ],
+      "language": [
+        "vbscript"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-02-attach-python",
       "title": "Attach to a running SolidWorks from Python",
       "path": "entries/connect/02-attach-from-python.md",
       "category": "connect",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024, 2025 and 2026 side by side",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "ISldWorks.RevisionNumber",
-        "ISldWorks.ActiveDoc"
-      ],
+      "answers": "How do I connect to SolidWorks from Python without launching a second copy?",
       "keywords": [
         "pywin32",
         "pythoncom",
@@ -885,24 +977,30 @@
         "onefile exe",
         "frozen app"
       ],
-      "answers": "How do I connect to SolidWorks from Python without launching a second copy?"
+      "api": [
+        "ISldWorks.RevisionNumber",
+        "ISldWorks.ActiveDoc"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024, 2025 and 2026 side by side",
+      "majors": [
+        32,
+        33,
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-03-attach-csharp",
       "title": "Attach to a running SolidWorks from C# on .NET 8",
       "path": "entries/connect/03-attach-from-csharp.md",
       "category": "connect",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 for attach and dependency read",
-      "language": [
-        "csharp-standalone"
-      ],
-      "api": [
-        "GetActiveObject",
-        "GetRunningObjectTable",
-        "CreateBindCtx",
-        "CLSIDFromProgID"
-      ],
+      "answers": "Marshal.GetActiveObject is gone on .NET 8. How do I attach to SolidWorks?",
       "keywords": [
         "dotnet 8",
         "Marshal.GetActiveObject",
@@ -913,22 +1011,30 @@
         "EmbedInteropTypes",
         "wpf"
       ],
-      "answers": "Marshal.GetActiveObject is gone on .NET 8. How do I attach to SolidWorks?"
+      "api": [
+        "GetActiveObject",
+        "GetRunningObjectTable",
+        "CreateBindCtx",
+        "CLSIDFromProgID"
+      ],
+      "language": [
+        "csharp-standalone"
+      ],
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2026 for attach and dependency read",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-04-attach-vba",
       "title": "Attach from VBA, inside SolidWorks",
       "path": "entries/connect/04-attach-from-vba.md",
       "category": "connect",
-      "status": "unverified",
-      "verified_on": "standard across versions",
-      "language": [
-        "vba"
-      ],
-      "api": [
-        "Application.SldWorks",
-        "ISldWorks.ActiveDoc"
-      ],
+      "answers": "What is the preamble for a macro that runs inside SolidWorks?",
       "keywords": [
         "vba",
         "macro",
@@ -938,21 +1044,26 @@
         "Application.SldWorks",
         "paste macro"
       ],
-      "answers": "What is the preamble for a macro that runs inside SolidWorks?"
+      "api": [
+        "Application.SldWorks",
+        "ISldWorks.ActiveDoc"
+      ],
+      "language": [
+        "vba"
+      ],
+      "status": "unverified",
+      "verified_on": "standard across versions",
+      "majors": [],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-05-choosing-among-versions",
       "title": "Choosing among several installed versions",
       "path": "entries/connect/05-choosing-among-versions.md",
       "category": "connect",
-      "status": "verified",
-      "verified_on": "a machine carrying SolidWorks 2024, 2025 and 2026",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "ISldWorks.RevisionNumber"
-      ],
+      "answers": "Several SolidWorks versions are installed. Which one should my tool drive?",
       "keywords": [
         "version",
         "revision number",
@@ -968,23 +1079,28 @@
         "find_candidates",
         "read-only tool on an older version"
       ],
-      "answers": "Several SolidWorks versions are installed. Which one should my tool drive?"
+      "api": [
+        "ISldWorks.RevisionNumber"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "a machine carrying SolidWorks 2024, 2025 and 2026",
+      "majors": [
+        32,
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-06-one-apartment-thread",
       "title": "Put every COM call on one apartment thread",
       "path": "entries/connect/06-one-apartment-thread.md",
       "category": "connect",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "csharp-standalone",
-        "python"
-      ],
-      "api": [
-        "CoInitializeEx",
-        "Marshal.FinalReleaseComObject"
-      ],
+      "answers": "How do I stop COM calls blowing up or freezing my UI?",
       "keywords": [
         "STA",
         "apartment",
@@ -996,25 +1112,29 @@
         "modal dialog",
         "blocking"
       ],
-      "answers": "How do I stop COM calls blowing up or freezing my UI?"
+      "api": [
+        "CoInitializeEx",
+        "Marshal.FinalReleaseComObject"
+      ],
+      "language": [
+        "csharp-standalone",
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-07-find-open-document",
       "title": "Find the open document you want to work on",
       "path": "entries/connect/07-find-the-open-document.md",
       "category": "connect",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "vbscript",
-        "python"
-      ],
-      "api": [
-        "ISldWorks.ActiveDoc",
-        "ISldWorks.GetFirstDocument",
-        "IModelDoc2.GetNext",
-        "IModelDoc2.GetTitle"
-      ],
+      "answers": "How do I get the ModelDoc2 for the part I care about, rather than whatever is on top?",
       "keywords": [
         "active document",
         "open documents",
@@ -1022,27 +1142,31 @@
         "GetTitle",
         "part not open"
       ],
-      "answers": "How do I get the ModelDoc2 for the part I care about, rather than whatever is on top?"
+      "api": [
+        "ISldWorks.ActiveDoc",
+        "ISldWorks.GetFirstDocument",
+        "IModelDoc2.GetNext",
+        "IModelDoc2.GetTitle"
+      ],
+      "language": [
+        "vbscript",
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-08-find-feature-by-name",
       "title": "Find a feature by name in the tree",
       "path": "entries/connect/08-find-a-feature-by-name.md",
       "category": "connect",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "vbscript",
-        "python"
-      ],
-      "api": [
-        "IPartDoc.FeatureByName",
-        "IModelDoc2.FirstFeature",
-        "IFeature.GetNextFeature",
-        "IFeature.Name",
-        "IFeature.GetFirstSubFeature",
-        "IFeature.GetNextSubFeature"
-      ],
+      "answers": "How do I get an IFeature by its name so I can modify or reference it?",
       "keywords": [
         "feature tree",
         "walk features",
@@ -1058,25 +1182,33 @@
         "fast lookup",
         "feature in a folder"
       ],
-      "answers": "How do I get an IFeature by its name so I can modify or reference it?"
+      "api": [
+        "IPartDoc.FeatureByName",
+        "IModelDoc2.FirstFeature",
+        "IFeature.GetNextFeature",
+        "IFeature.Name",
+        "IFeature.GetFirstSubFeature",
+        "IFeature.GetNextSubFeature"
+      ],
+      "language": [
+        "vbscript",
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-09-launch-versus-attach",
       "title": "Launch versus attach, and never closing someone's session",
       "path": "entries/connect/09-launch-versus-attach.md",
       "category": "connect",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 for attach; launch path compiles and runs, ExitApp untested; the hidden-instance warning observed on 2026 SP1.1",
-      "language": [
-        "csharp-standalone",
-        "vbscript"
-      ],
-      "api": [
-        "ISldWorks.Visible",
-        "ISldWorks.ExitApp",
-        "Activator.CreateInstance",
-        "Type.GetTypeFromProgID"
-      ],
+      "answers": "Should my tool start SolidWorks if none is running, and how do I clean up?",
       "keywords": [
         "launch solidworks",
         "hidden instance",
@@ -1087,24 +1219,31 @@
         "batch",
         "modal dialog blocks"
       ],
-      "answers": "Should my tool start SolidWorks if none is running, and how do I clean up?"
+      "api": [
+        "ISldWorks.Visible",
+        "ISldWorks.ExitApp",
+        "Activator.CreateInstance",
+        "Type.GetTypeFromProgID"
+      ],
+      "language": [
+        "csharp-standalone",
+        "vbscript"
+      ],
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2026 for attach; launch path compiles and runs, ExitApp untested; the hidden-instance warning observed on 2026 SP1.1",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-10-driving-from-outside-windows",
       "title": "Driving Windows SolidWorks from WSL or another host",
       "path": "entries/connect/10-driving-from-outside-windows.md",
       "category": "connect",
-      "status": "verified",
-      "verified_on": "WSL2 to SolidWorks 2026",
-      "language": [
-        "shell",
-        "typescript",
-        "python"
-      ],
-      "api": [
-        "cscript",
-        "wslpath"
-      ],
+      "answers": "My code runs on Linux or a Mac. How do I still drive SolidWorks?",
       "keywords": [
         "wsl",
         "cross platform",
@@ -1121,25 +1260,30 @@
         "carriage return",
         "tr -d"
       ],
-      "answers": "My code runs on Linux or a Mac. How do I still drive SolidWorks?"
+      "api": [
+        "cscript",
+        "wslpath"
+      ],
+      "language": [
+        "shell",
+        "typescript",
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "WSL2 to SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-11-probe-an-api-member-on-a-live-session",
       "title": "Probe an API member on a live session before relying on it",
       "path": "entries/connect/11-probe-an-api-member-on-a-live-session.md",
       "category": "connect",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "ISldWorks.NewDocument",
-        "ISldWorks.CloseDoc",
-        "ISldWorks.GetFirstDocument",
-        "IModelDoc2.GetNext",
-        "ISelectionMgr.GetSelectedObjectCount2"
-      ],
+      "answers": "How do I find out whether a SolidWorks API call really works before my tool depends on it?",
       "keywords": [
         "probe",
         "harness",
@@ -1158,20 +1302,31 @@
         "skip cascade",
         "cleanup"
       ],
-      "answers": "How do I find out whether a SolidWorks API call really works before my tool depends on it?"
+      "api": [
+        "ISldWorks.NewDocument",
+        "ISldWorks.CloseDoc",
+        "ISldWorks.GetFirstDocument",
+        "IModelDoc2.GetNext",
+        "ISelectionMgr.GetSelectedObjectCount2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "connect-12-read-the-api-help-offline",
       "title": "Read the SolidWorks API help offline, from the installed .chm files",
       "path": "entries/connect/12-read-the-api-help-offline.md",
       "category": "connect",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 install, Windows 11, driven from WSL2",
-      "language": [
-        "shell",
-        "powershell"
-      ],
-      "api": [],
+      "answers": "The online API help comes back empty to my fetch tool. How do I read a member's signature, remarks or an enum's values from the docs installed with SolidWorks?",
       "keywords": [
         "API help",
         "documentation",
@@ -1193,17 +1348,26 @@
         "Start-Process",
         "silent failure"
       ],
-      "answers": "The online API help comes back empty to my fetch tool. How do I read a member's signature, remarks or an enum's values from the docs installed with SolidWorks?"
+      "api": [],
+      "language": [
+        "shell",
+        "powershell"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 install, Windows 11, driven from WSL2",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-01-sldcrv-format",
       "title": "The Curve Through XYZ Points file format",
       "path": "entries/curves/01-sldcrv-file-format.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2025 and 2026",
-      "language": [],
-      "api": [],
+      "answers": "What exactly do I write into a .sldcrv file so SolidWorks reads it correctly?",
       "keywords": [
         "sldcrv",
         "curve through xyz points",
@@ -1221,25 +1385,24 @@
         "chord length parametrisation",
         "interpolation"
       ],
-      "answers": "What exactly do I write into a .sldcrv file so SolidWorks reads it correctly?"
+      "api": [],
+      "language": [],
+      "status": "verified",
+      "verified_on": "SolidWorks 2025 and 2026",
+      "majors": [
+        33,
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-02-insert-curve-from-file",
       "title": "Insert a curve from a file as a new feature",
       "path": "entries/curves/02-insert-curve-from-file.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "vbscript",
-        "python"
-      ],
-      "api": [
-        "IModelDoc2.InsertCurveFile",
-        "IFeature.Name",
-        "IModelDoc2.GetFeatureCount",
-        "IModelDocExtension.GetLastFeatureAdded"
-      ],
+      "answers": "How do I import a .sldcrv file as a feature from code, and get hold of what it made?",
       "keywords": [
         "InsertCurveFile",
         "CurveInFile",
@@ -1248,25 +1411,31 @@
         "IFeatureManager",
         "insert feature"
       ],
-      "answers": "How do I import a .sldcrv file as a feature from code, and get hold of what it made?"
+      "api": [
+        "IModelDoc2.InsertCurveFile",
+        "IFeature.Name",
+        "IModelDoc2.GetFeatureCount",
+        "IModelDocExtension.GetLastFeatureAdded"
+      ],
+      "language": [
+        "vbscript",
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-03-stream-curve-points",
       "title": "Create a curve by streaming points, with no file",
       "path": "entries/curves/03-stream-curve-points.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2025",
-      "language": [
-        "vba",
-        "vbscript",
-        "python"
-      ],
-      "api": [
-        "IModelDoc2.InsertCurveFileBegin",
-        "IModelDoc2.InsertCurveFilePoint",
-        "IModelDoc2.InsertCurveFileEnd"
-      ],
+      "answers": "Can I make a Curve Through XYZ Points feature without writing a file first?",
       "keywords": [
         "InsertCurveFileBegin",
         "InsertCurveFilePoint",
@@ -1275,25 +1444,31 @@
         "metres",
         "no file"
       ],
-      "answers": "Can I make a Curve Through XYZ Points feature without writing a file first?"
+      "api": [
+        "IModelDoc2.InsertCurveFileBegin",
+        "IModelDoc2.InsertCurveFilePoint",
+        "IModelDoc2.InsertCurveFileEnd"
+      ],
+      "language": [
+        "vba",
+        "vbscript",
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2025",
+      "majors": [
+        33
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-04-reload-curve-in-place",
       "title": "Refresh a curve's points in place, without breaking what uses it",
       "path": "entries/curves/04-reload-curve-in-place.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "vbscript",
-        "python"
-      ],
-      "api": [
-        "IFeature.GetDefinition",
-        "IFeature.ModifyDefinition",
-        "LoadPointsFromFile",
-        "IModelDoc2.ForceRebuild3"
-      ],
+      "answers": "How do I change a curve's geometry without re-picking it in the boundary surface?",
       "keywords": [
         "LoadPointsFromFile",
         "ModifyDefinition",
@@ -1306,22 +1481,31 @@
         "25 seconds per curve",
         "rollback bar"
       ],
-      "answers": "How do I change a curve's geometry without re-picking it in the boundary surface?"
+      "api": [
+        "IFeature.GetDefinition",
+        "IFeature.ModifyDefinition",
+        "LoadPointsFromFile",
+        "IModelDoc2.ForceRebuild3"
+      ],
+      "language": [
+        "vbscript",
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-05-read-curve-points-back",
       "title": "Read a curve's points back out",
       "path": "entries/curves/05-read-curve-points-back.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeature.GetDefinition",
-        "PointArray"
-      ],
+      "answers": "How do I check what a curve feature actually contains?",
       "keywords": [
         "PointArray",
         "read curve",
@@ -1330,27 +1514,28 @@
         "round trip",
         "verify"
       ],
-      "answers": "How do I check what a curve feature actually contains?"
+      "api": [
+        "IFeature.GetDefinition",
+        "PointArray"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-06-composite-curve",
       "title": "Join several curves into one selectable curve",
       "path": "entries/curves/06-composite-curve.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDoc2.InsertCompositeCurve",
-        "IModelDocExtension.SelectByID2",
-        "IModelDoc2.ClearSelection2",
-        "AccessSelections",
-        "GetEntitiesToJoin",
-        "ReleaseSelectionAccess",
-        "IFeature.GetParents"
-      ],
+      "answers": "How do I join two curves into one thing a loft can select, keeping the corner sharp?",
       "keywords": [
         "InsertCompositeCurve",
         "composite curve",
@@ -1375,22 +1560,33 @@
         "which curves a composite joins",
         "slow composite read"
       ],
-      "answers": "How do I join two curves into one thing a loft can select, keeping the corner sharp?"
+      "api": [
+        "IModelDoc2.InsertCompositeCurve",
+        "IModelDocExtension.SelectByID2",
+        "IModelDoc2.ClearSelection2",
+        "AccessSelections",
+        "GetEntitiesToJoin",
+        "ReleaseSelectionAccess",
+        "IFeature.GetParents"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-07-rename-a-feature",
       "title": "Rename a feature, and read the name back",
       "path": "entries/curves/07-rename-a-feature.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "vbscript",
-        "python"
-      ],
-      "api": [
-        "IFeature.Name"
-      ],
+      "answers": "How do I name a feature I just created, and why did my name not stick?",
       "keywords": [
         "rename feature",
         "feature name",
@@ -1398,24 +1594,28 @@
         "silent rename",
         "read back"
       ],
-      "answers": "How do I name a feature I just created, and why did my name not stick?"
+      "api": [
+        "IFeature.Name"
+      ],
+      "language": [
+        "vbscript",
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-08-rebuild-once",
       "title": "Suppress rebuilds, change everything, rebuild once",
       "path": "entries/curves/08-rebuild-once-at-the-end.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "vbscript",
-        "python"
-      ],
-      "api": [
-        "ISldWorks.CommandInProgress",
-        "IModelDoc2.ForceRebuild3",
-        "IModelDoc2.EditRebuild3"
-      ],
+      "answers": "Why does my part show errors halfway through my batch update, and how do I make it fast?",
       "keywords": [
         "ForceRebuild3",
         "CommandInProgress",
@@ -1430,17 +1630,30 @@
         "feature in error",
         "25 seconds rebuild"
       ],
-      "answers": "Why does my part show errors halfway through my batch update, and how do I make it fast?"
+      "api": [
+        "ISldWorks.CommandInProgress",
+        "IModelDoc2.ForceRebuild3",
+        "IModelDoc2.EditRebuild3"
+      ],
+      "language": [
+        "vbscript",
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-09-curves-as-loft-profiles",
       "title": "Imported curves are selectable as loft and boundary profiles",
       "path": "entries/curves/09-curves-as-loft-profiles.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [],
-      "api": [],
+      "answers": "Do I need to convert imported curves into sketches before lofting them?",
       "keywords": [
         "loft profile",
         "boundary surface",
@@ -1450,22 +1663,23 @@
         "guide curve",
         "pierce"
       ],
-      "answers": "Do I need to convert imported curves into sketches before lofting them?"
+      "api": [],
+      "language": [],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-10-persistent-references",
       "title": "Track a feature that might get renamed",
       "path": "entries/curves/10-persistent-references.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDocExtension.GetPersistReference3",
-        "IModelDocExtension.GetObjectByPersistReference3"
-      ],
+      "answers": "How do I keep a handle on a feature that survives the user renaming it?",
       "keywords": [
         "GetPersistReference3",
         "GetObjectByPersistReference3",
@@ -1474,27 +1688,28 @@
         "stable handle",
         "VT_BYREF"
       ],
-      "answers": "How do I keep a handle on a feature that survives the user renaming it?"
+      "api": [
+        "IModelDocExtension.GetPersistReference3",
+        "IModelDocExtension.GetObjectByPersistReference3"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-11-feature-tree-folders",
       "title": "Put features in a feature-tree folder",
       "path": "entries/curves/11-feature-tree-folders.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.InsertFeatureTreeFolder2",
-        "IFeatureManager.MoveToFolder",
-        "IModelDocExtension.DeleteSelection2",
-        "IFeature.Select2",
-        "IFeature.GetSpecificFeature2",
-        "IFeatureFolder.GetFeatureCount",
-        "IFeatureFolder.GetFeatures"
-      ],
+      "answers": "How do I put features into a folder in the feature tree from code?",
       "keywords": [
         "InsertFeatureTreeFolder2",
         "MoveToFolder",
@@ -1513,27 +1728,33 @@
         "BODYFEATURE",
         "loose curves"
       ],
-      "answers": "How do I put features into a folder in the feature tree from code?"
+      "api": [
+        "IFeatureManager.InsertFeatureTreeFolder2",
+        "IFeatureManager.MoveToFolder",
+        "IModelDocExtension.DeleteSelection2",
+        "IFeature.Select2",
+        "IFeature.GetSpecificFeature2",
+        "IFeatureFolder.GetFeatureCount",
+        "IFeatureFolder.GetFeatures"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "curves-12-roll-the-tree-back-before-reloading",
       "title": "Roll the tree back before reloading curves, because a reload is charged for the tree below it",
       "path": "entries/curves/12-roll-the-tree-back-before-reloading.md",
       "category": "curves",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 SP0.0 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.EditRollback",
-        "IModelDoc2.FeatureByPositionReverse",
-        "IFeature.IsRolledBack",
-        "IFeature.ModifyDefinition",
-        "IModelDoc2.EditRebuild3",
-        "IFeatureManager.EnableFeatureTree",
-        "IModelView.EnableGraphicsUpdate"
-      ],
+      "answers": "Why does reloading each curve take 25 seconds on a big part, and how do I make it half a second?",
       "keywords": [
         "EditRollback",
         "swMoveRollbackBarTo_e",
@@ -1552,26 +1773,33 @@
         "loft with no faces",
         "insert at the bar"
       ],
-      "answers": "Why does reloading each curve take 25 seconds on a big part, and how do I make it half a second?"
+      "api": [
+        "IFeatureManager.EditRollback",
+        "IModelDoc2.FeatureByPositionReverse",
+        "IFeature.IsRolledBack",
+        "IFeature.ModifyDefinition",
+        "IModelDoc2.EditRebuild3",
+        "IFeatureManager.EnableFeatureTree",
+        "IModelView.EnableGraphicsUpdate"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 SP0.0 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "documents-01-new-part-from-template",
       "title": "Make a new part or assembly from a template, in millimetres",
       "path": "entries/documents/01-new-part-from-template.md",
       "category": "documents",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "ISldWorks.GetDocumentTemplate",
-        "ISldWorks.GetUserPreferenceStringValue",
-        "ISldWorks.NewDocument",
-        "IModelDoc2.GetType",
-        "IModelDocExtension.GetUserPreferenceInteger",
-        "IModelDocExtension.SetUserPreferenceInteger"
-      ],
+      "answers": "How do I create a new part or assembly from code, and make sure it is in millimetres?",
       "keywords": [
         "NewDocument",
         "GetDocumentTemplate",
@@ -1591,27 +1819,32 @@
         "document units",
         "millimetres"
       ],
-      "answers": "How do I create a new part or assembly from code, and make sure it is in millimetres?"
+      "api": [
+        "ISldWorks.GetDocumentTemplate",
+        "ISldWorks.GetUserPreferenceStringValue",
+        "ISldWorks.NewDocument",
+        "IModelDoc2.GetType",
+        "IModelDocExtension.GetUserPreferenceInteger",
+        "IModelDocExtension.SetUserPreferenceInteger"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "documents-02-save-as-and-close",
       "title": "Save a document to a new path, and close it",
       "path": "entries/documents/02-save-as-and-close.md",
       "category": "documents",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0); closing assemblies also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDocExtension.SaveAs3",
-        "IModelDoc2.SaveAs3",
-        "IModelDoc2.GetPathName",
-        "IModelDoc2.GetTitle",
-        "IModelDoc2.GetSaveFlag",
-        "ISldWorks.CloseDoc",
-        "ISldWorks.QuitDoc"
-      ],
+      "answers": "How do I save a new document to a path from code, and close a document without a prompt?",
       "keywords": [
         "SaveAs3",
         "save as",
@@ -1634,40 +1867,33 @@
         "0x80010105",
         "document will not close"
       ],
-      "answers": "How do I save a new document to a path from code, and close a document without a prompt?"
+      "api": [
+        "IModelDocExtension.SaveAs3",
+        "IModelDoc2.SaveAs3",
+        "IModelDoc2.GetPathName",
+        "IModelDoc2.GetTitle",
+        "IModelDoc2.GetSaveFlag",
+        "ISldWorks.CloseDoc",
+        "ISldWorks.QuitDoc"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0); closing assemblies also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "drawings-01-new-drawing-and-place-views",
       "title": "Make a drawing from a template and place, scale and align its views",
       "path": "entries/drawings/01-new-drawing-and-place-views.md",
       "category": "drawings",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "ISldWorks.NewDocument",
-        "IDrawingDoc.Create3rdAngleViews2",
-        "IDrawingDoc.CreateDrawViewFromModelView3",
-        "IDrawingDoc.CreateUnfoldedViewAt3",
-        "ISheet.GetProperties2",
-        "ISheet.SetScale",
-        "IView.UseSheetScale",
-        "IView.ScaleDecimal",
-        "IView.GetOutline",
-        "IView.Position",
-        "IView.ModelToViewTransform",
-        "IView.SetDisplayMode4",
-        "IView.Type",
-        "IView.GetName2",
-        "IView.ShowExploded",
-        "IView.IsExploded",
-        "IDrawingDoc.GetFirstView",
-        "IView.GetNextView",
-        "IModelDocExtension.SaveAs",
-        "IView.Angle"
-      ],
+      "answers": "How do I make a drawing from a template, place standard, model and projected views at the scale I want, line them up, and export a picture to check it?",
       "keywords": [
         "drawing",
         "SLDDRW",
@@ -1706,54 +1932,46 @@
         "Toolbox gear view orientation",
         "stale PNG"
       ],
-      "answers": "How do I make a drawing from a template, place standard, model and projected views at the scale I want, line them up, and export a picture to check it?"
+      "api": [
+        "ISldWorks.NewDocument",
+        "IDrawingDoc.Create3rdAngleViews2",
+        "IDrawingDoc.CreateDrawViewFromModelView3",
+        "IDrawingDoc.CreateUnfoldedViewAt3",
+        "ISheet.GetProperties2",
+        "ISheet.SetScale",
+        "IView.UseSheetScale",
+        "IView.ScaleDecimal",
+        "IView.GetOutline",
+        "IView.Position",
+        "IView.ModelToViewTransform",
+        "IView.SetDisplayMode4",
+        "IView.Type",
+        "IView.GetName2",
+        "IView.ShowExploded",
+        "IView.IsExploded",
+        "IDrawingDoc.GetFirstView",
+        "IView.GetNextView",
+        "IModelDocExtension.SaveAs",
+        "IView.Angle"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "drawings-02-bom-table-and-balloons",
       "title": "Add a bill of materials and balloons to an assembly drawing",
       "path": "entries/drawings/02-bom-table-and-balloons.md",
       "category": "drawings",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IView.InsertBomTable5",
-        "IBomTableAnnotation.BomFeature",
-        "IBomFeature.GetConfigurationCount",
-        "IBomFeature.GetConfigurations",
-        "IBomFeature.SetConfigurations",
-        "IBomFeature.FollowAssemblyOrder2",
-        "IBomFeature.TableType",
-        "IView.GetTableAnnotations",
-        "ITableAnnotation.Type",
-        "ITableAnnotation.RowCount",
-        "ITableAnnotation.ColumnCount",
-        "ITableAnnotation.Text",
-        "IDrawingDoc.CreateAutoBalloonOptions",
-        "IDrawingDoc.AutoBalloon5",
-        "INote.IsBomBalloon",
-        "INote.GetText",
-        "IAnnotation.SetPosition2",
-        "IAnnotation.GetPosition",
-        "IModelDocExtension.CustomPropertyManager",
-        "ICustomPropertyManager.Add3",
-        "ITableAnnotation.Text",
-        "ITableAnnotation.InsertColumn2",
-        "ITableAnnotation.SetTextFormat",
-        "ITableAnnotation.SetColumnWidth",
-        "ITableAnnotation.SetRowHeight",
-        "IConfiguration.AlternateName",
-        "IConfiguration.UseAlternateNameInBOM",
-        "IConfiguration.BOMPartNoSource",
-        "IModelDocExtension.CreateBalloonOptions",
-        "IModelDocExtension.InsertBOMBalloon2",
-        "IView.GetVisibleComponents",
-        "IAnnotation.GetLeaderPointsAtIndex",
-        "IModelDoc2.GetConfigurationByName",
-        "IModelDoc2.GetConfigurationNames"
-      ],
+      "answers": "How do I put a bill of materials on an assembly drawing from code, make it actually list the parts with descriptions, and balloon every part?",
       "keywords": [
         "BOM",
         "bill of materials",
@@ -1799,38 +2017,60 @@
         "virtual component part number",
         "AlternateName every configuration"
       ],
-      "answers": "How do I put a bill of materials on an assembly drawing from code, make it actually list the parts with descriptions, and balloon every part?"
+      "api": [
+        "IView.InsertBomTable5",
+        "IBomTableAnnotation.BomFeature",
+        "IBomFeature.GetConfigurationCount",
+        "IBomFeature.GetConfigurations",
+        "IBomFeature.SetConfigurations",
+        "IBomFeature.FollowAssemblyOrder2",
+        "IBomFeature.TableType",
+        "IView.GetTableAnnotations",
+        "ITableAnnotation.Type",
+        "ITableAnnotation.RowCount",
+        "ITableAnnotation.ColumnCount",
+        "ITableAnnotation.Text",
+        "IDrawingDoc.CreateAutoBalloonOptions",
+        "IDrawingDoc.AutoBalloon5",
+        "INote.IsBomBalloon",
+        "INote.GetText",
+        "IAnnotation.SetPosition2",
+        "IAnnotation.GetPosition",
+        "IModelDocExtension.CustomPropertyManager",
+        "ICustomPropertyManager.Add3",
+        "ITableAnnotation.Text",
+        "ITableAnnotation.InsertColumn2",
+        "ITableAnnotation.SetTextFormat",
+        "ITableAnnotation.SetColumnWidth",
+        "ITableAnnotation.SetRowHeight",
+        "IConfiguration.AlternateName",
+        "IConfiguration.UseAlternateNameInBOM",
+        "IConfiguration.BOMPartNoSource",
+        "IModelDocExtension.CreateBalloonOptions",
+        "IModelDocExtension.InsertBOMBalloon2",
+        "IView.GetVisibleComponents",
+        "IAnnotation.GetLeaderPointsAtIndex",
+        "IModelDoc2.GetConfigurationByName",
+        "IModelDoc2.GetConfigurationNames"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "drawings-03-notes-title-block-and-deleting-annotations",
       "title": "Add, edit and delete notes on a drawing, including the title block",
       "path": "entries/drawings/03-notes-title-block-and-deleting-annotations.md",
       "category": "drawings",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDoc2.InsertNote",
-        "IDrawingDoc.EditSheet",
-        "IDrawingDoc.EditTemplate",
-        "IView.GetNotes",
-        "IView.GetFirstNote",
-        "INote.GetNext",
-        "INote.GetText",
-        "INote.SetText",
-        "INote.GetName",
-        "INote.GetExtent",
-        "INote.GetTextPoint2",
-        "INote.GetAnnotation",
-        "IAnnotation.SetPosition2",
-        "IAnnotation.GetPosition",
-        "IAnnotation.GetLeaderCount",
-        "IAnnotation.Select3",
-        "IModelDocExtension.SelectByID2",
-        "IModelDoc2.EditDelete"
-      ],
+      "answers": "How do I add a note to a drawing sheet from code, fill in the title block, change a note's text, and delete notes or balloons reliably?",
       "keywords": [
         "note",
         "drawing note",
@@ -1860,34 +2100,44 @@
         "DetailItem",
         "NOTE select type"
       ],
-      "answers": "How do I add a note to a drawing sheet from code, fill in the title block, change a note's text, and delete notes or balloons reliably?"
+      "api": [
+        "IModelDoc2.InsertNote",
+        "IDrawingDoc.EditSheet",
+        "IDrawingDoc.EditTemplate",
+        "IView.GetNotes",
+        "IView.GetFirstNote",
+        "INote.GetNext",
+        "INote.GetText",
+        "INote.SetText",
+        "INote.GetName",
+        "INote.GetExtent",
+        "INote.GetTextPoint2",
+        "INote.GetAnnotation",
+        "IAnnotation.SetPosition2",
+        "IAnnotation.GetPosition",
+        "IAnnotation.GetLeaderCount",
+        "IAnnotation.Select3",
+        "IModelDocExtension.SelectByID2",
+        "IModelDoc2.EditDelete"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "drawings-04-centre-marks-and-centre-lines",
       "title": "Add and remove centre marks and axis centre lines in a drawing view",
       "path": "entries/drawings/04-centre-marks-and-centre-lines.md",
       "category": "drawings",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IView.GetVisibleEntities2",
-        "IView.SelectEntity",
-        "IEdge.GetCurve",
-        "ICurve.IsCircle",
-        "ICurve.CircleParams",
-        "IFace2.GetSurface",
-        "ISurface.IsCylinder",
-        "ISurface.CylinderParams",
-        "IModelDoc2.InsertCenterMark3",
-        "IModelDoc2.InsertCenterLine2",
-        "IView.GetFirstCenterMark",
-        "ICenterMark.GetNext",
-        "ICenterMark.GetPosition",
-        "ICenterMark.Select"
-      ],
+      "answers": "How do I put centre marks on the holes and arcs I choose in a drawing view, a centre line on a cylinder's axis, and remove the centre marks I don't want?",
       "keywords": [
         "centre mark",
         "center mark",
@@ -1909,36 +2159,40 @@
         "cylinder axis",
         "axis line in side view"
       ],
-      "answers": "How do I put centre marks on the holes and arcs I choose in a drawing view, a centre line on a cylinder's axis, and remove the centre marks I don't want?"
+      "api": [
+        "IView.GetVisibleEntities2",
+        "IView.SelectEntity",
+        "IEdge.GetCurve",
+        "ICurve.IsCircle",
+        "ICurve.CircleParams",
+        "IFace2.GetSurface",
+        "ISurface.IsCylinder",
+        "ISurface.CylinderParams",
+        "IModelDoc2.InsertCenterMark3",
+        "IModelDoc2.InsertCenterLine2",
+        "IView.GetFirstCenterMark",
+        "ICenterMark.GetNext",
+        "ICenterMark.GetPosition",
+        "ICenterMark.Select"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "drawings-05-read-and-tidy-dimensions",
       "title": "Read every dimension on a drawing with its tolerance, and fix its precision and text",
       "path": "entries/drawings/05-read-and-tidy-dimensions.md",
       "category": "drawings",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IView.GetFirstDisplayDimension5",
-        "IDisplayDimension.GetNext5",
-        "IDisplayDimension.GetDimension2",
-        "IDimension.SystemValue",
-        "IDimension.FullName",
-        "IDimension.Tolerance",
-        "IDimensionTolerance.Type",
-        "IDimensionTolerance.GetMaxValue",
-        "IDimensionTolerance.GetMinValue",
-        "IDimensionTolerance.GetHoleFitValue",
-        "IDimensionTolerance.GetShaftFitValue",
-        "IDisplayDimension.ShowParenthesis",
-        "IDisplayDimension.GetText",
-        "IDisplayDimension.SetText",
-        "IDisplayDimension.SetPrecision3",
-        "IDisplayDimension.Type2"
-      ],
+      "answers": "How do I list every dimension on a drawing with its tolerance or fit, and fix trailing zeros, tolerance decimals and prefix text from code?",
       "keywords": [
         "drawing dimensions",
         "read dimensions",
@@ -1973,28 +2227,42 @@
         "SetText",
         "swDimensionTextParts_e"
       ],
-      "answers": "How do I list every dimension on a drawing with its tolerance or fit, and fix trailing zeros, tolerance decimals and prefix text from code?"
+      "api": [
+        "IView.GetFirstDisplayDimension5",
+        "IDisplayDimension.GetNext5",
+        "IDisplayDimension.GetDimension2",
+        "IDimension.SystemValue",
+        "IDimension.FullName",
+        "IDimension.Tolerance",
+        "IDimensionTolerance.Type",
+        "IDimensionTolerance.GetMaxValue",
+        "IDimensionTolerance.GetMinValue",
+        "IDimensionTolerance.GetHoleFitValue",
+        "IDimensionTolerance.GetShaftFitValue",
+        "IDisplayDimension.ShowParenthesis",
+        "IDisplayDimension.GetText",
+        "IDisplayDimension.SetText",
+        "IDisplayDimension.SetPrecision3",
+        "IDisplayDimension.Type2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "drawings-06-alternate-position-views",
       "title": "Show an assembly's other positions as phantom lines in a drawing view",
       "path": "entries/drawings/06-alternate-position-views.md",
       "category": "drawings",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IView.InsertAlternateView",
-        "IView.ReferencedConfiguration",
-        "IView.Type",
-        "IModelDoc2.ShowConfiguration2",
-        "IModelDoc2.ForceRebuild3",
-        "IModelDocExtension.SelectByID2",
-        "IModelDoc2.EditDelete",
-        "ISldWorks.ActivateDoc3"
-      ],
+      "answers": "How do I draw an assembly in one position with its other positions overlaid as phantom lines, from configurations, and make sure each pose is the right one?",
       "keywords": [
         "alternate position view",
         "phantom lines",
@@ -2011,27 +2279,34 @@
         "Alternate Position1",
         "DRAWINGVIEW"
       ],
-      "answers": "How do I draw an assembly in one position with its other positions overlaid as phantom lines, from configurations, and make sure each pose is the right one?"
+      "api": [
+        "IView.InsertAlternateView",
+        "IView.ReferencedConfiguration",
+        "IView.Type",
+        "IModelDoc2.ShowConfiguration2",
+        "IModelDoc2.ForceRebuild3",
+        "IModelDocExtension.SelectByID2",
+        "IModelDoc2.EditDelete",
+        "ISldWorks.ActivateDoc3"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "drawings-07-explode-lines-in-a-drawing-view",
       "title": "Show an assembly's explode lines in a drawing view, and what cannot be removed from them",
       "path": "entries/drawings/07-explode-lines-in-a-drawing-view.md",
       "category": "drawings",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDocExtension.SelectByID2",
-        "IModelDoc2.UnblankSketch",
-        "IView.RootDrawingComponent",
-        "ISelectionMgr.GetSelectedObjectType3",
-        "ISketchManager.InsertExplodeLineSketch",
-        "ISketch.GetSketchSegments",
-        "ISldWorks.RunCommand"
-      ],
+      "answers": "My assembly has explode lines but the drawing's exploded view doesn't show them — how do I show them from code, and can I delete some of the segments?",
       "keywords": [
         "explode lines",
         "explode line sketch",
@@ -2049,31 +2324,33 @@
         "dissolve smart explode lines",
         "RunCommand"
       ],
-      "answers": "My assembly has explode lines but the drawing's exploded view doesn't show them — how do I show them from code, and can I delete some of the segments?"
+      "api": [
+        "IModelDocExtension.SelectByID2",
+        "IModelDoc2.UnblankSketch",
+        "IView.RootDrawingComponent",
+        "ISelectionMgr.GetSelectedObjectType3",
+        "ISketchManager.InsertExplodeLineSketch",
+        "ISketch.GetSketchSegments",
+        "ISldWorks.RunCommand"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "drawings-08-section-views-from-code",
       "title": "Make a section view from code, pointing the right way, with parts left unsectioned",
       "path": "entries/drawings/08-section-views-from-code.md",
       "category": "drawings",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IDrawingDoc.ActivateView",
-        "ISketchManager.CreateLine",
-        "IDrawingDoc.CreateSectionViewAt5",
-        "IView.GetXform",
-        "IView.Angle",
-        "IView.Position",
-        "IView.GetVisibleComponents",
-        "IView.GetSection",
-        "IDrSection.SetExcludedComponents",
-        "IDrSection.GetExcludedComponents",
-        "IModelDoc2.ForceRebuild3"
-      ],
+      "answers": "How do I make a section view of a part or assembly from code — draw the cutting line where I mean, make it face the right way, and keep shafts unhatched?",
       "keywords": [
         "section view",
         "CreateSectionViewAt5",
@@ -2105,35 +2382,37 @@
         "aligned section stuck",
         "section direction"
       ],
-      "answers": "How do I make a section view of a part or assembly from code — draw the cutting line where I mean, make it face the right way, and keep shafts unhatched?"
+      "api": [
+        "IDrawingDoc.ActivateView",
+        "ISketchManager.CreateLine",
+        "IDrawingDoc.CreateSectionViewAt5",
+        "IView.GetXform",
+        "IView.Angle",
+        "IView.Position",
+        "IView.GetVisibleComponents",
+        "IView.GetSection",
+        "IDrSection.SetExcludedComponents",
+        "IDrSection.GetExcludedComponents",
+        "IModelDoc2.ForceRebuild3"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "drawings-09-add-dimensions-and-tolerances",
       "title": "Add dimensions to a drawing view from code, with symmetric and fit tolerances",
       "path": "entries/drawings/09-add-dimensions-and-tolerances.md",
       "category": "drawings",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IView.GetVisibleEntities2",
-        "IView.SelectEntity",
-        "IModelDoc2.AddDimension2",
-        "IDisplayDimension.GetDimension2",
-        "IDisplayDimension.SetPrecision3",
-        "IDisplayDimension.SetText",
-        "IDimension.Tolerance",
-        "IDimensionTolerance.Type",
-        "IDimensionTolerance.SetValues",
-        "IDimensionTolerance.SetFitValues",
-        "IDimensionTolerance.GetMaxValue",
-        "IDimensionTolerance.GetMinValue",
-        "IEdge.GetCurveParams2",
-        "ICurve.CircleParams",
-        "IDrawingDoc.CreateUnfoldedViewAt3"
-      ],
+      "answers": "How do I add dimensions to a drawing from code — centre distances, diameters, lengths — and give them a ± tolerance or an ISO fit?",
       "keywords": [
         "AddDimension2",
         "add dimension from code",
@@ -2169,27 +2448,41 @@
         "line to arc centre",
         "hole location from face"
       ],
-      "answers": "How do I add dimensions to a drawing from code — centre distances, diameters, lengths — and give them a ± tolerance or an ISO fit?"
+      "api": [
+        "IView.GetVisibleEntities2",
+        "IView.SelectEntity",
+        "IModelDoc2.AddDimension2",
+        "IDisplayDimension.GetDimension2",
+        "IDisplayDimension.SetPrecision3",
+        "IDisplayDimension.SetText",
+        "IDimension.Tolerance",
+        "IDimensionTolerance.Type",
+        "IDimensionTolerance.SetValues",
+        "IDimensionTolerance.SetFitValues",
+        "IDimensionTolerance.GetMaxValue",
+        "IDimensionTolerance.GetMinValue",
+        "IEdge.GetCurveParams2",
+        "ICurve.CircleParams",
+        "IDrawingDoc.CreateUnfoldedViewAt3"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "drawings-10-general-table",
       "title": "Put a general table on a drawing and fill it from code",
       "path": "entries/drawings/10-general-table.md",
       "category": "drawings",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IDrawingDoc.InsertTableAnnotation2",
-        "ITableAnnotation.Text",
-        "ITableAnnotation.GetTextFormat",
-        "ITableAnnotation.SetTextFormat",
-        "ITableAnnotation.SetColumnWidth",
-        "ITableAnnotation.SetRowHeight",
-        "ITableAnnotation.GetRowHeight"
-      ],
+      "answers": "How do I add a table of my own (not a BOM) to a drawing sheet and write text into its cells?",
       "keywords": [
         "general table",
         "InsertTableAnnotation2",
@@ -2207,32 +2500,33 @@
         "swBOMConfigurationAnchorType_e",
         "anchor top left"
       ],
-      "answers": "How do I add a table of my own (not a BOM) to a drawing sheet and write text into its cells?"
+      "api": [
+        "IDrawingDoc.InsertTableAnnotation2",
+        "ITableAnnotation.Text",
+        "ITableAnnotation.GetTextFormat",
+        "ITableAnnotation.SetTextFormat",
+        "ITableAnnotation.SetColumnWidth",
+        "ITableAnnotation.SetRowHeight",
+        "ITableAnnotation.GetRowHeight"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "equations-01-global-variables-from-code",
       "title": "Add, read and change global variables in the Equation Manager",
       "path": "entries/equations/01-global-variables-from-code.md",
       "category": "equations",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDoc2.GetEquationMgr",
-        "IEquationMgr.Add2",
-        "IEquationMgr.Add3",
-        "IEquationMgr.GetCount",
-        "IEquationMgr.Equation",
-        "IEquationMgr.Value",
-        "IEquationMgr.GlobalVariable",
-        "IEquationMgr.Delete",
-        "IEquationMgr.Status",
-        "IEquationMgr.SetEquationAndConfigurationOption",
-        "IEquationMgr.AngularEquationUnits",
-        "IModelDoc2.ForceRebuild3"
-      ],
+      "answers": "How do I add, read and change global variables in the Equation Manager from code?",
       "keywords": [
         "equation manager",
         "global variable",
@@ -2267,26 +2561,38 @@
         "in-context equation",
         "swInConfigurationOpts_e"
       ],
-      "answers": "How do I add, read and change global variables in the Equation Manager from code?"
+      "api": [
+        "IModelDoc2.GetEquationMgr",
+        "IEquationMgr.Add2",
+        "IEquationMgr.Add3",
+        "IEquationMgr.GetCount",
+        "IEquationMgr.Equation",
+        "IEquationMgr.Value",
+        "IEquationMgr.GlobalVariable",
+        "IEquationMgr.Delete",
+        "IEquationMgr.Status",
+        "IEquationMgr.SetEquationAndConfigurationOption",
+        "IEquationMgr.AngularEquationUnits",
+        "IModelDoc2.ForceRebuild3"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "equations-02-link-a-dimension-to-a-global",
       "title": "Link a dimension to a global variable",
       "path": "entries/equations/02-link-a-dimension-to-a-global.md",
       "category": "equations",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IEquationMgr.Add2",
-        "IEquationMgr.Equation",
-        "IDimension.Name",
-        "IDimension.FullName",
-        "IDimension.SystemValue",
-        "IModelDoc2.ForceRebuild3"
-      ],
+      "answers": "How do I make a sketch, feature or mate dimension follow a global variable from code?",
       "keywords": [
         "link dimension",
         "dimension equation",
@@ -2302,25 +2608,32 @@
         "mate dimension",
         "pattern count"
       ],
-      "answers": "How do I make a sketch, feature or mate dimension follow a global variable from code?"
+      "api": [
+        "IEquationMgr.Add2",
+        "IEquationMgr.Equation",
+        "IDimension.Name",
+        "IDimension.FullName",
+        "IDimension.SystemValue",
+        "IModelDoc2.ForceRebuild3"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-01-boss-extrude",
       "title": "Extrude a closed sketch into a boss",
       "path": "entries/features/01-boss-extrude.md",
       "category": "features",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.FeatureExtrusion3",
-        "IFeature.Select2",
-        "IModelDocExtension.SelectByID2",
-        "IFeature.Name",
-        "IMassProperty.CenterOfMass"
-      ],
+      "answers": "How do I extrude a closed sketch into a solid boss from code?",
       "keywords": [
         "FeatureExtrusion3",
         "extrude",
@@ -2340,21 +2653,31 @@
         "two concentric circles",
         "ring gear blank"
       ],
-      "answers": "How do I extrude a closed sketch into a solid boss from code?"
+      "api": [
+        "IFeatureManager.FeatureExtrusion3",
+        "IFeature.Select2",
+        "IModelDocExtension.SelectByID2",
+        "IFeature.Name",
+        "IMassProperty.CenterOfMass"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-02-cut-extrude",
       "title": "Cut-extrude a sketch through the part",
       "path": "entries/features/02-cut-extrude.md",
       "category": "features",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.FeatureCut4"
-      ],
+      "answers": "How do I cut-extrude a sketch through a part from code, and be sure it removed material?",
       "keywords": [
         "FeatureCut4",
         "cut extrude",
@@ -2368,23 +2691,27 @@
         "hole",
         "27 arguments"
       ],
-      "answers": "How do I cut-extrude a sketch through a part from code, and be sure it removed material?"
+      "api": [
+        "IFeatureManager.FeatureCut4"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-03-circular-pattern",
       "title": "Pattern a feature around an axis",
       "path": "entries/features/03-circular-pattern.md",
       "category": "features",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDoc2.InsertAxis2",
-        "IFeatureManager.FeatureCircularPattern5",
-        "IFeature.Select2"
-      ],
+      "answers": "How do I make a circular pattern of a feature about an axis from code?",
       "keywords": [
         "FeatureCircularPattern5",
         "circular pattern",
@@ -2402,26 +2729,29 @@
         "equal spacing",
         "teeth"
       ],
-      "answers": "How do I make a circular pattern of a feature about an axis from code?"
+      "api": [
+        "IModelDoc2.InsertAxis2",
+        "IFeatureManager.FeatureCircularPattern5",
+        "IFeature.Select2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-04-read-a-features-dimensions",
       "title": "Read a feature's dimensions, and find one by value",
       "path": "entries/features/04-read-a-features-dimensions.md",
       "category": "features",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeature.GetFirstDisplayDimension",
-        "IFeature.GetNextDisplayDimension",
-        "IDisplayDimension.GetDimension2",
-        "IDimension.Name",
-        "IDimension.SystemValue",
-        "IDimension.FullName"
-      ],
+      "answers": "How do I list a feature's dimensions from code and pick out one, such as an extrusion's depth or a pattern's count?",
       "keywords": [
         "GetFirstDisplayDimension",
         "GetNextDisplayDimension",
@@ -2437,25 +2767,32 @@
         "find by value",
         "FullName"
       ],
-      "answers": "How do I list a feature's dimensions from code and pick out one, such as an extrusion's depth or a pattern's count?"
+      "api": [
+        "IFeature.GetFirstDisplayDimension",
+        "IFeature.GetNextDisplayDimension",
+        "IDisplayDimension.GetDimension2",
+        "IDimension.Name",
+        "IDimension.SystemValue",
+        "IDimension.FullName"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-05-revolve",
       "title": "Revolve a sketch about a centreline",
       "path": "entries/features/05-revolve.md",
       "category": "features",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.FeatureRevolve2",
-        "ISketchManager.CreateCenterLine",
-        "IModelDocExtension.SelectByID2",
-        "ISketchSegment.GetName",
-        "IMassProperty.CenterOfMass"
-      ],
+      "answers": "How do I revolve a sketch about a centreline from code, and pick which line is the axis when the sketch has more than one?",
       "keywords": [
         "FeatureRevolve2",
         "revolve",
@@ -2474,25 +2811,31 @@
         "bevel blank",
         "20 arguments"
       ],
-      "answers": "How do I revolve a sketch about a centreline from code, and pick which line is the axis when the sketch has more than one?"
+      "api": [
+        "IFeatureManager.FeatureRevolve2",
+        "ISketchManager.CreateCenterLine",
+        "IModelDocExtension.SelectByID2",
+        "ISketchSegment.GetName",
+        "IMassProperty.CenterOfMass"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-06-reference-plane-normal-to-a-line",
       "title": "A reference plane square to a sketch line, through its end",
       "path": "entries/features/06-reference-plane-normal-to-a-line.md",
       "category": "features",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.InsertRefPlane",
-        "IModelDocExtension.SelectByID2",
-        "ISketch.ModelToSketchTransform",
-        "IMathTransform.Inverse",
-        "IMathTransform.ArrayData"
-      ],
+      "answers": "How do I make a reference plane perpendicular to a sketch line at its end, and which way does a sketch on that plane face?",
       "keywords": [
         "InsertRefPlane",
         "reference plane",
@@ -2512,22 +2855,31 @@
         "bevel heel plane",
         "back cone"
       ],
-      "answers": "How do I make a reference plane perpendicular to a sketch line at its end, and which way does a sketch on that plane face?"
+      "api": [
+        "IFeatureManager.InsertRefPlane",
+        "IModelDocExtension.SelectByID2",
+        "ISketch.ModelToSketchTransform",
+        "IMathTransform.Inverse",
+        "IMathTransform.ArrayData"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-07-loft-cut",
       "title": "Cut a loft between two sketched sections",
       "path": "entries/features/07-loft-cut.md",
       "category": "features",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.InsertCutBlend",
-        "IFeature.Select2"
-      ],
+      "answers": "How do I make a lofted cut between two closed sketches from code?",
       "keywords": [
         "InsertCutBlend",
         "lofted cut",
@@ -2543,25 +2895,28 @@
         "bevel tooth space",
         "12 arguments"
       ],
-      "answers": "How do I make a lofted cut between two closed sketches from code?"
+      "api": [
+        "IFeatureManager.InsertCutBlend",
+        "IFeature.Select2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-08-offset-reference-plane",
       "title": "A reference plane at a distance from another, on the side you choose",
       "path": "entries/features/08-offset-reference-plane.md",
       "category": "features",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.InsertRefPlane",
-        "IFeature.Name",
-        "IDimension.Name",
-        "IEquationMgr.Add2",
-        "ISketch.ModelToSketchTransform"
-      ],
+      "answers": "How do I make a reference plane offset from the Front plane from code, choose which side it lands on, and drive the offset from a global?",
       "keywords": [
         "InsertRefPlane",
         "offset plane",
@@ -2582,28 +2937,31 @@
         "profile plane",
         "mid plane"
       ],
-      "answers": "How do I make a reference plane offset from the Front plane from code, choose which side it lands on, and drive the offset from a global?"
+      "api": [
+        "IFeatureManager.InsertRefPlane",
+        "IFeature.Name",
+        "IDimension.Name",
+        "IEquationMgr.Add2",
+        "ISketch.ModelToSketchTransform"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-09-twisted-sweep",
       "title": "Sweep a profile along a line with a constant twist, and choose which way it turns",
       "path": "entries/features/09-twisted-sweep.md",
       "category": "features",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.InsertProtrusionSwept4",
-        "IFeature.GetDefinition",
-        "IFeature.ModifyDefinition",
-        "ISweepFeatureData.D1ReverseTwistDir",
-        "ISweepFeatureData.TwistControlType",
-        "ISweepFeatureData.GetTwistAngle",
-        "ISweepFeatureData.AccessSelections",
-        "IMassProperty.CenterOfMass"
-      ],
+      "answers": "How do I sweep a sketch along a straight path with a constant twist from code, drive the twist from a global, and make it turn the other way?",
       "keywords": [
         "InsertProtrusionSwept4",
         "sweep",
@@ -2631,26 +2989,34 @@
         "D4",
         "20 arguments"
       ],
-      "answers": "How do I sweep a sketch along a straight path with a constant twist from code, drive the twist from a global, and make it turn the other way?"
+      "api": [
+        "IFeatureManager.InsertProtrusionSwept4",
+        "IFeature.GetDefinition",
+        "IFeature.ModifyDefinition",
+        "ISweepFeatureData.D1ReverseTwistDir",
+        "ISweepFeatureData.TwistControlType",
+        "ISweepFeatureData.GetTwistAngle",
+        "ISweepFeatureData.AccessSelections",
+        "IMassProperty.CenterOfMass"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-10-swept-cut",
       "title": "Cut a sketch along a path with a twist, and pattern the cut",
       "path": "entries/features/10-swept-cut.md",
       "category": "features",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.InsertCutSwept5",
-        "IFeature.GetDefinition",
-        "IFeature.ModifyDefinition",
-        "ISweepFeatureData.D1ReverseTwistDir",
-        "IFeatureManager.FeatureCircularPattern5",
-        "IPartDoc.GetBodies2"
-      ],
+      "answers": "How do I cut a profile along a straight path with a twist from code, such as a helical gear's tooth space, and pattern that cut around an axis?",
       "keywords": [
         "InsertCutSwept5",
         "InsertCutSwept4",
@@ -2675,25 +3041,32 @@
         "selection mark 1",
         "mark 4"
       ],
-      "answers": "How do I cut a profile along a straight path with a twist from code, such as a helical gear's tooth space, and pattern that cut around an axis?"
+      "api": [
+        "IFeatureManager.InsertCutSwept5",
+        "IFeature.GetDefinition",
+        "IFeature.ModifyDefinition",
+        "ISweepFeatureData.D1ReverseTwistDir",
+        "IFeatureManager.FeatureCircularPattern5",
+        "IPartDoc.GetBodies2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-11-mirror-body",
       "title": "Mirror a part's body about a plane and merge it into one",
       "path": "entries/features/11-mirror-body.md",
       "category": "features",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.InsertMirrorFeature2",
-        "ISelectionMgr.CreateSelectData",
-        "IBody2.Select2",
-        "IPartDoc.GetBodies2",
-        "IFeature.Select2"
-      ],
+      "answers": "How do I mirror a part's solid body about a reference plane from code so the result is one merged body?",
       "keywords": [
         "InsertMirrorFeature2",
         "mirror",
@@ -2711,27 +3084,31 @@
         "nothing mirrored",
         "returned None"
       ],
-      "answers": "How do I mirror a part's solid body about a reference plane from code so the result is one merged body?"
+      "api": [
+        "IFeatureManager.InsertMirrorFeature2",
+        "ISelectionMgr.CreateSelectData",
+        "IBody2.Select2",
+        "IPartDoc.GetBodies2",
+        "IFeature.Select2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "features-12-guided-loft",
       "title": "Insert a loft through curves along guide curves, as a hand-made loft would be",
       "path": "entries/features/12-guided-loft.md",
       "category": "features",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 for the solid loft and its settings; the surface fallback's arguments were not examined",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeatureManager.InsertProtrusionBlend2",
-        "IFeature.GetDefinition",
-        "IModelDoc2.InsertLoftRefSurface2",
-        "IModelDocExtension.SelectByID2",
-        "IModelDoc2.ClearSelection2",
-        "IModelDoc2.ForceRebuild3",
-        "ISketchManager.ActiveSketch"
-      ],
+      "answers": "How do I make a solid loft through two curves, held by guide curves, from code, with the same settings as one made in the Loft property page?",
       "keywords": [
         "InsertProtrusionBlend2",
         "InsertLoftRefSurface2",
@@ -2762,27 +3139,33 @@
         "edit a loft's profiles",
         "loft follows reloaded curves"
       ],
-      "answers": "How do I make a solid loft through two curves, held by guide curves, from code, with the same settings as one made in the Loft property page?"
+      "api": [
+        "IFeatureManager.InsertProtrusionBlend2",
+        "IFeature.GetDefinition",
+        "IModelDoc2.InsertLoftRefSurface2",
+        "IModelDocExtension.SelectByID2",
+        "IModelDoc2.ClearSelection2",
+        "IModelDoc2.ForceRebuild3",
+        "ISketchManager.ActiveSketch"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2026 for the solid loft and its settings; the surface fallback's arguments were not examined",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "files-01-batch-convert-step",
       "title": "Batch-convert a tree of STEP files to SolidWorks parts",
       "path": "entries/files/01-batch-convert-step.md",
       "category": "files",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 SP1.1 for the C# converter; the VBA macro is the same sequence with a different save call and was not run end to end",
-      "language": [
-        "vba",
-        "csharp-standalone"
-      ],
-      "api": [
-        "ISldWorks.LoadFile4",
-        "ISldWorks.CloseDoc",
-        "ISldWorks.SetUserPreferenceToggle",
-        "IModelDoc2.GetType",
-        "IModelDoc2.SaveAs3",
-        "IModelDocExtension.SaveAs"
-      ],
+      "answers": "How do I import a folder of STEP files and save each one as a SolidWorks part?",
       "keywords": [
         "STEP",
         "stp",
@@ -2799,28 +3182,33 @@
         "SLDPRT",
         "resumable"
       ],
-      "answers": "How do I import a folder of STEP files and save each one as a SolidWorks part?"
+      "api": [
+        "ISldWorks.LoadFile4",
+        "ISldWorks.CloseDoc",
+        "ISldWorks.SetUserPreferenceToggle",
+        "IModelDoc2.GetType",
+        "IModelDoc2.SaveAs3",
+        "IModelDocExtension.SaveAs"
+      ],
+      "language": [
+        "vba",
+        "csharp-standalone"
+      ],
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2026 SP1.1 for the C# converter; the VBA macro is the same sequence with a different save call and was not run end to end",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "files-02-explode-configurations",
       "title": "Write one file per configuration out of a configurable part",
       "path": "entries/files/02-explode-configurations.md",
       "category": "files",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 SP1.1",
-      "language": [
-        "vba",
-        "csharp-standalone"
-      ],
-      "api": [
-        "ISldWorks.GetConfigurationNames",
-        "IModelDoc2.ShowConfiguration2",
-        "IModelDoc2.DeleteDesignTable",
-        "IModelDoc2.DeleteConfiguration2",
-        "IModelDoc2.GetConfigurationNames",
-        "IModelDoc2.Save3",
-        "IConfigurationManager.ActiveConfiguration"
-      ],
+      "answers": "How do I turn a part with many configurations into one standalone file per configuration?",
       "keywords": [
         "configuration",
         "design table",
@@ -2832,24 +3220,34 @@
         "one file per length",
         "explode"
       ],
-      "answers": "How do I turn a part with many configurations into one standalone file per configuration?"
+      "api": [
+        "ISldWorks.GetConfigurationNames",
+        "IModelDoc2.ShowConfiguration2",
+        "IModelDoc2.DeleteDesignTable",
+        "IModelDoc2.DeleteConfiguration2",
+        "IModelDoc2.GetConfigurationNames",
+        "IModelDoc2.Save3",
+        "IConfigurationManager.ActiveConfiguration"
+      ],
+      "language": [
+        "vba",
+        "csharp-standalone"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 SP1.1",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "files-03-upgrade-file-version",
       "title": "Re-save a library into the current file version",
       "path": "entries/files/03-upgrade-file-version.md",
       "category": "files",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 SP1.1",
-      "language": [
-        "csharp-standalone"
-      ],
-      "api": [
-        "ISldWorks.VersionHistory",
-        "ISldWorks.GetLatestSupportedFileVersion",
-        "ISldWorks.OpenDoc6",
-        "IModelDocExtension.SaveAs"
-      ],
+      "answers": "How do I re-save a whole folder of parts in the current SolidWorks file format?",
       "keywords": [
         "file version",
         "upgrade",
@@ -2862,24 +3260,30 @@
         "re-save",
         "read-only attribute"
       ],
-      "answers": "How do I re-save a whole folder of parts in the current SolidWorks file format?"
+      "api": [
+        "ISldWorks.VersionHistory",
+        "ISldWorks.GetLatestSupportedFileVersion",
+        "ISldWorks.OpenDoc6",
+        "IModelDocExtension.SaveAs"
+      ],
+      "language": [
+        "csharp-standalone"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 SP1.1",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "files-04-export-a-body-to-step",
       "title": "Write one body of a part to its own STEP file",
       "path": "entries/files/04-export-a-body-to-step.md",
       "category": "files",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 for the STEP export and for the suppression and its cascade; that each file of an earlier batch held only its own loft was never checked file by file",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDocExtension.SaveAs",
-        "IFeature.SetSuppression2",
-        "IFeature.IsSuppressed",
-        "IModelDoc2.ForceRebuild3"
-      ],
+      "answers": "How do I write a part, or just one of its lofts, to a STEP file from code without the open document changing name?",
       "keywords": [
         "STEP",
         "export STEP",
@@ -2901,28 +3305,30 @@
         "SewRefSurface",
         "MANIFOLD_SOLID_BREP"
       ],
-      "answers": "How do I write a part, or just one of its lofts, to a STEP file from code without the open document changing name?"
+      "api": [
+        "IModelDocExtension.SaveAs",
+        "IFeature.SetSuppression2",
+        "IFeature.IsSuppressed",
+        "IModelDoc2.ForceRebuild3"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2026 for the STEP export and for the suppression and its cascade; that each file of an earlier batch held only its own loft was never checked file by file",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "files-05-rename-a-component-file",
       "title": "Rename a component's part file from inside its assembly, keeping references",
       "path": "entries/files/05-rename-a-component-file.md",
       "category": "files",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDocExtension.RenameDocument",
-        "IModelDocExtension.HasRenamedDocuments",
-        "IComponent2.Select4",
-        "IComponent2.Name2",
-        "IComponent2.GetPathName",
-        "IModelDoc2.Save3",
-        "IConfiguration.GetRootComponent3",
-        "IComponent2.GetChildren"
-      ],
+      "answers": "How do I rename the part files of an assembly's components from code without breaking the assembly's references?",
       "keywords": [
         "rename part",
         "rename component",
@@ -2938,24 +3344,34 @@
         "Pack and Go alternative",
         "BOM part number"
       ],
-      "answers": "How do I rename the part files of an assembly's components from code without breaking the assembly's references?"
+      "api": [
+        "IModelDocExtension.RenameDocument",
+        "IModelDocExtension.HasRenamedDocuments",
+        "IComponent2.Select4",
+        "IComponent2.Name2",
+        "IComponent2.GetPathName",
+        "IModelDoc2.Save3",
+        "IConfiguration.GetRootComponent3",
+        "IComponent2.GetChildren"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-01-dependencies-closed-file",
       "title": "Read a closed file's references without opening it",
       "path": "entries/reading/01-dependencies-of-a-closed-file.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "csharp-standalone"
-      ],
-      "api": [
-        "ISldWorks.GetDocumentDependencies2",
-        "ISldWorks.GetConfigurationNames",
-        "ISldWorks.VersionHistory",
-        "ISldWorks.GetLatestSupportedFileVersion"
-      ],
+      "answers": "How do I find out what a part or assembly references without opening it?",
       "keywords": [
         "GetDocumentDependencies2",
         "references",
@@ -2969,21 +3385,30 @@
         "file version",
         "without opening"
       ],
-      "answers": "How do I find out what a part or assembly references without opening it?"
+      "api": [
+        "ISldWorks.GetDocumentDependencies2",
+        "ISldWorks.GetConfigurationNames",
+        "ISldWorks.VersionHistory",
+        "ISldWorks.GetLatestSupportedFileVersion"
+      ],
+      "language": [
+        "csharp-standalone"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-02-walk-reference-tree",
       "title": "Walk a full reference tree with a cycle guard",
       "path": "entries/reading/02-walk-a-reference-tree.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "csharp-standalone"
-      ],
-      "api": [
-        "ISldWorks.GetDocumentDependencies2"
-      ],
+      "answers": "How do I build the whole dependency tree from the one-level primitive?",
       "keywords": [
         "reference tree",
         "recursion",
@@ -2992,22 +3417,27 @@
         "dependency tree",
         "ancestors"
       ],
-      "answers": "How do I build the whole dependency tree from the one-level primitive?"
+      "api": [
+        "ISldWorks.GetDocumentDependencies2"
+      ],
+      "language": [
+        "csharp-standalone"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-03-repair-references",
       "title": "Rename or move a file and repair every reference to it",
       "path": "entries/reading/03-repair-references-after-a-move.md",
       "category": "reading",
-      "status": "unverified",
-      "verified_on": null,
-      "language": [
-        "csharp-standalone"
-      ],
-      "api": [
-        "ISldWorks.ReplaceReferencedDocument",
-        "ISldWorks.GetOpenDocumentByName"
-      ],
+      "answers": "How do I move a part on disk without breaking the assemblies that use it?",
       "keywords": [
         "ReplaceReferencedDocument",
         "rename",
@@ -3017,30 +3447,26 @@
         "where used",
         "preflight"
       ],
-      "answers": "How do I move a part on disk without breaking the assemblies that use it?"
+      "api": [
+        "ISldWorks.ReplaceReferencedDocument",
+        "ISldWorks.GetOpenDocumentByName"
+      ],
+      "language": [
+        "csharp-standalone"
+      ],
+      "status": "unverified",
+      "verified_on": null,
+      "majors": [],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-04-read-the-selection",
       "title": "Find out what the user just clicked",
       "path": "entries/reading/04-read-the-selection.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "ISelectionMgr.GetSelectedObjectCount2",
-        "GetSelectedObject6",
-        "GetSelectedObjectType3",
-        "GetSelectedObjectsSketch",
-        "GetPoint",
-        "GetCurve",
-        "IsLine",
-        "GetSurface",
-        "IsPlane",
-        "PlaneParams"
-      ],
+      "answers": "How do I let a user click something in SolidWorks and read what it was?",
       "keywords": [
         "selection manager",
         "GetSelectedObject6",
@@ -3058,24 +3484,36 @@
         "selection changed",
         "ActiveSketch"
       ],
-      "answers": "How do I let a user click something in SolidWorks and read what it was?"
+      "api": [
+        "ISelectionMgr.GetSelectedObjectCount2",
+        "GetSelectedObject6",
+        "GetSelectedObjectType3",
+        "GetSelectedObjectsSketch",
+        "GetPoint",
+        "GetCurve",
+        "IsLine",
+        "GetSurface",
+        "IsPlane",
+        "PlaneParams"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-05-sketch-to-model-transform",
       "title": "Convert sketch coordinates to model coordinates",
       "path": "entries/reading/05-sketch-to-model-transform.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "ISketch.ModelToSketchTransform",
-        "IMathTransform.Inverse",
-        "IMathTransform.ArrayData",
-        "ISelectionMgr.GetSelectedObjectsSketch"
-      ],
+      "answers": "A sketch point reports coordinates that are not in model space. How do I convert them?",
       "keywords": [
         "ModelToSketchTransform",
         "ArrayData",
@@ -3085,25 +3523,30 @@
         "transpose",
         "16 doubles"
       ],
-      "answers": "A sketch point reports coordinates that are not in model space. How do I convert them?"
+      "api": [
+        "ISketch.ModelToSketchTransform",
+        "IMathTransform.Inverse",
+        "IMathTransform.ArrayData",
+        "ISelectionMgr.GetSelectedObjectsSketch"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-06-live-sketch-monitor",
       "title": "Watch the active sketch while the user works",
       "path": "entries/reading/06-live-sketch-monitor.md",
       "category": "reading",
-      "status": "unverified",
-      "verified_on": null,
-      "language": [
-        "csharp-standalone",
-        "python"
-      ],
-      "api": [
-        "ISldWorks.ActiveDoc",
-        "ISketchManager.ActiveSketch",
-        "IFeature.ListExternalFileReferences2",
-        "IModelDocExtension.ListExternalFileReferences"
-      ],
+      "answers": "How do I show live information about whatever sketch the user is currently editing?",
       "keywords": [
         "ActiveSketch",
         "polling",
@@ -3113,22 +3556,29 @@
         "dangling",
         "watch"
       ],
-      "answers": "How do I show live information about whatever sketch the user is currently editing?"
+      "api": [
+        "ISldWorks.ActiveDoc",
+        "ISketchManager.ActiveSketch",
+        "IFeature.ListExternalFileReferences2",
+        "IModelDocExtension.ListExternalFileReferences"
+      ],
+      "language": [
+        "csharp-standalone",
+        "python"
+      ],
+      "status": "unverified",
+      "verified_on": null,
+      "majors": [],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-07-report-feature-type-on-failure",
       "title": "Make a failing call say what it found",
       "path": "entries/reading/07-report-feature-type-on-failure.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "vbscript",
-        "python"
-      ],
-      "api": [
-        "IFeature.GetTypeName2"
-      ],
+      "answers": "My macro fails on a feature and I can't tell why. How do I make the error useful?",
       "keywords": [
         "GetTypeName2",
         "error handling",
@@ -3137,17 +3587,40 @@
         "CompositeCurve",
         "failure message"
       ],
-      "answers": "My macro fails on a feature and I can't tell why. How do I make the error useful?"
+      "api": [
+        "IFeature.GetTypeName2"
+      ],
+      "language": [
+        "vbscript",
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-08-dimensions-and-equations",
       "title": "Read every dimension, equation and configuration out of a part",
       "path": "entries/reading/08-dimensions-and-equations.md",
       "category": "reading",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 SP1.1 for the open, configuration and size passes; the dimension and equation walks ran in the same tool but their output was not retained",
-      "language": [
-        "csharp-standalone"
+      "answers": "How do I read the dimensions and equations of an existing part from code?",
+      "keywords": [
+        "display dimension",
+        "GetFirstDisplayDimension",
+        "GetSystemValue2",
+        "FullName",
+        "equation manager",
+        "global variable",
+        "design table",
+        "derived configuration",
+        "GetParent",
+        "inspect part",
+        "dump"
       ],
       "api": [
         "IFeature.GetFirstDisplayDimension",
@@ -3162,36 +3635,24 @@
         "IModelDoc2.GetConfigurationByName",
         "IConfiguration.GetParent"
       ],
-      "keywords": [
-        "display dimension",
-        "GetFirstDisplayDimension",
-        "GetSystemValue2",
-        "FullName",
-        "equation manager",
-        "global variable",
-        "design table",
-        "derived configuration",
-        "GetParent",
-        "inspect part",
-        "dump"
+      "language": [
+        "csharp-standalone"
       ],
-      "answers": "How do I read the dimensions and equations of an existing part from code?"
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2026 SP1.1 for the open, configuration and size passes; the dimension and equation walks ran in the same tool but their output was not retained",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-09-bounding-box",
       "title": "Measure a part's bounding box, and use it as a check",
       "path": "entries/reading/09-bounding-box.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 SP1.1",
-      "language": [
-        "csharp-standalone"
-      ],
-      "api": [
-        "IPartDoc.GetPartBox",
-        "IModelDoc2.ShowConfiguration2",
-        "IModelDoc2.EditRebuild3"
-      ],
+      "answers": "How big is this part, and how do I check that a generated file is the size it should be?",
       "keywords": [
         "GetPartBox",
         "bounding box",
@@ -3204,24 +3665,29 @@
         "sanity check",
         "ShowConfiguration2"
       ],
-      "answers": "How big is this part, and how do I check that a generated file is the size it should be?"
+      "api": [
+        "IPartDoc.GetPartBox",
+        "IModelDoc2.ShowConfiguration2",
+        "IModelDoc2.EditRebuild3"
+      ],
+      "language": [
+        "csharp-standalone"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 SP1.1",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-10-mass-properties-as-an-oracle",
       "title": "Use the part's volume to check that a feature did what you meant",
       "path": "entries/reading/10-mass-properties-as-an-oracle.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDocExtension.CreateMassProperty",
-        "IMassProperty.Volume",
-        "IMassProperty.CenterOfMass",
-        "IModelDoc2.ForceRebuild3"
-      ],
+      "answers": "How do I check from code that a feature actually changed the solid the way I intended?",
       "keywords": [
         "CreateMassProperty",
         "mass property",
@@ -3242,23 +3708,30 @@
         "tolerance",
         "fresh build"
       ],
-      "answers": "How do I check from code that a feature actually changed the solid the way I intended?"
+      "api": [
+        "IModelDocExtension.CreateMassProperty",
+        "IMassProperty.Volume",
+        "IMassProperty.CenterOfMass",
+        "IModelDoc2.ForceRebuild3"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-11-cheap-change-detection",
       "title": "Notice that the part changed without making SolidWorks stutter",
       "path": "entries/reading/11-cheap-change-detection.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDoc2.GetFeatureCount",
-        "IModelDoc2.GetUpdateStamp",
-        "IFeatureManager.GetFeatures"
-      ],
+      "answers": "My tool polls SolidWorks every second and orbiting the model stutters. What can I ask that is cheap and still tells me the part changed?",
       "keywords": [
         "polling",
         "poll",
@@ -3279,26 +3752,29 @@
         "ten seconds",
         "nothing changed push"
       ],
-      "answers": "My tool polls SolidWorks every second and orbiting the model stutters. What can I ask that is cheap and still tells me the part changed?"
+      "api": [
+        "IModelDoc2.GetFeatureCount",
+        "IModelDoc2.GetUpdateStamp",
+        "IFeatureManager.GetFeatures"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-12-snapshot-suppression-before-you-suppress",
       "title": "Snapshot every feature's suppression before you suppress one, because suppression cascades",
       "path": "entries/reading/12-snapshot-suppression-before-you-suppress.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 SP0.0 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFeature.SetSuppression2",
-        "IFeature.IsSuppressed",
-        "IModelDoc2.FirstFeature",
-        "IFeature.GetNextFeature",
-        "IFeature.GetFirstSubFeature",
-        "IFeature.GetNextSubFeature"
-      ],
+      "answers": "Why did suppressing one feature suppress 74 others, and how do I put the part back exactly as it was?",
       "keywords": [
         "SetSuppression2",
         "IsSuppressed",
@@ -3314,25 +3790,32 @@
         "parents first",
         "export one body"
       ],
-      "answers": "Why did suppressing one feature suppress 74 others, and how do I put the part back exactly as it was?"
+      "api": [
+        "IFeature.SetSuppression2",
+        "IFeature.IsSuppressed",
+        "IModelDoc2.FirstFeature",
+        "IFeature.GetNextFeature",
+        "IFeature.GetFirstSubFeature",
+        "IFeature.GetNextSubFeature"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 SP0.0 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-13-measure-a-wall-between-two-bodies",
       "title": "Measure the wall between two bodies without leaving SolidWorks",
       "path": "entries/reading/13-measure-a-wall-between-two-bodies.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 SP0.0 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IFace2.GetTessTriangles",
-        "IFace2.GetClosestPointOn",
-        "IFeature.GetFaces",
-        "IBody2.GetMassProperties",
-        "IFace2.GetArea"
-      ],
+      "answers": "How do I check from code that the skin between two lofted surfaces really is the thickness I asked for?",
       "keywords": [
         "GetTessTriangles",
         "GetClosestPointOn",
@@ -3348,17 +3831,31 @@
         "validate a measurement",
         "closest point zero"
       ],
-      "answers": "How do I check from code that the skin between two lofted surfaces really is the thickness I asked for?"
+      "api": [
+        "IFace2.GetTessTriangles",
+        "IFace2.GetClosestPointOn",
+        "IFeature.GetFaces",
+        "IBody2.GetMassProperties",
+        "IFace2.GetArea"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 SP0.0 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-14-the-journal-records-api-calls",
       "title": "Read what a program did to a part from the SolidWorks journal",
       "path": "entries/reading/14-the-journal-records-api-calls.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 SP0.0 (revision 34.0.0)",
-      "language": [],
-      "api": [],
+      "answers": "How can I find out afterwards which API calls a program made on a part, and in what order, when it kept no log?",
       "keywords": [
         "swxJRNL.swj",
         "swxJRNL.BAK",
@@ -3378,33 +3875,23 @@
         "Select2 not recorded",
         "diagnose after the fact"
       ],
-      "answers": "How can I find out afterwards which API calls a program made on a part, and in what order, when it kept no log?"
+      "api": [],
+      "language": [],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 SP0.0 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-15-measure-a-part-that-has-no-dimensions",
       "title": "Measure a part's sizes from its faces when it has no dimensions to read",
       "path": "entries/reading/15-measure-a-part-that-has-no-dimensions.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IPartDoc.GetBodies2",
-        "IBody2.GetBodyBox",
-        "IBody2.GetFaces",
-        "IFace2.GetSurface",
-        "IFace2.GetBox",
-        "ISurface.IsPlane",
-        "ISurface.PlaneParams",
-        "ISurface.IsCylinder",
-        "ISurface.CylinderParams",
-        "ISurface.Identity",
-        "IFeature.GetTypeName2",
-        "IFeature.GetFirstDisplayDimension",
-        "IFeature.GetNextDisplayDimension"
-      ],
+      "answers": "My part was derived or imported and has no dimensions of its own — how do I get its real sizes (lengths, slot widths, hole diameters, positions) from code?",
       "keywords": [
         "derived part",
         "SavedExtBody",
@@ -3425,25 +3912,39 @@
         "reverse engineer dimensions",
         "dimension table from geometry"
       ],
-      "answers": "My part was derived or imported and has no dimensions of its own — how do I get its real sizes (lengths, slot widths, hole diameters, positions) from code?"
+      "api": [
+        "IPartDoc.GetBodies2",
+        "IBody2.GetBodyBox",
+        "IBody2.GetFaces",
+        "IFace2.GetSurface",
+        "IFace2.GetBox",
+        "ISurface.IsPlane",
+        "ISurface.PlaneParams",
+        "ISurface.IsCylinder",
+        "ISurface.CylinderParams",
+        "ISurface.Identity",
+        "IFeature.GetTypeName2",
+        "IFeature.GetFirstDisplayDimension",
+        "IFeature.GetNextDisplayDimension"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "reading-16-measure-between-two-selections",
       "title": "Measure the distance between two selected entities with IMeasure",
       "path": "entries/reading/16-measure-between-two-selections.md",
       "category": "reading",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDocExtension.CreateMeasure",
-        "IMeasure.Calculate",
-        "IMeasure.Distance",
-        "IMeasure.NormalDistance",
-        "IModelDocExtension.SelectByID2"
-      ],
+      "answers": "How do I measure the distance between two things I have selected (an axis and a plane, say) from code, the way the Measure tool does?",
       "keywords": [
         "IMeasure",
         "CreateMeasure",
@@ -3458,17 +3959,43 @@
         "late binding",
         "measure in an assembly"
       ],
-      "answers": "How do I measure the distance between two things I have selected (an axis and a plane, say) from code, the way the Measure tool does?"
+      "api": [
+        "IModelDocExtension.CreateMeasure",
+        "IMeasure.Calculate",
+        "IMeasure.Distance",
+        "IMeasure.NormalDistance",
+        "IModelDocExtension.SelectByID2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0)",
+      "majors": [
+        32,
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "sketches-01-2d-sketch-as-vba",
       "title": "Generate a 2D sketch as a VBA macro",
       "path": "entries/sketches/01-2d-sketch-as-vba.md",
       "category": "sketches",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "vba"
+      "answers": "How do I emit a VBA macro that draws a fully-defined 2D sketch?",
+      "keywords": [
+        "2d sketch",
+        "InsertSketch",
+        "CreateLine2",
+        "CreateSpline",
+        "sketch macro",
+        "generate vba",
+        "weld",
+        "construction geometry",
+        "shared end point",
+        "CreateArc direction"
       ],
       "api": [
         "ISketchManager.InsertSketch",
@@ -3483,41 +4010,24 @@
         "GetEndPoint2",
         "GetCenterPoint2"
       ],
-      "keywords": [
-        "2d sketch",
-        "InsertSketch",
-        "CreateLine2",
-        "CreateSpline",
-        "sketch macro",
-        "generate vba",
-        "weld",
-        "construction geometry",
-        "shared end point",
-        "CreateArc direction"
+      "language": [
+        "vba"
       ],
-      "answers": "How do I emit a VBA macro that draws a fully-defined 2D sketch?"
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "sketches-02-3d-sketch-as-vba",
       "title": "Generate a 3D sketch as a VBA macro",
       "path": "entries/sketches/02-3d-sketch-as-vba.md",
       "category": "sketches",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 (34.1.1), opening and closing a 3D sketch and drawing one line in it from Python, step by step; SolidWorks 2024 SP5 (32.5.0) inside an application build, where only the resulting axis on the line was read; the VBA listings were not run",
-      "language": [
-        "vba",
-        "python"
-      ],
-      "api": [
-        "ISketchManager.Insert3DSketch",
-        "ISketchManager.CreateLine",
-        "ISketchManager.ActiveSketch",
-        "IModelDoc2.InsertAxis2",
-        "CreatePoint",
-        "CreateLine2",
-        "CreateSpline",
-        "AddConstraint"
-      ],
+      "answers": "How do I emit a VBA macro that draws a 3D sketch?",
       "keywords": [
         "3d sketch",
         "Insert3DSketch",
@@ -3531,23 +4041,35 @@
         "spline on surface",
         "CreateArc plane"
       ],
-      "answers": "How do I emit a VBA macro that draws a 3D sketch?"
+      "api": [
+        "ISketchManager.Insert3DSketch",
+        "ISketchManager.CreateLine",
+        "ISketchManager.ActiveSketch",
+        "IModelDoc2.InsertAxis2",
+        "CreatePoint",
+        "CreateLine2",
+        "CreateSpline",
+        "AddConstraint"
+      ],
+      "language": [
+        "vba",
+        "python"
+      ],
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2026 (34.1.1), opening and closing a 3D sketch and drawing one line in it from Python, step by step; SolidWorks 2024 SP5 (32.5.0) inside an application build, where only the resulting axis on the line was read; the VBA listings were not run",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "sketches-03-relation-constants",
       "title": "Sketch relation constants for AddConstraint",
       "path": "entries/sketches/03-relation-constants.md",
       "category": "sketches",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "vba",
-        "python"
-      ],
-      "api": [
-        "ISketchManager.AddConstraint",
-        "IModelDoc2.SketchAddConstraints"
-      ],
+      "answers": "What string do I pass to AddConstraint for a given sketch relation?",
       "keywords": [
         "AddConstraint",
         "SketchAddConstraints",
@@ -3564,28 +4086,29 @@
         "relation constants",
         "swConstraintType"
       ],
-      "answers": "What string do I pass to AddConstraint for a given sketch relation?"
+      "api": [
+        "ISketchManager.AddConstraint",
+        "IModelDoc2.SketchAddConstraints"
+      ],
+      "language": [
+        "vba",
+        "python"
+      ],
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "sketches-04-dimensions",
       "title": "Add a dimension and set its value",
       "path": "entries/sketches/04-dimensions.md",
       "category": "sketches",
-      "status": "partly-verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "vba",
-        "python"
-      ],
-      "api": [
-        "IModelDocExtension.AddDimension2",
-        "IModelDoc2.AddDimension2",
-        "IDisplayDimension.Dimension",
-        "IDisplayDimension.GetDimension2",
-        "IDimension.SystemValue",
-        "IDimension.Name",
-        "IDimension.FullName"
-      ],
+      "answers": "How do I add a driving dimension from a macro and set its value?",
       "keywords": [
         "AddDimension2",
         "SystemValue",
@@ -3600,22 +4123,34 @@
         "swInputDimValOnCreate",
         "dimension dialog"
       ],
-      "answers": "How do I add a driving dimension from a macro and set its value?"
+      "api": [
+        "IModelDocExtension.AddDimension2",
+        "IModelDoc2.AddDimension2",
+        "IDisplayDimension.Dimension",
+        "IDisplayDimension.GetDimension2",
+        "IDimension.SystemValue",
+        "IDimension.Name",
+        "IDimension.FullName"
+      ],
+      "language": [
+        "vba",
+        "python"
+      ],
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "sketches-05-units-and-number-format",
       "title": "Units and number formatting for generated macros",
       "path": "entries/sketches/05-units-and-number-format.md",
       "category": "sketches",
-      "status": "verified",
-      "verified_on": "SolidWorks 2025 and 2026",
-      "language": [
-        "vba",
-        "vbscript",
-        "python",
-        "typescript"
-      ],
-      "api": [],
+      "answers": "What units does the API use, and how do I format numbers so VBA parses them?",
       "keywords": [
         "metres",
         "millimetres",
@@ -3626,19 +4161,29 @@
         "negative zero",
         "nine decimals"
       ],
-      "answers": "What units does the API use, and how do I format numbers so VBA parses them?"
+      "api": [],
+      "language": [
+        "vba",
+        "vbscript",
+        "python",
+        "typescript"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2025 and 2026",
+      "majors": [
+        33,
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "sketches-06-sketch-api-limits",
       "title": "What the sketch API cannot do, and how to handle it",
       "path": "entries/sketches/06-what-the-sketch-api-cannot-do.md",
       "category": "sketches",
-      "status": "unverified",
-      "verified_on": "documented API surface as of SW 2026",
-      "language": [
-        "vba"
-      ],
-      "api": [],
+      "answers": "Why can't my macro fully define this sketch, and what do I do about it?",
       "keywords": [
         "spline handle",
         "tangent handle",
@@ -3649,25 +4194,23 @@
         "limits",
         "cannot select"
       ],
-      "answers": "Why can't my macro fully define this sketch, and what do I do about it?"
+      "api": [],
+      "language": [
+        "vba"
+      ],
+      "status": "unverified",
+      "verified_on": "documented API surface as of SW 2026",
+      "majors": [],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "sketches-07-equation-driven-curve",
       "title": "Draw an equation driven curve, and drive it from globals",
       "path": "entries/sketches/07-equation-driven-curve.md",
       "category": "sketches",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "ISketchManager.CreateEquationSpline2",
-        "ISketchSpline.GetPoints2",
-        "ISketchSegment.GetType",
-        "ISketch.GetSketchPoints2",
-        "IModelDoc2.SketchAddConstraints"
-      ],
+      "answers": "How do I draw an equation driven curve from code, and make it follow global variables?",
       "keywords": [
         "equation driven curve",
         "CreateEquationSpline2",
@@ -3685,23 +4228,31 @@
         "curve end point",
         "spline"
       ],
-      "answers": "How do I draw an equation driven curve from code, and make it follow global variables?"
+      "api": [
+        "ISketchManager.CreateEquationSpline2",
+        "ISketchSpline.GetPoints2",
+        "ISketchSegment.GetType",
+        "ISketch.GetSketchPoints2",
+        "IModelDoc2.SketchAddConstraints"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "sketches-10-is-the-sketch-fully-defined",
       "title": "Check whether a sketch is fully defined",
       "path": "entries/sketches/10-is-the-sketch-fully-defined.md",
       "category": "sketches",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "ISketch.GetConstrainedStatus",
-        "ISketchManager.ActiveSketch",
-        "IFeature.GetSpecificFeature2"
-      ],
+      "answers": "How do I check from code whether a sketch is fully defined?",
       "keywords": [
         "GetConstrainedStatus",
         "fully defined",
@@ -3716,17 +4267,29 @@
         "black sketch",
         "blue sketch"
       ],
-      "answers": "How do I check from code whether a sketch is fully defined?"
+      "api": [
+        "ISketch.GetConstrainedStatus",
+        "ISketchManager.ActiveSketch",
+        "IFeature.GetSpecificFeature2"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "surfacing-01-boundary-surface-recipe",
       "title": "The boundary surface recipe, and generating it",
       "path": "entries/surfacing/01-boundary-surface-recipe.md",
       "category": "surfacing",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [],
-      "api": [],
+      "answers": "Which parts of building a surface from curves are automatable, and what stays manual?",
       "keywords": [
         "boundary surface",
         "loft",
@@ -3738,19 +4301,23 @@
         "recipe",
         "surface"
       ],
-      "answers": "Which parts of building a surface from curves are automatable, and what stays manual?"
+      "api": [],
+      "language": [],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "surfacing-02-axis-conventions",
       "title": "Axis conventions, and landing geometry the right way up",
       "path": "entries/surfacing/02-axis-conventions.md",
       "category": "surfacing",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [
-        "typescript"
-      ],
-      "api": [],
+      "answers": "Why does my exported geometry come out lying on its side?",
       "keywords": [
         "axes",
         "front plane",
@@ -3763,17 +4330,25 @@
         "mirror",
         "standard views"
       ],
-      "answers": "Why does my exported geometry come out lying on its side?"
+      "api": [],
+      "language": [
+        "typescript"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "surfacing-03-how-a-loft-fills-between-profiles",
       "title": "How SolidWorks shapes a loft between two profiles, and how its accuracy scaled with the number of guides",
       "path": "entries/surfacing/03-how-a-loft-fills-between-profiles.md",
       "category": "surfacing",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026",
-      "language": [],
-      "api": [],
+      "answers": "If I loft two profiles along guide curves, how far does SolidWorks' surface stray from the shape I meant, and how does that change as I add guides?",
       "keywords": [
         "loft accuracy",
         "loft deviation",
@@ -3814,34 +4389,23 @@
         "six decimals",
         "not planar"
       ],
-      "answers": "If I loft two profiles along guide curves, how far does SolidWorks' surface stray from the shape I meant, and how does that change as I add guides?"
+      "api": [],
+      "language": [],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     },
     {
       "id": "surfacing-04-cap-a-refused-loft-into-a-solid",
       "title": "Get a solid out of a loft SolidWorks refuses, by capping the surface and knitting it",
       "path": "entries/surfacing/04-cap-a-refused-loft-into-a-solid.md",
       "category": "surfacing",
-      "status": "verified",
-      "verified_on": "SolidWorks 2026 SP0.0 (revision 34.0.0)",
-      "language": [
-        "python"
-      ],
-      "api": [
-        "IModelDoc2.InsertLoftRefSurface2",
-        "IModelDoc2.InsertPlanarRefSurface",
-        "IFeatureManager.InsertSewRefSurface",
-        "IFeatureManager.InsertFillSurface2",
-        "IEntity.Select4",
-        "ISelectionMgr.CreateSelectData",
-        "IModelDocExtension.SelectByID2",
-        "IFeature.GetFaces",
-        "IFace2.GetBody",
-        "IFace2.GetArea",
-        "IBody2.GetEdges",
-        "IEdge.GetCurveParams2",
-        "IPartDoc.GetBodies2",
-        "IBody2.GetMassProperties"
-      ],
+      "answers": "SolidWorks refuses my solid loft but makes the surface — how do I get a solid out of it from code?",
       "keywords": [
         "InsertProtrusionBlend2 returns Nothing",
         "six decimals",
@@ -3872,7 +4436,33 @@
         "VT_ARRAY",
         "composite curve as boundary"
       ],
-      "answers": "SolidWorks refuses my solid loft but makes the surface — how do I get a solid out of it from code?"
+      "api": [
+        "IModelDoc2.InsertLoftRefSurface2",
+        "IModelDoc2.InsertPlanarRefSurface",
+        "IFeatureManager.InsertSewRefSurface",
+        "IFeatureManager.InsertFillSurface2",
+        "IEntity.Select4",
+        "ISelectionMgr.CreateSelectData",
+        "IModelDocExtension.SelectByID2",
+        "IFeature.GetFaces",
+        "IFace2.GetBody",
+        "IFace2.GetArea",
+        "IBody2.GetEdges",
+        "IEdge.GetCurveParams2",
+        "IPartDoc.GetBodies2",
+        "IBody2.GetMassProperties"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 SP0.0 (revision 34.0.0)",
+      "majors": [
+        34
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
     }
   ]
 }

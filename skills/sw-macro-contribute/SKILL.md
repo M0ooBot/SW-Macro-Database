@@ -1,6 +1,6 @@
 ---
 name: sw-macro-contribute
-description: Write a SolidWorks automation result back to the SW-Macro-Database repo (github.com/MoZ200701/SW-Macro-Database) as a pull request or a verification-report issue. Use after an unverified entry or script was proven against a real SolidWorks, after solving something the database does not cover, or when a working one-off snippet is general enough to become a prebuilt script.
+description: Write a SolidWorks automation result back to the SW-Macro-Database repo (github.com/MoZ200701/SW-Macro-Database) as a pull request or a verification-report issue. Use after an unverified entry, recipe or script was proven against a real SolidWorks, after solving something the database does not cover, after hitting a trap worth a gotcha, or when a working one-off snippet is general enough to become a recipe or a script.
 ---
 
 # Contributing to the SolidWorks macro database
@@ -8,54 +8,72 @@ description: Write a SolidWorks automation result back to the SW-Macro-Database 
 The database is only worth anything if what gets proven comes back to it. This
 skill turns a result from this session into a reviewable contribution. The rules
 for *what* may be written are in `CONTRIBUTING.md` in this folder: read it before
-writing anything, and follow its checklist. `_TEMPLATE.md` is the entry template.
+writing anything, and follow its checklist. `_TEMPLATE.md` is the entry template
+and `_GOTCHA_TEMPLATE.md` the gotcha template.
 
 ## 1. Decide whether there is something to contribute
 
 Contribute when one of these happened **against a real SolidWorks, in this
 session**:
 
-- An `unverified` or `partly-verified` entry or script ran and its result was
-  observed. In SolidWorks File Manager this is a tool result whose `verification`
-  passed; its `evidence` block gives the SolidWorks revision and what was observed.
+- An `unverified` or `partly-verified` entry, C# recipe or script ran and its
+  result was observed. With SW-Agent, this is a tool result whose
+  `verification` passed; it gives the SolidWorks revision and what was observed.
 - Something the database does not cover was solved.
-- A one-off snippet worked (`contributable: true` in the result) and would help
-  someone automating a completely different part. If it would not, it is
-  application logic and does not belong in the database.
+- A call failed in a way that cost time (a gotcha), or an API member was
+  observed to work, to fail, or to be absent (a ledger row).
+- A one-off snippet worked (`contributable: true` in SW-Agent's result) and
+  would help someone automating a completely different part. If it would not,
+  it is application logic and does not belong in the database.
 
 Ask the user before starting. Say what you would change and why.
 
 ## 2. Gather the evidence
 
-`status: verified` needs the SolidWorks version and **what was observed** —
-counts, return values, what the model looked like afterwards. "It worked" is not
-evidence. A script's status may only become `verified` if that exact
-`script.csx` ran; a snippet that was later parameterised into a script makes the
-script `unverified` until the script itself has run.
+`verified` needs the SolidWorks version and **what was observed**: counts,
+return values, what the model looked like afterwards. "It worked" is not
+evidence. A status may only rise for the exact code that ran: a snippet later
+parameterised into a script or recipe makes that script or recipe `unverified`
+until it has run itself.
+
+Every new verification gets an evidence record, `evidence/<id>.json` (fields in
+CONTRIBUTING.md: subject, language, `swRevision` and `major`, date, method,
+result, scope, observed). A failed run gets one too. Never put paths, user names
+or the user's file names in `observed`: the repo is public.
 
 ## 3. Find the clone
 
-In SolidWorks File Manager, `app_context` returns `macroDbClonePath`. Otherwise
-ask the user where their clone of `MoZ200701/SW-Macro-Database` is. If there is
+Ask the user where their clone of `MoZ200701/SW-Macro-Database` is. If there is
 none, offer to clone it (`gh repo clone MoZ200701/SW-Macro-Database`) into a
 folder the user picks. Never edit the copy of this skill that a tool loaded: it
-is a read-only release.
+is a read-only, hashed release.
 
 In the clone: `git switch main && git pull --ff-only`, then
 `git switch -c contrib/<short-slug>`.
 
 ## 4. Make the change
 
-- **Status upgrade:** edit the entry's frontmatter (`status`, `verified_on`) and
-  add the evidence under its `## Evidence` section; for a script, set `status`,
-  `verified_on` and `evidence` in its `script.json`. Update the API-LEDGER rows
-  for members that are now observed working.
-- **New entry:** copy `_TEMPLATE.md`, follow CONTRIBUTING.md. Extend an existing
-  entry instead when one covers the same question.
-- **New script:** `scripts/<id>/script.json` + `script.csx`, following the script
-  rules in CONTRIBUTING.md, linked to an entry that explains the method.
-- Run `python3 tools/build_manifest.py`, then `python3 tools/validate.py`. Both
-  must pass before anything is pushed.
+- **Status upgrade of an entry:** add the evidence record, list its id in the
+  entry's `evidence`, set `status`, and describe what was observed under the
+  entry's `## Evidence` section. `majors` holds only versions named in
+  `verified_on`; a new run's major comes from its record.
+- **A C# recipe:** the entry's `NN-slug.csx` sidecar, with its header
+  (`// recipe-effects:`, `// recipe-param:`) and `ctx.Params` for every input;
+  set `recipe_status` and list its records in `recipe_evidence` (`verified`
+  needs a passing `smoke` record).
+- **New entry:** copy `_TEMPLATE.md` (schema 2 frontmatter, every key), follow
+  CONTRIBUTING.md. New code is Python or a C# recipe. Extend an existing entry
+  instead when one covers the same question.
+- **Gotcha:** a new `gotchas/NNN-slug.md` from `_GOTCHA_TEMPLATE.md`, with the
+  next free number, its `members` and `languages`. Never renumber.
+- **API ledger:** add or change the row in `api-ledger.json` (status, the cell
+  wording in `note`, `majors`, `evidence`).
+- **Script:** `scripts/<id>/script.json` + `script.csx`, following the script
+  rules in CONTRIBUTING.md, linked to an entry that explains the method; its
+  records in `evidence`.
+- Run `python3 tools/build_manifest.py` (it regenerates `manifest.json`,
+  `gotchas.json`, `GOTCHAS.md` and `API-LEDGER.md`), then
+  `python3 tools/validate.py`. Both must pass before anything is pushed.
 - Commit messages follow the repo's history ("Write back what … established").
   Never add co-author or "generated by" trailers.
 
@@ -77,4 +95,4 @@ Never force-push, never push tags, never create releases: the owner releases.
 ## 6. Tell the user
 
 Give the link to the pull request or issue, and say that the change reaches
-SolidWorks File Manager after the owner merges it and tags a release.
+SW-Agent after the owner merges it and tags a release.

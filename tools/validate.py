@@ -13,8 +13,12 @@ Exits non-zero and lists every problem found. It checks, in order:
      a lint of script.csx;
   3. every skills/<name>/ folder: SKILL.md frontmatter, and the template's
      placeholders;
-  4. that the release package builds (into a temp dir, version 0.0.0-ci);
-  5. the unit tests in tools/tests/.
+  4. that the release package builds (into a temp dir, version 0.0.0-ci),
+     and search: the packaged lookup.py, run on the extracted package, passes
+     search-tests.json (match-text vectors and test questions; needs FTS5);
+  5. that the release notes can be written (against the latest v* tag, when
+     the clone has it), so a broken tag workflow shows here, not at release;
+  6. the unit tests in tools/tests/.
 
 Python 3 stdlib only.
 """
@@ -22,6 +26,7 @@ Python 3 stdlib only.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import io
 import json
 import pathlib
@@ -29,6 +34,7 @@ import re
 import sys
 import tempfile
 import unittest
+import zipfile
 
 import build_manifest
 import build_package
@@ -315,6 +321,36 @@ def check_skills(root: pathlib.Path) -> list[str]:
 
 
 # --------------------------------------------------------------------------
+# search
+
+
+def check_search(zip_path: pathlib.Path, into: pathlib.Path) -> list[str]:
+    """Run the packaged lookup.py's self-test on the extracted package."""
+    with zipfile.ZipFile(zip_path) as zf:
+        zf.extractall(into)
+    skill = into / build_package.SKILL
+    spec = importlib.util.spec_from_file_location("packaged_lookup", skill / "lookup.py")
+    lookup = importlib.util.module_from_spec(spec)
+    dont_write = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    try:
+        spec.loader.exec_module(lookup)
+    finally:
+        sys.dont_write_bytecode = dont_write
+    if not lookup.has_fts5():
+        return [f"search: {lookup.NO_FTS5}"]
+    report = io.StringIO()
+    try:
+        package = lookup.Package(skill)
+        ok = lookup.self_test(package, package.index(), report)
+    except (lookup.PackageError, KeyError, TypeError) as exc:
+        return [f"search: the packaged lookup.py cannot read the package: {exc}"]
+    if ok:
+        return []
+    return [f"search: {line}" for line in report.getvalue().splitlines()]
+
+
+# --------------------------------------------------------------------------
 # unit tests
 
 
@@ -351,9 +387,15 @@ def validate(root: pathlib.Path) -> tuple[list[str], list[str]]:
 
     with tempfile.TemporaryDirectory() as tmp:
         try:
-            _, warnings = build_package.build(root, "0.0.0-ci", pathlib.Path(tmp))
+            zip_path, warnings = build_package.build(root, "0.0.0-ci", pathlib.Path(tmp))
         except build_package.BuildError as exc:
             problems.append(f"package build failed: {exc}")
+        else:
+            problems.extend(check_search(zip_path, pathlib.Path(tmp) / "package"))
+    try:
+        build_package.release_notes(root, build_package.latest_tag(root))
+    except (build_package.BuildError, ValueError, KeyError, TypeError) as exc:
+        problems.append(f"release notes cannot be written: {exc}")
     problems.extend(run_unit_tests(root))
     return problems, warnings
 
