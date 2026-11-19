@@ -37,6 +37,13 @@ class GotchaTests(unittest.TestCase):
         problems = gotchas.check_fields("gotchas/002-x.md", 2, bad)
         self.assertEqual(len(problems), 6, problems)
 
+    def test_languages_in_order(self):
+        good = {"id": "G2", "title": "T", "always": False, "members": [], "languages": ["pywin32", "late-bound"]}
+        self.assertEqual(gotchas.check_fields("g", 2, good), [])
+        problems = gotchas.check_fields("g", 2, dict(good, languages=["late-bound", "pywin32"]))
+        self.assertEqual(len(problems), 1, problems)
+        self.assertIn("in this order", problems[0])
+
     def test_body_heading_outside_fence(self):
         self.assertEqual(len(gotchas.check_body("g", "Text\n## 3. Not here\n")), 1)
         self.assertEqual(gotchas.check_body("g", G[1]["body"]), [])

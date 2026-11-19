@@ -31,7 +31,8 @@ PREAMBLE = "# Gotchas\n\nThings that cost somebody an afternoon. Read this befor
 
 KEYS = ["id", "title", "always", "members", "languages"]
 # How the API is bound, not an entry's language: "all", or the bindings it bites.
-LANGUAGES = {"all", "csharp", "pywin32", "late-bound"}
+LANGUAGE_ORDER = ["all", "csharp", "pywin32", "late-bound"]
+LANGUAGES = set(LANGUAGE_ORDER)
 # `Interface.Member` where the gotcha names the interface, else the bare `Member`.
 MEMBER = re.compile(r"^(?:I[A-Z][A-Za-z0-9_]*\.)?[A-Za-z_][A-Za-z0-9_]*$")
 FILE = re.compile(r"^(\d{3,})-([a-z0-9]+(?:-[a-z0-9]+)*)\.md$")
@@ -170,6 +171,8 @@ def check_fields(rel: str, number: int, fm: dict) -> list[str]:
                 problems.append(f"{rel}: 'all' stands alone in 'languages'")
             if len(set(langs)) != len(langs):
                 problems.append(f"{rel}: 'languages' lists a value twice")
+            elif set(langs) <= LANGUAGES and langs != sorted(langs, key=LANGUAGE_ORDER.index):
+                problems.append(f"{rel}: write 'languages' in this order: {', '.join(LANGUAGE_ORDER)}")
     return problems
 
 

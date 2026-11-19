@@ -3,7 +3,7 @@ id: G21
 title: A late-bound host cannot call an API with a `ByRef Long` out-parameter
 always: false
 members: [OpenDoc6, LoadFile4]
-languages: [late-bound, pywin32]
+languages: [pywin32, late-bound]
 ---
 
 `OpenDoc6` and `LoadFile4` both take one. VBScript and PowerShell are

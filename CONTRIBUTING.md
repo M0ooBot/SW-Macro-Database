@@ -82,7 +82,8 @@ mechanisms into one.
 
 ## Rule 5 — Search before you write
 
-Read [`manifest.json`](manifest.json) and grep the keywords. If an entry covers
+Search with `python3 skills/sw-macro-database/lookup.py "what you are doing"`
+(and `--gotchas`), read [`manifest.json`](manifest.json), and grep the keywords. If an entry covers
 the mechanism already, **extend it**. A second entry on the same call is worse
 than no entry, because the reader gets two answers and has to choose.
 
@@ -376,9 +377,9 @@ holds one that does for the user's review.
 - [ ] Units stated wherever the boundary is crossed
 - [ ] No guessed calls; limits named instead
 - [ ] Code copied or generated, not recalled; complete enough to run
-- [ ] Searched the manifest; not a duplicate
+- [ ] Searched with `lookup.py` and the manifest; not a duplicate
 - [ ] Entry stands alone, with no dependency on an external repo
 - [ ] `manifest.json`, `gotchas.json`, `GOTCHAS.md` and `API-LEDGER.md` regenerated
-- [ ] INDEX, API-LEDGER, gotchas and See-also links updated
+- [ ] INDEX, `api-ledger.json`, gotchas and See-also links updated
 - [ ] Scripts: effects declared truthfully, `openTargets` set, only `ctx.Sw`, nothing closed that the script did not open, preferences restored
 - [ ] `python3 tools/validate.py` passes

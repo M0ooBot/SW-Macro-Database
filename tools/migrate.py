@@ -235,7 +235,7 @@ GOTCHA_LANGUAGES = {
     5: (["pywin32","late-bound"], "Titled late-bound COM; observed through pywin32's dynamic dispatch. Early-bound C# calls methods as methods."),
     6: (["pywin32","late-bound"], "Late binding needs IDispatch; the code is pywin32."),
     7: (["csharp"], ".NET only: Marshal.GetActiveObject is gone on modern .NET."),
-    21: (["late-bound","pywin32"], "VBScript and PowerShell (late-bound) fail; Python needs a typed VARIANT; VBA and early-bound C# work."),
+    21: (["pywin32","late-bound"], "VBScript and PowerShell (late-bound) fail; Python needs a typed VARIANT; VBA and early-bound C# work."),
     31: (["pywin32"], "pywin32 attribute access (the \"call\" helper); \"That pywin32 exposes…\"."),
     39: (["pywin32","late-bound"], "Titled late binding; observed through pywin32's dynamic dispatch."),
     40: (["pywin32","late-bound"], "\"through late binding\", Python method objects."),

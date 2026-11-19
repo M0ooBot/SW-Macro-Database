@@ -277,8 +277,8 @@
         "LoadFile4"
       ],
       "languages": [
-        "late-bound",
-        "pywin32"
+        "pywin32",
+        "late-bound"
       ],
       "path": "gotchas/021-a-late-bound-host-cannot-call-an-api-with-a.md"
     },
