@@ -1,0 +1,5 @@
+# Check every file out exactly as it is committed, with no line-ending
+# conversion, whatever core.autocrlf says. The release package is built from
+# the working tree and must be byte-identical on every machine; and code/ holds
+# files copied verbatim, some of them with CRLF line ends.
+* -text

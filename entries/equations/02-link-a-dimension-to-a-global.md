@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: equations-02-link-a-dimension-to-a-global
 title: Link a dimension to a global variable
+answers: "How do I make a sketch, feature or mate dimension follow a global variable from code?"
+keywords: [link dimension, dimension equation, drive dimension, D1@Sketch1, Dim@Feature, global variable, parametric, document units, millimetres, -1, dimension does not exist yet, mate dimension, pattern count]
+api: [IEquationMgr.Add2, IEquationMgr.Equation, IDimension.Name, IDimension.FullName, IDimension.SystemValue, IModelDoc2.ForceRebuild3]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IEquationMgr.Add2, IEquationMgr.Equation, IDimension.Name, IDimension.FullName, IDimension.SystemValue, IModelDoc2.ForceRebuild3]
-keywords: [link dimension, dimension equation, drive dimension, D1@Sketch1, Dim@Feature, global variable, parametric, document units, millimetres, -1, dimension does not exist yet, mate dimension, pattern count]
-answers: "How do I make a sketch, feature or mate dimension follow a global variable from code?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Link a dimension to a global variable

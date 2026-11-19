@@ -5,14 +5,17 @@ already been solved, and is the solution trustworthy?**
 
 ## Looking something up
 
-1. Read [`manifest.json`](manifest.json). One file, every entry, with `answers`,
-   `keywords`, `api` and `status`. That is usually enough to decide whether a
-   solution exists.
+1. Run `python3 skills/sw-macro-database/lookup.py "what you want to do"`. It
+   ranks the entries the way SW-Agent's `db_search` does (`--gotchas "topic"`
+   for the gotchas). Without a Python whose SQLite has FTS5, read
+   [`manifest.json`](manifest.json) instead: one file, every entry, with
+   `answers`, `keywords`, `api` and `status`. With SW-Agent's tools, use them.
 2. If a candidate matches, read that entry in full. Entries are self-contained.
-3. If you only need to know whether a specific API member is proven, grep
-   [API-LEDGER.md](API-LEDGER.md).
-4. Before writing any SolidWorks automation, read [GOTCHAS.md](GOTCHAS.md). It
-   is short, and most of it is failure modes that are silent.
+3. If you only need to know whether a specific API member is proven, look it up
+   in [`api-ledger.json`](api-ledger.json) (or [API-LEDGER.md](API-LEDGER.md)).
+4. Before writing any SolidWorks automation, read [GOTCHAS.md](GOTCHAS.md),
+   starting with the gotchas marked `always` in `gotchas.json`. Most of it is
+   failure modes that are silent.
 5. For a common task, check [`scripts/`](scripts/) first: parameterised C#
    scripts, each with its own `status` in `script.json`, linked to the entry that
    explains the method.
@@ -28,6 +31,12 @@ already been solved, and is the solution trustworthy?**
 
 Do not upgrade your confidence beyond what `status` says just because the code
 reads well. That distinction is the repo's whole value.
+
+`status` is one claim for the whole entry; `verified_on` says what was run (a
+`verified` earned in Python is a Python run). `majors` lists the SolidWorks
+revision majors the claim was run on (32 = 2024, 33 = 2025, 34 = 2026): on
+another major the evidence is weaker, so say so. An entry with a C# recipe (its
+`.csx` sidecar) gives the recipe its own `recipe_status`.
 
 ## If the answer is not here
 

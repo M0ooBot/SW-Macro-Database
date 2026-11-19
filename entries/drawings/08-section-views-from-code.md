@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: drawings-08-section-views-from-code
 title: Make a section view from code, pointing the right way, with parts left unsectioned
+answers: "How do I make a section view of a part or assembly from code — draw the cutting line where I mean, make it face the right way, and keep shafts unhatched?"
+keywords: [section view, CreateSectionViewAt5, section line, cutting plane, sketch line in a view, view sketch coordinates, GetXform, section upside down, change direction, NotAligned, ExcludedComponents, shafts not hatched, unsectioned parts, rotated view, IView.Angle, section between spokes, aligned section tilted, swCreateSectionViewAtOptions_e, SetExcludedComponents, GetSection, DrSection, excluded components ignored, section not hatched, no hatching in PDF, hatch missing, ForceRebuild3, move section view, aligned section stuck, section direction]
+api: [IDrawingDoc.ActivateView, ISketchManager.CreateLine, IDrawingDoc.CreateSectionViewAt5, IView.GetXform, IView.Angle, IView.Position, IView.GetVisibleComponents, IView.GetSection, IDrSection.SetExcludedComponents, IDrSection.GetExcludedComponents, IModelDoc2.ForceRebuild3]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IDrawingDoc.ActivateView, ISketchManager.CreateLine, IDrawingDoc.CreateSectionViewAt5, IView.GetXform, IView.Angle, IView.Position, IView.GetVisibleComponents, IView.GetSection, IDrSection.SetExcludedComponents, IDrSection.GetExcludedComponents, IModelDoc2.ForceRebuild3]
-keywords: [section view, CreateSectionViewAt5, section line, cutting plane, sketch line in a view, view sketch coordinates, GetXform, section upside down, change direction, NotAligned, ExcludedComponents, shafts not hatched, unsectioned parts, rotated view, IView.Angle, section between spokes, aligned section tilted, swCreateSectionViewAtOptions_e, SetExcludedComponents, GetSection, DrSection, excluded components ignored, section not hatched, no hatching in PDF, hatch missing, ForceRebuild3, move section view, aligned section stuck, section direction]
-answers: "How do I make a section view of a part or assembly from code — draw the cutting line where I mean, make it face the right way, and keep shafts unhatched?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Make a section view from code

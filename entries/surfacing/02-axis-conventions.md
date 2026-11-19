@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: surfacing-02-axis-conventions
 title: Axis conventions, and landing geometry the right way up
+answers: "Why does my exported geometry come out lying on its side?"
+keywords: [axes, front plane, top plane, right plane, orientation, Y up, Z up, axis map, mirror, standard views]
+api: []
+language: [typescript]
 status: verified
 verified_on: SolidWorks 2026
-language: [typescript]
-api: []
-keywords: [axes, front plane, top plane, right plane, orientation, Y up, Z up, axis map, mirror, standard views]
-answers: "Why does my exported geometry come out lying on its side?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Axis conventions, and landing geometry the right way up

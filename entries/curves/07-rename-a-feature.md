@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-07-rename-a-feature
 title: Rename a feature, and read the name back
+answers: "How do I name a feature I just created, and why did my name not stick?"
+keywords: [rename feature, feature name, collision, silent rename, read back]
+api: [IFeature.Name]
+language: [vbscript, python]
 status: verified
 verified_on: SolidWorks 2026
-language: [vbscript, python]
-api: [IFeature.Name]
-keywords: [rename feature, feature name, collision, silent rename, read back]
-answers: "How do I name a feature I just created, and why did my name not stick?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Rename a feature, and read the name back

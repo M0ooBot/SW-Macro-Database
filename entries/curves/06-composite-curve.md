@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-06-composite-curve
 title: Join several curves into one selectable curve
+answers: "How do I join two curves into one thing a loft can select, keeping the corner sharp?"
+keywords: [InsertCompositeCurve, composite curve, SelectByID2, selection mark, REFERENCECURVES, sharp corner, loft profile, piece count, delete composite deletes loft, rename aside, edit composite, GetEntitiesToJoin, hairpin, select after rebuild, AccessSelections, ReleaseSelectionAccess, rolls the tree back, IsRolledBack, method object never ran, GetParents, which curves a composite joins, slow composite read]
+api: [IModelDoc2.InsertCompositeCurve, IModelDocExtension.SelectByID2, IModelDoc2.ClearSelection2, AccessSelections, GetEntitiesToJoin, ReleaseSelectionAccess, IFeature.GetParents]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026
-language: [python]
-api: [IModelDoc2.InsertCompositeCurve, IModelDocExtension.SelectByID2, IModelDoc2.ClearSelection2, AccessSelections, GetEntitiesToJoin, ReleaseSelectionAccess, IFeature.GetParents]
-keywords: [InsertCompositeCurve, composite curve, SelectByID2, selection mark, REFERENCECURVES, sharp corner, loft profile, piece count, delete composite deletes loft, rename aside, edit composite, GetEntitiesToJoin, hairpin, select after rebuild, AccessSelections, ReleaseSelectionAccess, rolls the tree back, IsRolledBack, method object never ran, GetParents, which curves a composite joins, slow composite read]
-answers: "How do I join two curves into one thing a loft can select, keeping the corner sharp?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Join several curves into one selectable curve

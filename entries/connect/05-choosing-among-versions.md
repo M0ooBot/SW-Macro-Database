@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-05-choosing-among-versions
 title: Choosing among several installed versions
+answers: "Several SolidWorks versions are installed. Which one should my tool drive?"
+keywords: [version, revision number, major 32 33 34, 2024 2025 2026, minimum version, choose session, multiple installs, WrongVersion, connect refuses 2024, This needs SolidWorks 2026, MINIMUM_MAJOR, find_candidates, read-only tool on an older version]
+api: [ISldWorks.RevisionNumber]
+language: [python]
 status: verified
 verified_on: a machine carrying SolidWorks 2024, 2025 and 2026
-language: [python]
-api: [ISldWorks.RevisionNumber]
-keywords: [version, revision number, major 32 33 34, 2024 2025 2026, minimum version, choose session, multiple installs, WrongVersion, connect refuses 2024, This needs SolidWorks 2026, MINIMUM_MAJOR, find_candidates, read-only tool on an older version]
-answers: "Several SolidWorks versions are installed. Which one should my tool drive?"
+majors: [32, 34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Choosing among several installed versions
@@ -139,6 +145,14 @@ copy to get past the error; the Airfoil Converter's calls (feature folders,
 lofts, curve reloads) are verified on 2026 only. Note the order above puts a
 session with a document open ahead of a newer empty one, the reverse of
 `choose()`; for a tool that reads the open assembly that is the right call.
+
+Both orderings are deliberate, and both stay. SW-Agent, the local bridge that
+runs this database's scripts and C# recipes, states its own instance ranking in
+its design document (`docs/DESIGN.md` §7.2, in the SW-Agent repository): a
+session with an active document first, then the highest revision, then the
+longest-running process. That is the second ordering above, with process age as
+the last key; it is SW-Agent's choice, recorded there, and changes nothing in
+this entry.
 
 Not tried: 2025 (major 33), and anything older than 2024.
 

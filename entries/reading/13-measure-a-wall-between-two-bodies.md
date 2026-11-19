@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-13-measure-a-wall-between-two-bodies
 title: Measure the wall between two bodies without leaving SolidWorks
+answers: "How do I check from code that the skin between two lofted surfaces really is the thickness I asked for?"
+keywords: [GetTessTriangles, GetClosestPointOn, wall thickness, skin thickness, offset check, distance between surfaces, tessellation, measure in SolidWorks, no STEP, GetMassProperties, volume slot, validate a measurement, closest point zero]
+api: [IFace2.GetTessTriangles, IFace2.GetClosestPointOn, IFeature.GetFaces, IBody2.GetMassProperties, IFace2.GetArea]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 SP0.0 (revision 34.0.0)
-language: [python]
-api: [IFace2.GetTessTriangles, IFace2.GetClosestPointOn, IFeature.GetFaces, IBody2.GetMassProperties, IFace2.GetArea]
-keywords: [GetTessTriangles, GetClosestPointOn, wall thickness, skin thickness, offset check, distance between surfaces, tessellation, measure in SolidWorks, no STEP, GetMassProperties, volume slot, validate a measurement, closest point zero]
-answers: "How do I check from code that the skin between two lofted surfaces really is the thickness I asked for?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Measure the wall between two bodies

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: files-03-upgrade-file-version
 title: Re-save a library into the current file version
+answers: "How do I re-save a whole folder of parts in the current SolidWorks file format?"
+keywords: [file version, upgrade, VersionHistory, GetLatestSupportedFileVersion, 19000, 14000, backwards compatible, downgrade, re-save, read-only attribute]
+api: [ISldWorks.VersionHistory, ISldWorks.GetLatestSupportedFileVersion, ISldWorks.OpenDoc6, IModelDocExtension.SaveAs]
+language: [csharp-standalone]
 status: verified
 verified_on: SolidWorks 2026 SP1.1
-language: [csharp]
-api: [ISldWorks.VersionHistory, ISldWorks.GetLatestSupportedFileVersion, ISldWorks.OpenDoc6, IModelDocExtension.SaveAs]
-keywords: [file version, upgrade, VersionHistory, GetLatestSupportedFileVersion, 19000, 14000, backwards compatible, downgrade, re-save, read-only attribute]
-answers: "How do I re-save a whole folder of parts in the current SolidWorks file format?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Re-save a library into the current file version

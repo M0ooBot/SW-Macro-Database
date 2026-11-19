@@ -1,0 +1,279 @@
+{
+  "format": 1,
+  "match": [
+    {
+      "query": "IModelDoc2.GetTitle \u2014 \"saved\" \u00e9tat",
+      "text": "\"IModelDoc2\"* OR \"GetTitle\"* OR \"saved\"* OR \"\u00e9tat\"*"
+    },
+    {
+      "query": "GetTitle",
+      "text": "\"GetTitle\"*"
+    },
+    {
+      "query": "SaveAs3(path, 0, 1)",
+      "text": "\"SaveAs3\"* OR \"path\"* OR \"0\"* OR \"1\"*"
+    },
+    {
+      "query": "swDocPART_x",
+      "text": "\"swDocPART\"* OR \"x\"*"
+    },
+    {
+      "query": "IModelDoc2.Extension.SelectByID2",
+      "text": "\"IModelDoc2\"* OR \"Extension\"* OR \"SelectByID2\"*"
+    },
+    {
+      "query": "say \"hello\" and 'bye'",
+      "text": "\"say\"* OR \"hello\"* OR \"and\"* OR \"bye\"*"
+    },
+    {
+      "query": "GetTitle gettitle GETTITLE",
+      "text": "\"GetTitle\"*"
+    },
+    {
+      "query": "Mate mate MATE mates",
+      "text": "\"Mate\"* OR \"mates\"*"
+    },
+    {
+      "query": "34.1.1 2024 SP5",
+      "text": "\"34\"* OR \"1\"* OR \"2024\"* OR \"SP5\"*"
+    },
+    {
+      "query": "caf\u00e9 cafe",
+      "text": "\"caf\u00e9\"* OR \"cafe\"*"
+    },
+    {
+      "query": "e\u0301te",
+      "text": "\"e\u0301te\"*"
+    },
+    {
+      "query": "\u0301abc",
+      "text": "\"abc\"*"
+    },
+    {
+      "query": "Stra\u00dfe STRASSE strasse",
+      "text": "\"Stra\u00dfe\"* OR \"STRASSE\"*"
+    },
+    {
+      "query": "\u00df SS ss",
+      "text": "\"\u00df\"* OR \"SS\"*"
+    },
+    {
+      "query": "\u0130stanbul istanbul ISTANBUL",
+      "text": "\"\u0130stanbul\"* OR \"istanbul\"*"
+    },
+    {
+      "query": "\u01c5emal \u01c6emal \u01c4emal",
+      "text": "\"\u01c5emal\"* OR \"\u01c6emal\"* OR \"\u01c4emal\"*"
+    },
+    {
+      "query": "\ufb01le file FILE",
+      "text": "\"\ufb01le\"* OR \"file\"*"
+    },
+    {
+      "query": "cut AND extrude OR NOT NEAR",
+      "text": "\"cut\"* OR \"AND\"* OR \"extrude\"* OR \"OR\"* OR \"NOT\"* OR \"NEAR\"*"
+    },
+    {
+      "query": "and AND",
+      "text": "\"and\"*"
+    },
+    {
+      "query": "",
+      "text": null
+    },
+    {
+      "query": "   ...  --- !!! ?",
+      "text": null
+    },
+    {
+      "query": "\u96f6\u4ef6 \u6d4b\u8bd5",
+      "text": "\"\u96f6\u4ef6\"* OR \"\u6d4b\u8bd5\"*"
+    },
+    {
+      "query": "x\u00b2 \u00bd \u216b",
+      "text": "\"x\u00b2\"* OR \"\u00bd\"* OR \"\u216b\"*"
+    },
+    {
+      "query": "\ue000abc",
+      "text": "\"\ue000abc\"*"
+    },
+    {
+      "query": "\u0915\u094d\u0937\u093f",
+      "text": "\"\u0915\u094d\u0937\u093f\"*"
+    },
+    {
+      "query": "a\u20ddb",
+      "text": "\"a\u20ddb\"*"
+    },
+    {
+      "query": "write-back can't",
+      "text": "\"write\"* OR \"back\"* OR \"can\"* OR \"t\"*"
+    },
+    {
+      "query": "tab\tnew\nline",
+      "text": "\"tab\"* OR \"new\"* OR \"line\"*"
+    },
+    {
+      "query": "\ud83d\ude00 emoji \ud83d\ude00",
+      "text": "\"emoji\"*"
+    },
+    {
+      "query": "\ud835\udc00\ud835\udc01c x",
+      "text": "\"\ud835\udc00\ud835\udc01c\"* OR \"x\"*"
+    },
+    {
+      "query": "\u02b0ello",
+      "text": "\"\u02b0ello\"*"
+    },
+    {
+      "query": "\uff33\uff57 sw",
+      "text": "\"\uff33\uff57\"* OR \"sw\"*"
+    },
+    {
+      "query": "GOTCHAS \u00a755",
+      "text": "\"GOTCHAS\"* OR \"55\"*"
+    },
+    {
+      "query": "C# .NET",
+      "text": "\"C\"* OR \"NET\"*"
+    },
+    {
+      "query": "1.0e-3",
+      "text": "\"1\"* OR \"0e\"* OR \"3\"*"
+    }
+  ],
+  "questions": [
+    {
+      "question": "list the dependencies of a sldasm on disk without loading it into SolidWorks",
+      "expect": "reading-01-dependencies-closed-file"
+    },
+    {
+      "question": "GetDocumentDependencies2",
+      "expect": "reading-01-dependencies-closed-file"
+    },
+    {
+      "question": "export a single body of a part to a STEP file without the document changing its name",
+      "expect": "files-04-export-a-body-to-step"
+    },
+    {
+      "question": "add a coincident mate between two assembly components",
+      "expect": "assemblies-02-mates-from-code"
+    },
+    {
+      "question": "GetObject raises error 429 ActiveX component can't create object",
+      "expect": "connect-01-attach-vbscript"
+    },
+    {
+      "question": "put a bill of materials on an assembly drawing and balloon the parts",
+      "expect": "drawings-02-bom-table-and-balloons"
+    },
+    {
+      "question": "circular pattern of a feature around an axis",
+      "expect": "features-03-circular-pattern"
+    },
+    {
+      "question": "measure a part's bounding box",
+      "expect": "reading-09-bounding-box"
+    },
+    {
+      "question": "use mass properties volume to verify a cut removed material",
+      "expect": "reading-10-mass-properties-as-an-oracle"
+    },
+    {
+      "question": "once my macro finishes, closing the top-level file prompts about untouched components; dirty flag",
+      "expect": "assemblies-12-rebuild-scope-and-the-save-flag"
+    },
+    {
+      "question": "my 2D profile still shows blue lines; is everything constrained",
+      "expect": "sketches-10-is-the-sketch-fully-defined"
+    },
+    {
+      "question": "convert sketch coordinates to model coordinates",
+      "expect": "reading-05-sketch-to-model-transform"
+    },
+    {
+      "question": "SolidWorks API hangs my WPF window when used from Task.Run",
+      "expect": "connect-06-one-apartment-thread"
+    },
+    {
+      "question": "make a section view of an assembly in a drawing",
+      "expect": "drawings-08-section-views-from-code"
+    },
+    {
+      "question": "batch convert a folder of STEP files to SolidWorks parts",
+      "expect": "files-01-batch-convert-step"
+    },
+    {
+      "question": "several SolidWorks versions are installed, which one should I attach to",
+      "expect": "connect-05-choosing-among-versions"
+    },
+    {
+      "question": "suppressing one feature suppressed others, how do I restore the suppression state",
+      "expect": "reading-12-snapshot-suppression-before-you-suppress"
+    },
+    {
+      "question": "list every mate in an assembly with the gear mate ratio",
+      "expect": "assemblies-06-read-every-mate"
+    },
+    {
+      "question": "drive Windows SolidWorks from WSL",
+      "expect": "connect-10-driving-from-outside-windows"
+    },
+    {
+      "question": "my add-in's timer makes rotating the view laggy; lightweight way to detect edits",
+      "expect": "reading-11-cheap-change-detection"
+    },
+    {
+      "question": "insert a curve from a sldcrv file as a feature",
+      "expect": "curves-02-insert-curve-from-file"
+    },
+    {
+      "question": "add dimensions with a tolerance or ISO fit to a drawing",
+      "expect": "drawings-09-add-dimensions-and-tolerances"
+    },
+    {
+      "question": "exploded view of an assembly from code",
+      "expect": "assemblies-08-exploded-view-from-code"
+    },
+    {
+      "question": "AddConstraint relation string for a tangent relation",
+      "expect": "sketches-03-relation-constants"
+    },
+    {
+      "question": "OpenDoc6 gives error 2097152 on a .stp",
+      "expect": "files-01-batch-convert-step"
+    },
+    {
+      "question": "InsertProtrusionBlend2 returns Nothing; can I cap and knit instead",
+      "expect": "surfacing-04-cap-a-refused-loft-into-a-solid"
+    },
+    {
+      "question": "linkage locked: what is jamming the mechanism",
+      "expect": "assemblies-05-test-motion-with-the-drag-operator"
+    },
+    {
+      "question": "values come out a thousand times too large, mm versus metres",
+      "expect": "sketches-05-units-and-number-format"
+    },
+    {
+      "question": "my modified bolt from the fastener library snaps back to stock on reopen",
+      "expect": "assemblies-09-keep-an-edited-toolbox-copy"
+    },
+    {
+      "question": "pywin32 says 'bool' object is not callable",
+      "expect": "connect-02-attach-python"
+    },
+    {
+      "question": "parts saved by 2018 must be brought up to 2026 in bulk",
+      "expect": "files-03-upgrade-file-version"
+    },
+    {
+      "question": "show phantom lines for the other poses of a linkage on the sheet",
+      "expect": "drawings-06-alternate-position-views"
+    },
+    {
+      "question": "my dotnet 8 tool can't reach the open CAD session through COM interop",
+      "expect": "connect-03-attach-csharp"
+    }
+  ]
+}

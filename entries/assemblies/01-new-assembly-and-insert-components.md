@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-01-new-assembly-and-insert-components
 title: Make an assembly and insert saved parts as components
+answers: "How do I make a new assembly and insert saved parts into it as components from code?"
+keywords: [assembly, AddComponent5, insert component, component name -1, Name2, Transform2, ArrayData, IsFixed, FixComponent, fixed on insert, first component fixed, asmdot, assembly template, component position, AddComponent5 returns None, insert a closed part, swFileWithSameTitleAlreadyOpen, 65536, same file name, GetComponentByName, move a fixed component]
+api: [ISldWorks.NewDocument, IAssemblyDoc.AddComponent5, IComponent2.Name2, IComponent2.Transform2, IComponent2.IsFixed, IComponent2.Select4, IAssemblyDoc.FixComponent, IAssemblyDoc.GetComponentByName, ISldWorks.OpenDoc6]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0); inserting a closed part, a fixed component's put, and the template's effect on fixing also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [ISldWorks.NewDocument, IAssemblyDoc.AddComponent5, IComponent2.Name2, IComponent2.Transform2, IComponent2.IsFixed, IComponent2.Select4, IAssemblyDoc.FixComponent, IAssemblyDoc.GetComponentByName, ISldWorks.OpenDoc6]
-keywords: [assembly, AddComponent5, insert component, component name -1, Name2, Transform2, ArrayData, IsFixed, FixComponent, fixed on insert, first component fixed, asmdot, assembly template, component position, AddComponent5 returns None, insert a closed part, swFileWithSameTitleAlreadyOpen, 65536, same file name, GetComponentByName, move a fixed component]
-answers: "How do I make a new assembly and insert saved parts into it as components from code?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Make an assembly and insert saved parts as components

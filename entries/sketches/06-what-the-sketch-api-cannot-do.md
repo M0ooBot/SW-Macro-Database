@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: sketches-06-sketch-api-limits
 title: What the sketch API cannot do, and how to handle it
-status: verified
-verified_on: documented API surface as of SW 2026
-language: [vba]
-api: []
-keywords: [spline handle, tangent handle, style spline, interior fit point, manual step, SW-MANUAL, limits, cannot select]
 answers: "Why can't my macro fully define this sketch, and what do I do about it?"
+keywords: [spline handle, tangent handle, style spline, interior fit point, manual step, SW-MANUAL, limits, cannot select]
+api: []
+language: [vba]
+status: unverified
+verified_on: documented API surface as of SW 2026
+majors: []
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # What the sketch API cannot do, and how to handle it

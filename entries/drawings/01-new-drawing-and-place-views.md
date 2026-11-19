@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: drawings-01-new-drawing-and-place-views
 title: Make a drawing from a template and place, scale and align its views
+answers: "How do I make a drawing from a template, place standard, model and projected views at the scale I want, line them up, and export a picture to check it?"
+keywords: [drawing, SLDDRW, drawing template, DRWDOT, new drawing, standard 3 views, third angle, first angle, projected view, unfolded view, model view, isometric view, sheet scale, view scale, UseSheetScale, sheet rescaled, 2:1 became 1:2, view position, view outline, align views, ModelToViewTransform, hidden lines visible, SetDisplayMode4, exploded drawing view, ShowExploded, PNG export of a drawing, sheet properties, GetProperties2, rotate view, IView.Angle, per-view scale, ScaleDecimal, PDF export, named view edge-on, Toolbox gear view orientation, stale PNG]
+api: [ISldWorks.NewDocument, IDrawingDoc.Create3rdAngleViews2, IDrawingDoc.CreateDrawViewFromModelView3, IDrawingDoc.CreateUnfoldedViewAt3, ISheet.GetProperties2, ISheet.SetScale, IView.UseSheetScale, IView.ScaleDecimal, IView.GetOutline, IView.Position, IView.ModelToViewTransform, IView.SetDisplayMode4, IView.Type, IView.GetName2, IView.ShowExploded, IView.IsExploded, IDrawingDoc.GetFirstView, IView.GetNextView, IModelDocExtension.SaveAs, IView.Angle]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [ISldWorks.NewDocument, IDrawingDoc.Create3rdAngleViews2, IDrawingDoc.CreateDrawViewFromModelView3, IDrawingDoc.CreateUnfoldedViewAt3, ISheet.GetProperties2, ISheet.SetScale, IView.UseSheetScale, IView.ScaleDecimal, IView.GetOutline, IView.Position, IView.ModelToViewTransform, IView.SetDisplayMode4, IView.Type, IView.GetName2, IView.ShowExploded, IView.IsExploded, IDrawingDoc.GetFirstView, IView.GetNextView, IModelDocExtension.SaveAs, IView.Angle]
-keywords: [drawing, SLDDRW, drawing template, DRWDOT, new drawing, standard 3 views, third angle, first angle, projected view, unfolded view, model view, isometric view, sheet scale, view scale, UseSheetScale, sheet rescaled, 2:1 became 1:2, view position, view outline, align views, ModelToViewTransform, hidden lines visible, SetDisplayMode4, exploded drawing view, ShowExploded, PNG export of a drawing, sheet properties, GetProperties2, rotate view, IView.Angle, per-view scale, ScaleDecimal, PDF export, named view edge-on, Toolbox gear view orientation, stale PNG]
-answers: "How do I make a drawing from a template, place standard, model and projected views at the scale I want, line them up, and export a picture to check it?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Make a drawing from a template and place, scale and align its views

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: sketches-05-units-and-number-format
 title: Units and number formatting for generated macros
+answers: "What units does the API use, and how do I format numbers so VBA parses them?"
+keywords: [metres, millimetres, radians, units, number format, scientific notation, negative zero, nine decimals]
+api: []
+language: [vba, vbscript, python, typescript]
 status: verified
 verified_on: SolidWorks 2025 and 2026
-language: [vba, vbscript, python, typescript]
-api: []
-keywords: [metres, millimetres, radians, units, number format, scientific notation, negative zero, nine decimals]
-answers: "What units does the API use, and how do I format numbers so VBA parses them?"
+majors: [33, 34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Units and number formatting for generated macros

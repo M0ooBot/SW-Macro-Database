@@ -1,0 +1,1573 @@
+{
+  "schema": 1,
+  "gotchas": [
+    {
+      "number": 1,
+      "id": "G1",
+      "title": "The unversioned ProgID can point at the wrong SolidWorks",
+      "always": false,
+      "members": [
+        "GetObject",
+        "GetActiveObject"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/001-the-unversioned-progid-can-point-at-the-wrong.md"
+    },
+    {
+      "number": 2,
+      "id": "G2",
+      "title": "The API is in metres, always",
+      "always": true,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/002-the-api-is-in-metres-always.md"
+    },
+    {
+      "number": 3,
+      "id": "G3",
+      "title": "`InsertCurveFile` is on the document, not the feature manager",
+      "always": false,
+      "members": [
+        "InsertCurveFile"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/003-insertcurvefile-is-on-the-document-not-the.md"
+    },
+    {
+      "number": 4,
+      "id": "G4",
+      "title": "A bare `None` is a type mismatch for an absent COM object",
+      "always": false,
+      "members": [
+        "ModifyDefinition",
+        "GetObjectByPersistReference3"
+      ],
+      "languages": [
+        "pywin32"
+      ],
+      "path": "gotchas/004-a-bare-none-is-a-type-mismatch-for-an-absent-com.md"
+    },
+    {
+      "number": 5,
+      "id": "G5",
+      "title": "In late-bound COM, a zero-argument method is a property get",
+      "always": false,
+      "members": [
+        "RevisionNumber",
+        "ActiveDoc",
+        "IAssemblyDoc.FixComponent",
+        "IBody2.GetEdges",
+        "IFace2.GetTessTriangles"
+      ],
+      "languages": [
+        "pywin32",
+        "late-bound"
+      ],
+      "path": "gotchas/005-in-late-bound-com-a-zero-argument-method-is-a.md"
+    },
+    {
+      "number": 6,
+      "id": "G6",
+      "title": "The Running Object Table hands back an `IUnknown`",
+      "always": false,
+      "members": [],
+      "languages": [
+        "pywin32",
+        "late-bound"
+      ],
+      "path": "gotchas/006-the-running-object-table-hands-back-an-iunknown.md"
+    },
+    {
+      "number": 7,
+      "id": "G7",
+      "title": "`Marshal.GetActiveObject` does not exist on modern .NET",
+      "always": false,
+      "members": [
+        "GetActiveObject"
+      ],
+      "languages": [
+        "csharp"
+      ],
+      "path": "gotchas/007-marshal-getactiveobject-does-not-exist-on-modern.md"
+    },
+    {
+      "number": 8,
+      "id": "G8",
+      "title": "SolidWorks quietly renames on collision",
+      "always": true,
+      "members": [
+        "Name"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/008-solidworks-quietly-renames-on-collision.md"
+    },
+    {
+      "number": 9,
+      "id": "G9",
+      "title": "Rebuilding per change is both slow and wrong",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/009-rebuilding-per-change-is-both-slow-and-wrong.md"
+    },
+    {
+      "number": 10,
+      "id": "G10",
+      "title": "A transform's rotation is stored by columns",
+      "always": false,
+      "members": [
+        "IMathTransform.ArrayData"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/010-a-transform-s-rotation-is-stored-by-columns.md"
+    },
+    {
+      "number": 11,
+      "id": "G11",
+      "title": "`InsertCurveFile` tells you True or False and nothing else",
+      "always": false,
+      "members": [
+        "InsertCurveFile"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/011-insertcurvefile-tells-you-true-or-false-and.md"
+    },
+    {
+      "number": 12,
+      "id": "G12",
+      "title": "Composite Curve reads its inputs from selection mark 1",
+      "always": false,
+      "members": [
+        "InsertCompositeCurve"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/012-composite-curve-reads-its-inputs-from-selection.md"
+    },
+    {
+      "number": 13,
+      "id": "G13",
+      "title": "A point-streamed curve has no file association",
+      "always": false,
+      "members": [
+        "InsertCurveFileBegin",
+        "LoadPointsFromFile"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/013-a-point-streamed-curve-has-no-file-association.md"
+    },
+    {
+      "number": 14,
+      "id": "G14",
+      "title": "Inserting a curve does not add it to your surface",
+      "always": false,
+      "members": [
+        "InsertCurveFile"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/014-inserting-a-curve-does-not-add-it-to-your.md"
+    },
+    {
+      "number": 15,
+      "id": "G15",
+      "title": "Never text-merge SolidWorks binaries",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/015-never-text-merge-solidworks-binaries.md"
+    },
+    {
+      "number": 16,
+      "id": "G16",
+      "title": "`ReplaceReferencedDocument` needs the referencing documents closed",
+      "always": false,
+      "members": [
+        "ReplaceReferencedDocument"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/016-replacereferenceddocument-needs-the-referencing.md"
+    },
+    {
+      "number": 17,
+      "id": "G17",
+      "title": "`check-ignore` and other verifications that read what you control",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/017-check-ignore-and-other-verifications-that-read.md"
+    },
+    {
+      "number": 18,
+      "id": "G18",
+      "title": "`MoveToFolder` does not move anything",
+      "always": false,
+      "members": [
+        "IFeatureManager.MoveToFolder",
+        "InsertFeatureTreeFolder2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/018-movetofolder-does-not-move-anything.md"
+    },
+    {
+      "number": 19,
+      "id": "G19",
+      "title": "A folder is two features in the tree",
+      "always": false,
+      "members": [
+        "FirstFeature",
+        "GetNextFeature",
+        "IFeatureFolder.GetFeatures",
+        "GetFirstSubFeature"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/019-a-folder-is-two-features-in-the-tree.md"
+    },
+    {
+      "number": 20,
+      "id": "G20",
+      "title": "`OpenDoc6` cannot open a STEP file that `LoadFile4` opens fine",
+      "always": false,
+      "members": [
+        "ISldWorks.OpenDoc6",
+        "ISldWorks.LoadFile4",
+        "OpenDoc7",
+        "GetOpenDocSpec"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/020-opendoc6-cannot-open-a-step-file-that-loadfile4.md"
+    },
+    {
+      "number": 21,
+      "id": "G21",
+      "title": "A late-bound host cannot call an API with a `ByRef Long` out-parameter",
+      "always": false,
+      "members": [
+        "OpenDoc6",
+        "LoadFile4"
+      ],
+      "languages": [
+        "pywin32",
+        "late-bound"
+      ],
+      "path": "gotchas/021-a-late-bound-host-cannot-call-an-api-with-a.md"
+    },
+    {
+      "number": 22,
+      "id": "G22",
+      "title": "Opening an older file in a newer SolidWorks makes closing it dangerous",
+      "always": true,
+      "members": [
+        "ISldWorks.CloseDoc",
+        "QuitDoc",
+        "CloseAllDocuments"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/022-opening-an-older-file-in-a-newer-solidworks.md"
+    },
+    {
+      "number": 23,
+      "id": "G23",
+      "title": "`ShowConfiguration2` returns False when the configuration is already active",
+      "always": false,
+      "members": [
+        "ShowConfiguration2",
+        "DeleteConfiguration2",
+        "DeleteDesignTable",
+        "GetConfigurationNames"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/023-showconfiguration2-returns-false-when-the.md"
+    },
+    {
+      "number": 24,
+      "id": "G24",
+      "title": "`GetPartBox` is the exception to §2",
+      "always": false,
+      "members": [
+        "IPartDoc.GetPartBox"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/024-getpartbox-is-the-exception-to-2.md"
+    },
+    {
+      "number": 25,
+      "id": "G25",
+      "title": "The default template can be another year's, and in inches",
+      "always": true,
+      "members": [
+        "ISldWorks.GetDocumentTemplate"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/025-the-default-template-can-be-another-year-s-and.md"
+    },
+    {
+      "number": 26,
+      "id": "G26",
+      "title": "The Equation Manager says no with -1, not an exception",
+      "always": true,
+      "members": [
+        "IEquationMgr.Add3",
+        "Add2",
+        "IEquationMgr.SetEquationAndConfigurationOption"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/026-the-equation-manager-says-no-with-1-not-an.md"
+    },
+    {
+      "number": 27,
+      "id": "G27",
+      "title": "`sqr ( 0 )` is refused, and `IIF` does not guard it",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/027-sqr-0-is-refused-and-iif-does-not-guard-it.md"
+    },
+    {
+      "number": 28,
+      "id": "G28",
+      "title": "An unbracketed comparison binds before the arithmetic",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/028-an-unbracketed-comparison-binds-before-the.md"
+    },
+    {
+      "number": 29,
+      "id": "G29",
+      "title": "An Equation Driven Curve's trig is radians, and a degree conversion is refused",
+      "always": false,
+      "members": [
+        "ISketchManager.CreateEquationSpline2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/029-an-equation-driven-curve-s-trig-is-radians-and-a.md"
+    },
+    {
+      "number": 30,
+      "id": "G30",
+      "title": "`sgEQUAL` did nothing to two circles",
+      "always": false,
+      "members": [
+        "sgEQUAL"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/030-sgequal-did-nothing-to-two-circles.md"
+    },
+    {
+      "number": 31,
+      "id": "G31",
+      "title": "A zero-argument method that returns nothing is not called by `call`",
+      "always": false,
+      "members": [
+        "IAssemblyDoc.FixComponent"
+      ],
+      "languages": [
+        "pywin32"
+      ],
+      "path": "gotchas/031-a-zero-argument-method-that-returns-nothing-is.md"
+    },
+    {
+      "number": 32,
+      "id": "G32",
+      "title": "A through-all cut in the default direction made nothing",
+      "always": false,
+      "members": [
+        "IFeatureManager.FeatureCut4"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/032-a-through-all-cut-in-the-default-direction-made.md"
+    },
+    {
+      "number": 33,
+      "id": "G33",
+      "title": "Find a feature's dimension by its value, not by name or position",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/033-find-a-feature-s-dimension-by-its-value-not-by.md"
+    },
+    {
+      "number": 34,
+      "id": "G34",
+      "title": "`SaveAs3` overwrites an existing file without a word",
+      "always": true,
+      "members": [
+        "IModelDocExtension.SaveAs3",
+        "IModelDoc2.SaveAs3"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/034-saveas3-overwrites-an-existing-file-without-a.md"
+    },
+    {
+      "number": 35,
+      "id": "G35",
+      "title": "An entity drawn starting on another's end shares that point",
+      "always": false,
+      "members": [
+        "GetStartPoint2",
+        "GetSelectedObjectCount2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/035-an-entity-drawn-starting-on-another-s-end-shares.md"
+    },
+    {
+      "number": 36,
+      "id": "G36",
+      "title": "A new sketch point once could not be selected, and it did not happen again",
+      "always": false,
+      "members": [
+        "ISketchPoint.Select4"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/036-a-new-sketch-point-once-could-not-be-selected.md"
+    },
+    {
+      "number": 37,
+      "id": "G37",
+      "title": "From a sub-feature, `GetNextFeature` walks on through the main tree",
+      "always": false,
+      "members": [
+        "GetNextFeature",
+        "IFeature.GetFirstSubFeature",
+        "IFeature.GetNextSubFeature"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/037-from-a-sub-feature-getnextfeature-walks-on.md"
+    },
+    {
+      "number": 38,
+      "id": "G38",
+      "title": "With two centrelines in a sketch, the revolve axis has to be selected, at mark 16",
+      "always": false,
+      "members": [
+        "IFeatureManager.FeatureRevolve2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/038-with-two-centrelines-in-a-sketch-the-revolve.md"
+    },
+    {
+      "number": 39,
+      "id": "G39",
+      "title": "`IMathUtility.CreateTransform` is \"Member not found\" to late binding",
+      "always": false,
+      "members": [
+        "IMathUtility.CreateTransform"
+      ],
+      "languages": [
+        "pywin32",
+        "late-bound"
+      ],
+      "path": "gotchas/039-imathutility-createtransform-is-member-not-found.md"
+    },
+    {
+      "number": 40,
+      "id": "G40",
+      "title": "Interference detection: three `Get` members are properties, `Done` is a method",
+      "always": false,
+      "members": [
+        "Done",
+        "GetInterferenceCount",
+        "GetInterferences",
+        "IInterference.Volume"
+      ],
+      "languages": [
+        "pywin32",
+        "late-bound"
+      ],
+      "path": "gotchas/040-interference-detection-three-get-members-are.md"
+    },
+    {
+      "number": 41,
+      "id": "G41",
+      "title": "`AddComponent5` does not put the part's origin at the point you give",
+      "always": false,
+      "members": [
+        "AddComponent5"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/041-addcomponent5-does-not-put-the-part-s-origin-at.md"
+    },
+    {
+      "number": 42,
+      "id": "G42",
+      "title": "A point-to-plane distance mate is measured along the plane's normal",
+      "always": false,
+      "members": [
+        "AddMate5"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/042-a-point-to-plane-distance-mate-is-measured-along.md"
+    },
+    {
+      "number": 43,
+      "id": "G43",
+      "title": "An angle dimension on the Top plane: give its placement point in model space",
+      "always": false,
+      "members": [
+        "IModelDoc2.AddDimension2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/043-an-angle-dimension-on-the-top-plane-give-its.md"
+    },
+    {
+      "number": 44,
+      "id": "G44",
+      "title": "A Move/Copy Body turn records no dimension, so no global can drive it",
+      "always": false,
+      "members": [
+        "IFeatureManager.InsertMoveCopyBody2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/044-a-move-copy-body-turn-records-no-dimension-so-no.md"
+    },
+    {
+      "number": 45,
+      "id": "G45",
+      "title": "A sweep's twist sign is ignored: the other hand is `D1ReverseTwistDir`",
+      "always": false,
+      "members": [
+        "D1ReverseTwistDir",
+        "IFeatureManager.InsertProtrusionSwept4",
+        "InsertCutSwept5"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/045-a-sweep-s-twist-sign-is-ignored-the-other-hand.md"
+    },
+    {
+      "number": 46,
+      "id": "G46",
+      "title": "`arctan` is refused; the inverse tangent is `atn`",
+      "always": false,
+      "members": [
+        "IEquationMgr.Add2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/046-arctan-is-refused-the-inverse-tangent-is-atn.md"
+    },
+    {
+      "number": 47,
+      "id": "G47",
+      "title": "Mirroring a body: the body goes at mark 256, and a wrong mark returns `None`",
+      "always": false,
+      "members": [
+        "IFeatureManager.InsertMirrorFeature2",
+        "IBody2.Select2",
+        "ISelectionMgr.CreateSelectData"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/047-mirroring-a-body-the-body-goes-at-mark-256-and-a.md"
+    },
+    {
+      "number": 48,
+      "id": "G48",
+      "title": "Twisted and patterned spline cuts weigh close to the arithmetic, not exactly",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/048-twisted-and-patterned-spline-cuts-weigh-close-to.md"
+    },
+    {
+      "number": 49,
+      "id": "G49",
+      "title": "Deleting a composite curve deletes the loft built on it",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/049-deleting-a-composite-curve-deletes-the-loft.md"
+    },
+    {
+      "number": 50,
+      "id": "G50",
+      "title": "The order guides are picked in can change the loft",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/050-the-order-guides-are-picked-in-can-change-the.md"
+    },
+    {
+      "number": 51,
+      "id": "G51",
+      "title": "Clearing the selection during a user's pick crashed SolidWorks",
+      "always": false,
+      "members": [
+        "IModelDoc2.ClearSelection2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/051-clearing-the-selection-during-a-user-s-pick.md"
+    },
+    {
+      "number": 52,
+      "id": "G52",
+      "title": "Guides too close to a sharp corner break a loft, sometimes silently",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/052-guides-too-close-to-a-sharp-corner-break-a-loft.md"
+    },
+    {
+      "number": 53,
+      "id": "G53",
+      "title": "A curve file with near-duplicate points is refused",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/053-a-curve-file-with-near-duplicate-points-is.md"
+    },
+    {
+      "number": 54,
+      "id": "G54",
+      "title": "Walking the feature tree every second makes SolidWorks stutter",
+      "always": false,
+      "members": [
+        "FirstFeature",
+        "GetNextFeature"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/054-walking-the-feature-tree-every-second-makes.md"
+    },
+    {
+      "number": 55,
+      "id": "G55",
+      "title": "A zero-argument member that returns nothing *or an array* comes back uncalled",
+      "always": false,
+      "members": [
+        "ReleaseSelectionAccess",
+        "IBody2.GetEdges",
+        "IFace2.GetTessTriangles",
+        "IAssemblyDoc.FixComponent",
+        "IMassProperty.AddBodies",
+        "IModelDocExtension.DeleteDisplayStateSpecificRenderMaterial",
+        "IModelDocExtension.CreateBalloonOptions",
+        "IEdge.GetCurveParams2",
+        "IModelDoc2.EditRebuild3",
+        "INote.GetBalloonStyle",
+        "IMeasure.Calculate",
+        "ISldWorks.ExitApp"
+      ],
+      "languages": [
+        "pywin32"
+      ],
+      "path": "gotchas/055-a-zero-argument-member-that-returns-nothing-or.md"
+    },
+    {
+      "number": 56,
+      "id": "G56",
+      "title": "Reloading a curve is charged for the whole tree below it",
+      "always": false,
+      "members": [
+        "IFeature.ModifyDefinition",
+        "LoadPointsFromFile",
+        "ISldWorks.CommandInProgress",
+        "IFeatureManager.EditRollback"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/056-reloading-a-curve-is-charged-for-the-whole-tree.md"
+    },
+    {
+      "number": 57,
+      "id": "G57",
+      "title": "`EditRollback` to the previous position answers True and moves nothing",
+      "always": false,
+      "members": [
+        "IFeatureManager.EditRollback",
+        "IFeatureManager.GetRollbackBarPosition"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/057-editrollback-to-the-previous-position-answers.md"
+    },
+    {
+      "number": 58,
+      "id": "G58",
+      "title": "`EditRebuild3` returns False whenever anything in the part is in error",
+      "always": false,
+      "members": [
+        "EditRebuild3",
+        "ForceRebuild3"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/058-editrebuild3-returns-false-whenever-anything-in.md"
+    },
+    {
+      "number": 59,
+      "id": "G59",
+      "title": "`AccessSelections` rolls the tree back, and the release that undoes it never ran",
+      "always": false,
+      "members": [
+        "AccessSelections",
+        "ReleaseSelectionAccess"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/059-accessselections-rolls-the-tree-back-and-the.md"
+    },
+    {
+      "number": 60,
+      "id": "G60",
+      "title": "A planar cap can span a sliver instead of the end, and answer True",
+      "always": false,
+      "members": [
+        "IModelDoc2.InsertPlanarRefSurface"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/060-a-planar-cap-can-span-a-sliver-instead-of-the.md"
+    },
+    {
+      "number": 61,
+      "id": "G61",
+      "title": "A knit asked for a solid can sew a sheet and still make a feature",
+      "always": false,
+      "members": [
+        "IFeatureManager.InsertSewRefSurface"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/061-a-knit-asked-for-a-solid-can-sew-a-sheet-and.md"
+    },
+    {
+      "number": 62,
+      "id": "G62",
+      "title": "Suppressing one feature suppresses what is built on it, and unsuppressing does not undo it",
+      "always": true,
+      "members": [
+        "IFeature.SetSuppression2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/062-suppressing-one-feature-suppresses-what-is-built.md"
+    },
+    {
+      "number": 63,
+      "id": "G63",
+      "title": "A six-decimal curve file can make a flat loft end \"3D\", and the solid loft is refused",
+      "always": false,
+      "members": [
+        "InsertProtrusionBlend2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/063-a-six-decimal-curve-file-can-make-a-flat-loft.md"
+    },
+    {
+      "number": 64,
+      "id": "G64",
+      "title": "Guides that land on each section's nearest point zigzag, and two of them refuse the loft",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/064-guides-that-land-on-each-section-s-nearest-point.md"
+    },
+    {
+      "number": 65,
+      "id": "G65",
+      "title": "A round nose cut into two curves comes out a wedge",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/065-a-round-nose-cut-into-two-curves-comes-out-a.md"
+    },
+    {
+      "number": 66,
+      "id": "G66",
+      "title": "Diffing the tree around every insert costs two full listings",
+      "always": false,
+      "members": [
+        "InsertCurveFile",
+        "IModelDocExtension.GetLastFeatureAdded"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/066-diffing-the-tree-around-every-insert-costs-two.md"
+    },
+    {
+      "number": 67,
+      "id": "G67",
+      "title": "Deleting a surface loft deletes the caps built on its edges",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/067-deleting-a-surface-loft-deletes-the-caps-built.md"
+    },
+    {
+      "number": 68,
+      "id": "G68",
+      "title": "A surface loft has no feature data",
+      "always": false,
+      "members": [
+        "IFeature.GetDefinition"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/068-a-surface-loft-has-no-feature-data.md"
+    },
+    {
+      "number": 69,
+      "id": "G69",
+      "title": "The journal records a program's calls, but not all of them, and not always as made",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/069-the-journal-records-a-program-s-calls-but-not.md"
+    },
+    {
+      "number": 70,
+      "id": "G70",
+      "title": "`DeleteDisplayStateSpecificRenderMaterial` wants two arrays, and says only `False`",
+      "always": false,
+      "members": [
+        "IModelDocExtension.DeleteDisplayStateSpecificRenderMaterial",
+        "IRenderMaterial.GetMaterialIds"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/070-deletedisplaystatespecificrendermaterial-wants.md"
+    },
+    {
+      "number": 71,
+      "id": "G71",
+      "title": "Zeroing an appearance's transparency does not make the part look like the others",
+      "always": false,
+      "members": [
+        "GetRenderMaterialsCount2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/071-zeroing-an-appearance-s-transparency-does-not.md"
+    },
+    {
+      "number": 72,
+      "id": "G72",
+      "title": "`hh.exe -decompile` made nothing from the `.chm`'s install path, and said nothing",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/072-hh-exe-decompile-made-nothing-from-the-chm-s.md"
+    },
+    {
+      "number": 73,
+      "id": "G73",
+      "title": "Placing a component and rebuilding ignores gear mates",
+      "always": false,
+      "members": [
+        "Transform2",
+        "EditRebuild3"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/073-placing-a-component-and-rebuilding-ignores-gear.md"
+    },
+    {
+      "number": 74,
+      "id": "G74",
+      "title": "`swcom.connect()` refuses SolidWorks 2024 and 2025",
+      "always": false,
+      "members": [],
+      "languages": [
+        "pywin32"
+      ],
+      "path": "gotchas/074-swcom-connect-refuses-solidworks-2024-and-2025.md"
+    },
+    {
+      "number": 75,
+      "id": "G75",
+      "title": "A gear mate's numerator belongs to its *second* entity, and is not the geometry",
+      "always": false,
+      "members": [
+        "GearRatioNumerator",
+        "IMate2.MateEntity",
+        "EntityParams"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/075-a-gear-mate-s-numerator-belongs-to-its-second.md"
+    },
+    {
+      "number": 76,
+      "id": "G76",
+      "title": "Mate folders do not contain their mates",
+      "always": false,
+      "members": [
+        "GetFirstSubFeature",
+        "GetNextSubFeature",
+        "IMate2.Type"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/076-mate-folders-do-not-contain-their-mates.md"
+    },
+    {
+      "number": 77,
+      "id": "G77",
+      "title": "A drawing's first model view rescales the sheet",
+      "always": false,
+      "members": [
+        "IDrawingDoc.CreateDrawViewFromModelView3",
+        "ISheet.SetScale"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/077-a-drawing-s-first-model-view-rescales-the-sheet.md"
+    },
+    {
+      "number": 78,
+      "id": "G78",
+      "title": "A BOM inserted from code lists nothing until its configuration is switched on",
+      "always": false,
+      "members": [
+        "IView.InsertBomTable5",
+        "SetConfigurations"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/078-a-bom-inserted-from-code-lists-nothing-until-its.md"
+    },
+    {
+      "number": 79,
+      "id": "G79",
+      "title": "`InsertNote` puts the note in the active view",
+      "always": false,
+      "members": [
+        "IModelDoc2.InsertNote"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/079-insertnote-puts-the-note-in-the-active-view.md"
+    },
+    {
+      "number": 80,
+      "id": "G80",
+      "title": "`IAnnotation.Select3` then `EditDelete` deleted nothing",
+      "always": false,
+      "members": [
+        "IAnnotation.Select3",
+        "EditDelete"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/080-iannotation-select3-then-editdelete-deleted.md"
+    },
+    {
+      "number": 81,
+      "id": "G81",
+      "title": "Auto-balloon skips parts it cannot see, without saying so",
+      "always": false,
+      "members": [
+        "IDrawingDoc.AutoBalloon5"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/081-auto-balloon-skips-parts-it-cannot-see-without.md"
+    },
+    {
+      "number": 82,
+      "id": "G82",
+      "title": "A drawing view can name a configuration and draw another one's pose",
+      "always": false,
+      "members": [
+        "ReferencedConfiguration"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/082-a-drawing-view-can-name-a-configuration-and-draw.md"
+    },
+    {
+      "number": 83,
+      "id": "G83",
+      "title": "Component positions are not stored per configuration",
+      "always": false,
+      "members": [
+        "AddMate5",
+        "Transform2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/083-component-positions-are-not-stored-per.md"
+    },
+    {
+      "number": 84,
+      "id": "G84",
+      "title": "Deleted smart-explode-line segments come back",
+      "always": false,
+      "members": [
+        "EditDelete",
+        "InsertExplodeLineSketch"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/084-deleted-smart-explode-line-segments-come-back.md"
+    },
+    {
+      "number": 85,
+      "id": "G85",
+      "title": "Explode lines are hidden in a drawing view that already existed",
+      "always": false,
+      "members": [
+        "UnblankSketch"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/085-explode-lines-are-hidden-in-a-drawing-view-that.md"
+    },
+    {
+      "number": 86,
+      "id": "G86",
+      "title": "A drawing view's `Position` is its outline's centre, not its model's",
+      "always": false,
+      "members": [
+        "IView.Position"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/086-a-drawing-view-s-position-is-its-outline-s.md"
+    },
+    {
+      "number": 87,
+      "id": "G87",
+      "title": "A line sketched in a drawing view uses the view's coordinates",
+      "always": false,
+      "members": [
+        "ISketchManager.CreateLine"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/087-a-line-sketched-in-a-drawing-view-uses-the-view.md"
+    },
+    {
+      "number": 88,
+      "id": "G88",
+      "title": "A section view can come out upside down, and a diagonal cut stays tilted",
+      "always": false,
+      "members": [
+        "CreateSectionViewAt5"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/088-a-section-view-can-come-out-upside-down-and-a.md"
+    },
+    {
+      "number": 89,
+      "id": "G89",
+      "title": "Silhouette edges are unusable through late binding",
+      "always": false,
+      "members": [
+        "IView.GetVisibleEntities2",
+        "GetCurve",
+        "Select2"
+      ],
+      "languages": [
+        "pywin32",
+        "late-bound"
+      ],
+      "path": "gotchas/089-silhouette-edges-are-unusable-through-late.md"
+    },
+    {
+      "number": 90,
+      "id": "G90",
+      "title": "A Toolbox-flagged component reloads from the Toolbox library",
+      "always": false,
+      "members": [
+        "ReplaceComponents2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/090-a-toolbox-flagged-component-reloads-from-the.md"
+    },
+    {
+      "number": 91,
+      "id": "G91",
+      "title": "Editing a BOM cell writes to the part's property",
+      "always": false,
+      "members": [
+        "Text"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/091-editing-a-bom-cell-writes-to-the-part-s-property.md"
+    },
+    {
+      "number": 92,
+      "id": "G92",
+      "title": "Auto-balloons can show each part's quantity, with no option to turn it off",
+      "always": false,
+      "members": [
+        "AutoBalloon5",
+        "CreateBalloonOptions"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/092-auto-balloons-can-show-each-part-s-quantity-with.md"
+    },
+    {
+      "number": 93,
+      "id": "G93",
+      "title": "`ForceRebuild3(False)` on an assembly marks every component modified",
+      "always": true,
+      "members": [
+        "ForceRebuild3"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/093-forcerebuild3-false-on-an-assembly-marks-every.md"
+    },
+    {
+      "number": 94,
+      "id": "G94",
+      "title": "Two reference axes cannot be mated concentric",
+      "always": false,
+      "members": [
+        "AddMate5"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/094-two-reference-axes-cannot-be-mated-concentric.md"
+    },
+    {
+      "number": 95,
+      "id": "G95",
+      "title": "An over-defining mate is still made, and the rebuild still says True",
+      "always": false,
+      "members": [
+        "AddMate5",
+        "ForceRebuild3",
+        "GetErrorCode2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/095-an-over-defining-mate-is-still-made-and-the.md"
+    },
+    {
+      "number": 96,
+      "id": "G96",
+      "title": "A gear mate's ratio goes in first-selection-first and comes back reversed",
+      "always": false,
+      "members": [
+        "AddMate5",
+        "GearRatioNumerator",
+        "MateEntity"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/096-a-gear-mate-s-ratio-goes-in-first-selection.md"
+    },
+    {
+      "number": 97,
+      "id": "G97",
+      "title": "On SolidWorks 2024, a gear mate changed by `ModifyDefinition` strands its assembly",
+      "always": false,
+      "members": [
+        "IFeature.ModifyDefinition",
+        "CloseDoc"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/097-on-solidworks-2024-a-gear-mate-changed-by.md"
+    },
+    {
+      "number": 98,
+      "id": "G98",
+      "title": "A put on a locked or gear-mated gear moves that gear alone, silently",
+      "always": false,
+      "members": [
+        "Transform2",
+        "SetTransformAndSolve2",
+        "Drag",
+        "DragAsUI"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/098-a-put-on-a-locked-or-gear-mated-gear-moves-that.md"
+    },
+    {
+      "number": 99,
+      "id": "G99",
+      "title": "`AddComponent5` of a part that is not open returns `None`",
+      "always": false,
+      "members": [
+        "AddComponent5",
+        "OpenDoc6"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/099-addcomponent5-of-a-part-that-is-not-open-returns.md"
+    },
+    {
+      "number": 100,
+      "id": "G100",
+      "title": "Closing an assembly can raise a modal dialog that hangs the script",
+      "always": true,
+      "members": [
+        "CloseDoc",
+        "QuitDoc"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/100-closing-an-assembly-can-raise-a-modal-dialog.md"
+    },
+    {
+      "number": 101,
+      "id": "G101",
+      "title": "The drag operator did not turn a gear train held by axis-coincident mates",
+      "always": false,
+      "members": [
+        "Drag"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/101-the-drag-operator-did-not-turn-a-gear-train-held.md"
+    },
+    {
+      "number": 102,
+      "id": "G102",
+      "title": "Forcing lightweight needs two flags, and the CAM add-in then blocks the open",
+      "always": false,
+      "members": [
+        "OpenDoc6"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/102-forcing-lightweight-needs-two-flags-and-the-cam.md"
+    },
+    {
+      "number": 103,
+      "id": "G103",
+      "title": "A suppressed mate reads error code 0, and unsuppressing an unsuppressed mate marks the assembly",
+      "always": false,
+      "members": [
+        "GetErrorCode2",
+        "SetSuppression2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/103-a-suppressed-mate-reads-error-code-0-and.md"
+    },
+    {
+      "number": 104,
+      "id": "G104",
+      "title": "\"No interference\" after a gear change proves nothing without a half-pitch control",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/104-no-interference-after-a-gear-change-proves.md"
+    },
+    {
+      "number": 105,
+      "id": "G105",
+      "title": "The `Flip` a toothed ring gear's gear mate needs differs between versions; read the mate back",
+      "always": false,
+      "members": [
+        "AddMate5",
+        "IGearMateFeatureData.Reverse",
+        "IMateEntity2.EntityParams"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/105-the-flip-a-toothed-ring-gear-s-gear-mate-needs.md"
+    },
+    {
+      "number": 106,
+      "id": "G106",
+      "title": "A gear mate between non-parallel axes: the `Flip` does not tell its sense; read it back",
+      "always": false,
+      "members": [
+        "AddMate5",
+        "IMateEntity2.EntityParams",
+        "IGearMateFeatureData.Reverse"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/106-a-gear-mate-between-non-parallel-axes-the-flip.md"
+    },
+    {
+      "number": 107,
+      "id": "G107",
+      "title": "A gear mate holds its ratio relative to the line between the axes, not the fixed frame",
+      "always": false,
+      "members": [],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/107-a-gear-mate-holds-its-ratio-relative-to-the-line.md"
+    },
+    {
+      "number": 108,
+      "id": "G108",
+      "title": "Component handles go stale after every `AddConfiguration2` and `ShowConfiguration2`, silently",
+      "always": true,
+      "members": [
+        "AddConfiguration2",
+        "ShowConfiguration2",
+        "Transform2",
+        "IsFixed"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/108-component-handles-go-stale-after-every.md"
+    },
+    {
+      "number": 109,
+      "id": "G109",
+      "title": "`SetSuppression2` per configuration straight after `AddConfiguration2` misreports both ways",
+      "always": false,
+      "members": [
+        "IFeature.SetSuppression2",
+        "AddConfiguration2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/109-setsuppression2-per-configuration-straight-after.md"
+    },
+    {
+      "number": 110,
+      "id": "G110",
+      "title": "A dimension's value per configuration: `GetSystemValue3` reads 0 until set, and `SystemValue` ignores the configuration",
+      "always": false,
+      "members": [
+        "GetSystemValue3",
+        "IDimension.SetSystemValue3",
+        "IDimension.SystemValue",
+        "IEquationMgr.Add2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/110-a-dimension-s-value-per-configuration.md"
+    },
+    {
+      "number": 111,
+      "id": "G111",
+      "title": "A section view's excluded components can be ignored at creation",
+      "always": false,
+      "members": [
+        "CreateSectionViewAt5",
+        "IView.GetSection",
+        "SetExcludedComponents"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/111-a-section-view-s-excluded-components-can-be.md"
+    },
+    {
+      "number": 112,
+      "id": "G112",
+      "title": "Section hatching is missing until the drawing is force-rebuilt",
+      "always": false,
+      "members": [
+        "ForceRebuild3",
+        "EditRebuild3"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/112-section-hatching-is-missing-until-the-drawing-is.md"
+    },
+    {
+      "number": 113,
+      "id": "G113",
+      "title": "Mate entities read before a configuration switch go stale",
+      "always": false,
+      "members": [
+        "ShowConfiguration2",
+        "AddMate5"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/113-mate-entities-read-before-a-configuration-switch.md"
+    },
+    {
+      "number": 114,
+      "id": "G114",
+      "title": "`ShowConfiguration2` can raise and still switch",
+      "always": false,
+      "members": [
+        "ShowConfiguration2",
+        "ForceRebuild3"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/114-showconfiguration2-can-raise-and-still-switch.md"
+    },
+    {
+      "number": 115,
+      "id": "G115",
+      "title": "In-context geometry is per part configuration, not per assembly configuration",
+      "always": false,
+      "members": [
+        "ReferencedConfiguration"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/115-in-context-geometry-is-per-part-configuration.md"
+    },
+    {
+      "number": 116,
+      "id": "G116",
+      "title": "Equation calls refuse a virtual in-context part, but `Delete` does not",
+      "always": false,
+      "members": [
+        "Delete",
+        "Add2",
+        "Add3",
+        "SetEquationAndConfigurationOption"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/116-equation-calls-refuse-a-virtual-in-context-part.md"
+    }
+  ]
+}

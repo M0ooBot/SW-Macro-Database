@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: surfacing-03-how-a-loft-fills-between-profiles
 title: How SolidWorks shapes a loft between two profiles, and how its accuracy scaled with the number of guides
+answers: "If I loft two profiles along guide curves, how far does SolidWorks' surface stray from the shape I meant, and how does that change as I add guides?"
+keywords: [loft accuracy, loft deviation, guide curves, number of guides, accuracy versus guides, guide spacing, sag between guides, linear blend, chordwise stretch, section scaling, taper, sharp corner, guide near corner, loft fails, dome, STEP measurement, 0.05 mm, sliver face, extra face, one guide too many, solid loft refused, drop a guide, 2% guide, tip loop, end loop edge count, many profiles, loft through sections, sections and guides, guide zigzag, nearest point, guide meets every section, point number guide, inserted guide point, nose cut into two curves, zero curvature at spline end, wedge nose, six decimals, not planar]
+api: []
+language: []
 status: verified
 verified_on: SolidWorks 2026
-language: [n/a]
-api: []
-keywords: [loft accuracy, loft deviation, guide curves, number of guides, accuracy versus guides, guide spacing, sag between guides, linear blend, chordwise stretch, section scaling, taper, sharp corner, guide near corner, loft fails, dome, STEP measurement, 0.05 mm, sliver face, extra face, one guide too many, solid loft refused, drop a guide, 2% guide, tip loop, end loop edge count, many profiles, loft through sections, sections and guides, guide zigzag, nearest point, guide meets every section, point number guide, inserted guide point, nose cut into two curves, zero curvature at spline end, wedge nose, six decimals, not planar]
-answers: "If I loft two profiles along guide curves, how far does SolidWorks' surface stray from the shape I meant, and how does that change as I add guides?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # How SolidWorks shapes a loft between two profiles

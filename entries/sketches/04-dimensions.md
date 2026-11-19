@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: sketches-04-dimensions
 title: Add a dimension and set its value
+answers: "How do I add a driving dimension from a macro and set its value?"
+keywords: [AddDimension2, SystemValue, swDistanceDim, swAngularDim, dimension placement, horizontal vertical, circle diameter, arc radius, GetDimension2, FullName, swInputDimValOnCreate, dimension dialog]
+api: [IModelDocExtension.AddDimension2, IModelDoc2.AddDimension2, IDisplayDimension.Dimension, IDisplayDimension.GetDimension2, IDimension.SystemValue, IDimension.Name, IDimension.FullName]
+language: [vba, python]
 status: partly-verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [vba, python]
-api: [IModelDocExtension.AddDimension2, IModelDoc2.AddDimension2, IDisplayDimension.Dimension, IDisplayDimension.GetDimension2, IDimension.SystemValue, IDimension.Name, IDimension.FullName]
-keywords: [AddDimension2, SystemValue, swDistanceDim, swAngularDim, dimension placement, horizontal vertical, circle diameter, arc radius, GetDimension2, FullName, swInputDimValOnCreate, dimension dialog]
-answers: "How do I add a driving dimension from a macro and set its value?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Add a dimension and set its value

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: surfacing-04-cap-a-refused-loft-into-a-solid
 title: Get a solid out of a loft SolidWorks refuses, by capping the surface and knitting it
+answers: "SolidWorks refuses my solid loft but makes the surface — how do I get a solid out of it from code?"
+keywords: [InsertProtrusionBlend2 returns Nothing, six decimals, end section not planar, replace capped loft, delete order, No feature called, loft refused, silent refusal, InsertPlanarRefSurface, planar surface cap, InsertSewRefSurface, knit, sew, SewRefSurface, PlanarSurface, TryToFormSolid, SURFACEBODY, Select4, CreateSelectData, GetEdges, GetCurveParams2, end loop, sliver face, cap area check, solid body count, InsertFillSurface2, VT_ARRAY, composite curve as boundary]
+api: [IModelDoc2.InsertLoftRefSurface2, IModelDoc2.InsertPlanarRefSurface, IFeatureManager.InsertSewRefSurface, IFeatureManager.InsertFillSurface2, IEntity.Select4, ISelectionMgr.CreateSelectData, IModelDocExtension.SelectByID2, IFeature.GetFaces, IFace2.GetBody, IFace2.GetArea, IBody2.GetEdges, IEdge.GetCurveParams2, IPartDoc.GetBodies2, IBody2.GetMassProperties]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 SP0.0 (revision 34.0.0)
-language: [python]
-api: [IModelDoc2.InsertLoftRefSurface2, IModelDoc2.InsertPlanarRefSurface, IFeatureManager.InsertSewRefSurface, IFeatureManager.InsertFillSurface2, IEntity.Select4, ISelectionMgr.CreateSelectData, IModelDocExtension.SelectByID2, IFeature.GetFaces, IFace2.GetBody, IFace2.GetArea, IBody2.GetEdges, IEdge.GetCurveParams2, IPartDoc.GetBodies2, IBody2.GetMassProperties]
-keywords: [InsertProtrusionBlend2 returns Nothing, six decimals, end section not planar, replace capped loft, delete order, No feature called, loft refused, silent refusal, InsertPlanarRefSurface, planar surface cap, InsertSewRefSurface, knit, sew, SewRefSurface, PlanarSurface, TryToFormSolid, SURFACEBODY, Select4, CreateSelectData, GetEdges, GetCurveParams2, end loop, sliver face, cap area check, solid body count, InsertFillSurface2, VT_ARRAY, composite curve as boundary]
-answers: "SolidWorks refuses my solid loft but makes the surface — how do I get a solid out of it from code?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Cap a refused loft into a solid

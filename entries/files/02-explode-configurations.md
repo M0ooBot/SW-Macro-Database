@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: files-02-explode-configurations
 title: Write one file per configuration out of a configurable part
+answers: "How do I turn a part with many configurations into one standalone file per configuration?"
+keywords: [configuration, design table, ShowConfiguration2, DeleteConfiguration2, DeleteDesignTable, derived configuration, save configuration as part, one file per length, explode]
+api: [ISldWorks.GetConfigurationNames, IModelDoc2.ShowConfiguration2, IModelDoc2.DeleteDesignTable, IModelDoc2.DeleteConfiguration2, IModelDoc2.GetConfigurationNames, IModelDoc2.Save3, IConfigurationManager.ActiveConfiguration]
+language: [vba, csharp-standalone]
 status: verified
 verified_on: SolidWorks 2026 SP1.1
-language: [vba, csharp]
-api: [ISldWorks.GetConfigurationNames, IModelDoc2.ShowConfiguration2, IModelDoc2.DeleteDesignTable, IModelDoc2.DeleteConfiguration2, IModelDoc2.GetConfigurationNames, IModelDoc2.Save3, IConfigurationManager.ActiveConfiguration]
-keywords: [configuration, design table, ShowConfiguration2, DeleteConfiguration2, DeleteDesignTable, derived configuration, save configuration as part, one file per length, explode]
-answers: "How do I turn a part with many configurations into one standalone file per configuration?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Write one file per configuration out of a configurable part

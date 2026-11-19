@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-10-driving-from-outside-windows
 title: Driving Windows SolidWorks from WSL or another host
+answers: "My code runs on Linux or a Mac. How do I still drive SolidWorks?"
+keywords: [wsl, cross platform, cscript, wslpath, path translation, remote drive, python.exe, windows python from wsl, pywin32 from wsl, ext4, \\wsl.localhost, UNC path, carriage return, tr -d]
+api: [cscript, wslpath]
+language: [shell, typescript, python]
 status: verified
 verified_on: WSL2 to SolidWorks 2026
-language: [shell, typescript, python]
-api: [cscript, wslpath]
-keywords: [wsl, cross platform, cscript, wslpath, path translation, remote drive, python.exe, windows python from wsl, pywin32 from wsl, ext4, \\wsl.localhost, UNC path, carriage return, tr -d]
-answers: "My code runs on Linux or a Mac. How do I still drive SolidWorks?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Driving Windows SolidWorks from WSL or another host

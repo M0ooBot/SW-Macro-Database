@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-10-mass-properties-as-an-oracle
 title: Use the part's volume to check that a feature did what you meant
+answers: "How do I check from code that a feature actually changed the solid the way I intended?"
+keywords: [CreateMassProperty, mass property, Volume, cubic metres, oracle, verify feature, test geometry, cut removed nothing, did it work, regression check, CenterOfMass, centre of mass, Cavalieri, twin, twisted sweep, spline, tolerance, fresh build]
+api: [IModelDocExtension.CreateMassProperty, IMassProperty.Volume, IMassProperty.CenterOfMass, IModelDoc2.ForceRebuild3]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IModelDocExtension.CreateMassProperty, IMassProperty.Volume, IMassProperty.CenterOfMass, IModelDoc2.ForceRebuild3]
-keywords: [CreateMassProperty, mass property, Volume, cubic metres, oracle, verify feature, test geometry, cut removed nothing, did it work, regression check, CenterOfMass, centre of mass, Cavalieri, twin, twisted sweep, spline, tolerance, fresh build]
-answers: "How do I check from code that a feature actually changed the solid the way I intended?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Use the part's volume to check that a feature did what you meant

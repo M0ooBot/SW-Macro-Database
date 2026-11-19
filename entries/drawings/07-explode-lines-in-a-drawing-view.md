@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: drawings-07-explode-lines-in-a-drawing-view
 title: Show an assembly's explode lines in a drawing view, and what cannot be removed from them
+answers: "My assembly has explode lines but the drawing's exploded view doesn't show them — how do I show them from code, and can I delete some of the segments?"
+keywords: [explode lines, explode line sketch, smart explode lines, 3DExplode1, ExplodeLineProfileFeature, exploded view drawing, dashed lines exploded, trail lines, explode lines not showing in drawing, UnblankSketch, show sketch in drawing view, delete explode line segment, explode lines come back, dissolve smart explode lines, RunCommand]
+api: [IModelDocExtension.SelectByID2, IModelDoc2.UnblankSketch, IView.RootDrawingComponent, ISelectionMgr.GetSelectedObjectType3, ISketchManager.InsertExplodeLineSketch, ISketch.GetSketchSegments, ISldWorks.RunCommand]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IModelDocExtension.SelectByID2, IModelDoc2.UnblankSketch, IView.RootDrawingComponent, ISelectionMgr.GetSelectedObjectType3, ISketchManager.InsertExplodeLineSketch, ISketch.GetSketchSegments, ISldWorks.RunCommand]
-keywords: [explode lines, explode line sketch, smart explode lines, 3DExplode1, ExplodeLineProfileFeature, exploded view drawing, dashed lines exploded, trail lines, explode lines not showing in drawing, UnblankSketch, show sketch in drawing view, delete explode line segment, explode lines come back, dissolve smart explode lines, RunCommand]
-answers: "My assembly has explode lines but the drawing's exploded view doesn't show them — how do I show them from code, and can I delete some of the segments?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Show an assembly's explode lines in a drawing view

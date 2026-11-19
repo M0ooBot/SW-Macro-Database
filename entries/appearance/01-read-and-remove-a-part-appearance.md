@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: appearance-01-read-and-remove-a-part-appearance
 title: Read a part's appearance, and remove one applied at the part level
+answers: "Why does my whole part look transparent or glossy, and how do I find and remove the appearance doing it from code?"
+keywords: [appearance, transparent, transparency, see-through, glossy, shiny, reflective, reflectivity, specular, color.p2m, p2m, render material, RenderMaterial, MaterialPropertyValues, remove appearance, delete appearance, DisplayManager, display state, swDisplayStateOpts_e, swThisDisplayState, swViewDisplayMode_e, ShadedWithEdges, GetMaterialIds, DeleteDisplayStateSpecificRenderMaterial, two arrays, returns False, bool object is not callable]
+api: [IModelDoc2.MaterialPropertyValues, IModelDocExtension.GetRenderMaterials2, IModelDocExtension.GetRenderMaterialsCount2, IRenderMaterial.FileName, IRenderMaterial.Specular, IRenderMaterial.Reflectivity, IRenderMaterial.Transparency, IRenderMaterial.GetEntitiesCount, IRenderMaterial.GetMaterialIds, IRenderMaterial.MaterialID, IModelDocExtension.DeleteDisplayStateSpecificRenderMaterial, IBody2.MaterialPropertyValues2, IModelView.DisplayMode]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (revision 32.5.0)
-language: [python]
-api: [IModelDoc2.MaterialPropertyValues, IModelDocExtension.GetRenderMaterials2, IModelDocExtension.GetRenderMaterialsCount2, IRenderMaterial.FileName, IRenderMaterial.Specular, IRenderMaterial.Reflectivity, IRenderMaterial.Transparency, IRenderMaterial.GetEntitiesCount, IRenderMaterial.GetMaterialIds, IRenderMaterial.MaterialID, IModelDocExtension.DeleteDisplayStateSpecificRenderMaterial, IBody2.MaterialPropertyValues2, IModelView.DisplayMode]
-keywords: [appearance, transparent, transparency, see-through, glossy, shiny, reflective, reflectivity, specular, color.p2m, p2m, render material, RenderMaterial, MaterialPropertyValues, remove appearance, delete appearance, DisplayManager, display state, swDisplayStateOpts_e, swThisDisplayState, swViewDisplayMode_e, ShadedWithEdges, GetMaterialIds, DeleteDisplayStateSpecificRenderMaterial, two arrays, returns False, bool object is not callable]
-answers: "Why does my whole part look transparent or glossy, and how do I find and remove the appearance doing it from code?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Read a part's appearance, and remove one applied at the part level

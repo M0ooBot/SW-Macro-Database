@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-04-reload-curve-in-place
 title: Refresh a curve's points in place, without breaking what uses it
+answers: "How do I change a curve's geometry without re-picking it in the boundary surface?"
+keywords: [LoadPointsFromFile, ModifyDefinition, GetDefinition, refresh curve, in place, reload, live update, slow reload, 25 seconds per curve, rollback bar]
+api: [IFeature.GetDefinition, IFeature.ModifyDefinition, LoadPointsFromFile, IModelDoc2.ForceRebuild3]
+language: [vbscript, python]
 status: verified
 verified_on: SolidWorks 2026
-language: [vbscript, python]
-api: [IFeature.GetDefinition, IFeature.ModifyDefinition, LoadPointsFromFile, IModelDoc2.ForceRebuild3]
-keywords: [LoadPointsFromFile, ModifyDefinition, GetDefinition, refresh curve, in place, reload, live update, slow reload, 25 seconds per curve, rollback bar]
-answers: "How do I change a curve's geometry without re-picking it in the boundary surface?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Refresh a curve's points in place

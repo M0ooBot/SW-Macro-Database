@@ -1,0 +1,12 @@
+{
+  "id": "YYYY-MM-DD-category-nn-slug-csharp-34",
+  "subject": "category-NN-entry-id, or a script id",
+  "language": "csharp for a recipe or script run, else the entry language that ran",
+  "swRevision": "34.1.1, or null when only the major is known",
+  "major": 34,
+  "date": "YYYY-MM-DD",
+  "method": "smoke, contribution, probe or manual",
+  "result": "pass or fail",
+  "scope": "full or partial",
+  "observed": "What was seen: counts, return values, errors. No paths, user names or file names."
+}

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: drawings-10-general-table
 title: Put a general table on a drawing and fill it from code
+answers: "How do I add a table of my own (not a BOM) to a drawing sheet and write text into its cells?"
+keywords: [general table, InsertTableAnnotation2, data table, gear data table, table text, indexed property put, Text(row, col), DISPATCH_PROPERTYPUT, table font size, CharHeight, column width, row height, swBOMConfigurationAnchorType_e, anchor top left]
+api: [IDrawingDoc.InsertTableAnnotation2, ITableAnnotation.Text, ITableAnnotation.GetTextFormat, ITableAnnotation.SetTextFormat, ITableAnnotation.SetColumnWidth, ITableAnnotation.SetRowHeight, ITableAnnotation.GetRowHeight]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IDrawingDoc.InsertTableAnnotation2, ITableAnnotation.Text, ITableAnnotation.GetTextFormat, ITableAnnotation.SetTextFormat, ITableAnnotation.SetColumnWidth, ITableAnnotation.SetRowHeight, ITableAnnotation.GetRowHeight]
-keywords: [general table, InsertTableAnnotation2, data table, gear data table, table text, indexed property put, Text(row, col), DISPATCH_PROPERTYPUT, table font size, CharHeight, column width, row height, swBOMConfigurationAnchorType_e, anchor top left]
-answers: "How do I add a table of my own (not a BOM) to a drawing sheet and write text into its cells?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Put a general table on a drawing and fill it

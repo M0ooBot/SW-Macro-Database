@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-08-exploded-view-from-code
 title: Build an assembly's exploded view step by step from code, and check each step moved
+answers: "How do I make an exploded view of an assembly from code — which parts move, how far and which way — and confirm each step went where I meant?"
+keywords: [CreateExplodedView, Chain1, explode along shaft axis, isometric overlap, exploded view, explode, explode step, AddExplodeStep2, ShowExploded2, GetExplodedViewNames2, DeleteExplodeStep, GetExplodeStep, explode direction, explode distance, explode along axis, reverse direction, Exploded View1, Chain1, check component moved]
+api: [IAssemblyDoc.GetExplodedViewNames2, IAssemblyDoc.ShowExploded2, IConfiguration.AddExplodeStep2, IConfiguration.GetNumberOfExplodeSteps, IConfiguration.GetExplodeStep, IConfiguration.DeleteExplodeStep, IExplodeStep.Name, IComponent2.Select4, ISelectionMgr.CreateSelectData, IComponent2.Transform2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IAssemblyDoc.GetExplodedViewNames2, IAssemblyDoc.ShowExploded2, IConfiguration.AddExplodeStep2, IConfiguration.GetNumberOfExplodeSteps, IConfiguration.GetExplodeStep, IConfiguration.DeleteExplodeStep, IExplodeStep.Name, IComponent2.Select4, ISelectionMgr.CreateSelectData, IComponent2.Transform2]
-keywords: [CreateExplodedView, Chain1, explode along shaft axis, isometric overlap, exploded view, explode, explode step, AddExplodeStep2, ShowExploded2, GetExplodedViewNames2, DeleteExplodeStep, GetExplodeStep, explode direction, explode distance, explode along axis, reverse direction, Exploded View1, Chain1, check component moved]
-answers: "How do I make an exploded view of an assembly from code — which parts move, how far and which way — and confirm each step went where I meant?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Build an assembly's exploded view step by step from code

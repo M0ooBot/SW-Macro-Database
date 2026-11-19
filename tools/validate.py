@@ -5,13 +5,20 @@
 
 Exits non-zero and lists every problem found. It checks, in order:
 
-  1. every entry, with the same checks tools/build_manifest.py applies, and that
-     the committed manifest.json is exactly what build_manifest.py would write;
+  1. every entry, gotcha, evidence record and ledger row, with the same checks
+     tools/build_manifest.py applies, and that the committed manifest.json,
+     gotchas.json, GOTCHAS.md and API-LEDGER.md are exactly what
+     build_manifest.py would write;
   2. every scripts/<id>/ folder: script.json shape (strict, no unknown keys) and
      a lint of script.csx;
   3. every skills/<name>/ folder: SKILL.md frontmatter, and the template's
      placeholders;
-  4. that the release package builds (into a temp dir, version 0.0.0-ci).
+  4. that the release package builds (into a temp dir, version 0.0.0-ci),
+     and search: the packaged lookup.py, run on the extracted package, passes
+     search-tests.json (match-text vectors and test questions; needs FTS5);
+  5. that the release notes can be written (against the latest v* tag, when
+     the clone has it), so a broken tag workflow shows here, not at release;
+  6. the unit tests in tools/tests/.
 
 Python 3 stdlib only.
 """
@@ -19,28 +26,35 @@ Python 3 stdlib only.
 from __future__ import annotations
 
 import argparse
+import importlib.util
+import io
 import json
 import pathlib
 import re
 import sys
 import tempfile
+import unittest
+import zipfile
 
 import build_manifest
 import build_package
+import evidence as evidence_mod
+import recipes
+import textfile
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
-STATUSES = build_manifest.STATUSES
-EFFECTS = {"read-only", "writes-new-files", "modifies-models"}
-PARAM_TYPES = {"string", "bool", "int", "number", "file", "files", "folder"}
-ROLES = {"targets", "output"}
+STATUSES = build_manifest.CLAIMS
+EFFECTS = recipes.EFFECTS
+PARAM_TYPES = recipes.PARAM_TYPES
+ROLES = recipes.ROLE_NAMES
 
-SCRIPT_KEYS = {"id", "title", "entry", "status", "verified_on", "evidence", "effects",
-               "irreversible", "supportsDryRun", "timeoutMinutes", "params"}
+SCRIPT_KEYS = {"id", "title", "entry", "status", "evidence", "effects", "irreversible",
+               "supportsDryRun", "timeoutMinutes", "openTargets", "params"}
 PARAM_KEYS = {"name", "type", "required", "description", "role", "default"}
 
 KEBAB = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-CAMEL = re.compile(r"^[a-z][A-Za-z0-9]*$")
+CAMEL = recipes.CAMEL
 
 # Scripts run unattended inside someone's SolidWorks session. These are the
 # ways a script can reach outside it, hang it, or hide from the host.
@@ -57,6 +71,13 @@ CSX_FORBIDDEN = [
     ("await", re.compile(r"\bawait\b")),
     ("#r directive", re.compile(r"^\s*#r\s")),
     ("#load directive", re.compile(r"^\s*#load\s")),
+]
+
+# A script with openTargets: true runs on documents the user may have open, so
+# it opens and closes only through Kit.Docs, which never closes what it did not
+# open. These are the direct calls that could.
+CSX_FORBIDDEN_WITH_OPEN_TARGETS = [
+    (name, re.compile(r"\b" + name + r"\b")) for name in ("OpenDoc6", "OpenDoc7", "LoadFile4", "CloseDoc", "QuitDoc")
 ]
 
 
@@ -140,6 +161,9 @@ def check_params(where: str, effects, params) -> list[str]:
     if effects == "modifies-models" and len(roles["targets"]) != 1:
         problems.append(f"{where}: a modifies-models script needs exactly one param with role "
                         f"'targets' (found {len(roles['targets'])})")
+    if effects == "edits-open-document" and (len(roles["targets"]) != 1 or roles["output"]):
+        problems.append(f"{where}: an edits-open-document script needs exactly one param with role "
+                        f"'targets' and none with role 'output' (it saves nothing)")
     if effects == "writes-new-files" and len(roles["output"]) != 1:
         problems.append(f"{where}: a writes-new-files script needs exactly one param with role "
                         f"'output' (found {len(roles['output'])})")
@@ -148,7 +172,7 @@ def check_params(where: str, effects, params) -> list[str]:
     return problems
 
 
-def check_script_json(root: pathlib.Path, folder: str, text: str) -> list[str]:
+def check_script_json(root: pathlib.Path, folder: str, text: str, records: dict) -> list[str]:
     where = f"scripts/{folder}/script.json"
     try:
         data = json.loads(text, object_pairs_hook=_no_duplicate_keys)
@@ -181,18 +205,19 @@ def check_script_json(root: pathlib.Path, folder: str, text: str) -> list[str]:
     status = data.get("status")
     if "status" in data and status not in STATUSES:
         problems.append(f"{where}: 'status' {status!r} is not one of {sorted(STATUSES)}")
-    for field in ("verified_on", "evidence"):
-        if field not in data:
-            continue
-        v = data[field]
-        if v is not None and (not isinstance(v, str) or not v.strip()):
-            problems.append(f"{where}: '{field}' must be a non-empty string or null")
-        elif v is None and status == "verified":
-            problems.append(f"{where}: status 'verified' requires '{field}'")
+    if "evidence" in data:
+        ids = data["evidence"]
+        if not isinstance(ids, list) or not all(isinstance(i, str) for i in ids):
+            problems.append(f"{where}: 'evidence' must be a list of evidence record ids")
+        else:
+            evidence_mod.check_refs(where, "evidence", ids, folder, records, problems, language="csharp")
+            if status == "verified" and not evidence_mod.has_full_pass(ids, records):
+                problems.append(f"{where}: status 'verified' needs a passing 'full' evidence record of this "
+                                f"script in 'evidence'")
 
     if "effects" in data and data["effects"] not in EFFECTS:
         problems.append(f"{where}: 'effects' {data['effects']!r} is not one of {sorted(EFFECTS)}")
-    for field in ("irreversible", "supportsDryRun"):
+    for field in ("irreversible", "supportsDryRun", "openTargets"):
         if field in data and not isinstance(data[field], bool):
             problems.append(f"{where}: '{field}' must be true or false")
     if "timeoutMinutes" in data and not (_is_int(data["timeoutMinutes"]) and data["timeoutMinutes"] > 0):
@@ -202,13 +227,16 @@ def check_script_json(root: pathlib.Path, folder: str, text: str) -> list[str]:
     return problems
 
 
-def check_csx(folder: str, text: str) -> list[str]:
+def check_csx(folder: str, text: str, open_targets: bool = False) -> list[str]:
     where = f"scripts/{folder}/script.csx"
     problems = []
+    forbidden = CSX_FORBIDDEN + (CSX_FORBIDDEN_WITH_OPEN_TARGETS if open_targets else [])
     for n, line in enumerate(text.splitlines(), 1):
-        for label, rx in CSX_FORBIDDEN:
+        for label, rx in forbidden:
             if rx.search(line):
-                problems.append(f"{where}:{n}: forbidden {label}")
+                problems.append(f"{where}:{n}: forbidden {label}"
+                                + (" (openTargets: true; open and close through Kit.Docs)"
+                                   if (label, rx) in CSX_FORBIDDEN_WITH_OPEN_TARGETS else ""))
     if "ctx." not in text:
         problems.append(f"{where}: never references 'ctx.' (a script must talk to the host through ctx)")
     return problems
@@ -219,6 +247,7 @@ def check_scripts(root: pathlib.Path) -> list[str]:
     if not base.is_dir():
         return []
     problems: list[str] = []
+    records = evidence_mod.load(root)[1]
     for folder in sorted(p for p in base.iterdir() if p.name not in build_package.SKIP_NAMES):
         rel = f"scripts/{folder.name}"
         if not folder.is_dir():
@@ -229,16 +258,22 @@ def check_scripts(root: pathlib.Path) -> list[str]:
             problems.append(f"{rel}: missing {missing}")
         for extra in sorted(names - {"script.json", "script.csx"}):
             problems.append(f"{rel}: unexpected file {extra} (a script folder has exactly script.json and script.csx)")
-        for name, check in (("script.json", lambda t: check_script_json(root, folder.name, t)),
-                            ("script.csx", lambda t: check_csx(folder.name, t))):
+        open_targets = False
+        for name in ("script.json", "script.csx"):
             if name not in names:
                 continue
-            try:
-                text = (folder / name).read_text(encoding="utf-8")
-            except (UnicodeDecodeError, OSError) as exc:
-                problems.append(f"{rel}/{name}: cannot read as UTF-8 ({exc})")
+            text, why = textfile.read(folder / name, f"{rel}/{name}")
+            if why:
+                problems.append(why)
                 continue
-            problems.extend(check(text))
+            if name == "script.json":
+                problems.extend(check_script_json(root, folder.name, text, records))
+                try:
+                    open_targets = json.loads(text).get("openTargets") is True
+                except (ValueError, AttributeError):
+                    pass
+            else:
+                problems.extend(check_csx(folder.name, text, open_targets))
     return problems
 
 
@@ -270,7 +305,10 @@ def check_skills(root: pathlib.Path) -> list[str]:
             if not path.is_file():
                 problems.append(f"{rel} is missing (the release package is generated from it)")
                 continue
-            text = path.read_text(encoding="utf-8")
+            text, why = textfile.read(path, rel)
+            if why:
+                problems.append(why)
+                continue
             for ph in build_package.PLACEHOLDERS:
                 if "{{" + ph + "}}" not in text:
                     problems.append(f"{rel}: missing placeholder {{{{{ph}}}}}")
@@ -281,34 +319,100 @@ def check_skills(root: pathlib.Path) -> list[str]:
             if not path.is_file():
                 problems.append(f"{rel} is missing")
                 continue
-            problems.extend(check_frontmatter(rel, path.read_text(encoding="utf-8"), name))
+            text, why = textfile.read(path, rel)
+            problems.extend([why] if why else check_frontmatter(rel, text, name))
+    return problems
+
+
+# --------------------------------------------------------------------------
+# search
+
+
+def check_search(zip_path: pathlib.Path, into: pathlib.Path) -> list[str]:
+    """Run the packaged lookup.py's self-test on the extracted package."""
+    with zipfile.ZipFile(zip_path) as zf:
+        zf.extractall(into)
+    skill = into / build_package.SKILL
+    spec = importlib.util.spec_from_file_location("packaged_lookup", skill / "lookup.py")
+    lookup = importlib.util.module_from_spec(spec)
+    dont_write = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    try:
+        spec.loader.exec_module(lookup)
+    finally:
+        sys.dont_write_bytecode = dont_write
+    if not lookup.has_fts5():
+        return [f"search: {lookup.NO_FTS5}"]
+    report = io.StringIO()
+    try:
+        package = lookup.Package(skill)
+        conn = package.index()
+        try:
+            ok = lookup.self_test(package, conn, report)
+        finally:
+            conn.close()
+    except (lookup.PackageError, KeyError, TypeError) as exc:
+        return [f"search: the packaged lookup.py cannot read the package: {exc}"]
+    if ok:
+        return []
+    return [f"search: {line}" for line in report.getvalue().splitlines()]
+
+
+# --------------------------------------------------------------------------
+# unit tests
+
+
+def run_unit_tests(root: pathlib.Path) -> list[str]:
+    """tools/tests/, run in-process, so this one command is the whole check."""
+    tests = root / "tools" / "tests"
+    if not tests.is_dir():
+        return []
+    suite = unittest.defaultTestLoader.discover(str(tests), top_level_dir=str(root / "tools"))
+    result = unittest.TextTestRunner(stream=io.StringIO(), verbosity=0).run(suite)
+    problems = [f"tools/tests: {test.id()} failed:\n{trace}" for test, trace in result.failures + result.errors]
+    if result.testsRun == 0:
+        problems.append("tools/tests: no tests found")
     return problems
 
 
 # --------------------------------------------------------------------------
 
 
-def validate(root: pathlib.Path) -> tuple[list[str], list[str]]:
+def check_generated(root: pathlib.Path) -> list[str]:
+    """The sources' problems, and every generated file that is not what build_manifest.py writes."""
+    problems, generated = build_manifest.outputs(root)
+    for rel, text in generated.items():
+        committed = root / rel
+        if not committed.is_file() or committed.read_bytes() != text.encode("utf-8"):
+            problems.append(f"{rel} is stale: run python3 tools/build_manifest.py")
+    return problems
+
+
+def validate(root: pathlib.Path, unit_tests: bool = True) -> tuple[list[str], list[str]]:
     """(problems, warnings) for the repo at root."""
     problems: list[str] = []
     warnings: list[str] = []
 
-    entry_problems, manifest = build_manifest.collect(root)
-    problems.extend(entry_problems)
-    if manifest is not None:
-        committed = root / "manifest.json"
-        if not committed.is_file() or committed.read_bytes() != build_manifest.render(manifest).encode("utf-8"):
-            problems.append("manifest.json is stale: run python3 tools/build_manifest.py")
+    problems.extend(check_generated(root))
 
     problems.extend(check_scripts(root))
     problems.extend(check_skills(root))
 
     with tempfile.TemporaryDirectory() as tmp:
         try:
-            _, warnings = build_package.build(root, "0.0.0-ci", pathlib.Path(tmp))
+            zip_path, warnings = build_package.build(root, "0.0.0-ci", pathlib.Path(tmp))
         except build_package.BuildError as exc:
             problems.append(f"package build failed: {exc}")
-    return problems, warnings
+        else:
+            problems.extend(check_search(zip_path, pathlib.Path(tmp) / "package"))
+    try:
+        build_package.release_notes(root, build_package.latest_tag(root))
+    except (build_package.BuildError, ValueError, KeyError, TypeError) as exc:
+        problems.append(f"release notes cannot be written: {exc}")
+    if unit_tests:
+        problems.extend(run_unit_tests(root))
+    # One bad file can be met by several checks; report each problem once.
+    return list(dict.fromkeys(problems)), list(dict.fromkeys(warnings))
 
 
 def main(argv: list[str] | None = None) -> int:

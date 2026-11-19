@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: category-NN-short-slug
 title: What this entry teaches, as a noun phrase
+answers: "The question a future agent would type to find this."
+keywords: [call names, error numbers, symptoms, synonyms]
+api: [IInterface.Member]
+language: [python]
 status: unverified
 verified_on: null
-language: [vba]
-api: [IInterface.Member]
-keywords: [call names, error numbers, symptoms, synonyms]
-answers: "The question a future agent would type to find this."
+majors: []
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Title
@@ -18,8 +24,8 @@ what tells them whether to keep reading.
 
 ## The call
 
-```vb
-' Real code, copied or generated. Not recalled, not tidied.
+```python
+# Real code, copied or generated. Not recalled, not tidied.
 ```
 
 State the interface each member lives on and the units it takes.

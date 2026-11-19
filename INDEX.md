@@ -1,7 +1,8 @@
 # Index by task
 
-What you are trying to do, and where the answer is. An agent wanting the whole
-set in one read should use [manifest.json](manifest.json) instead.
+What you are trying to do, and where the answer is. An agent should search with
+`lookup.py` (`python3 skills/sw-macro-database/lookup.py "question"` in the repository; beside
+this file in a release), or read [manifest.json](manifest.json) for the whole set in one file.
 
 ## Get a connection
 

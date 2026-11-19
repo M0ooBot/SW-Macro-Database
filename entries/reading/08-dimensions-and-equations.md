@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-08-dimensions-and-equations
 title: Read every dimension, equation and configuration out of a part
+answers: "How do I read the dimensions and equations of an existing part from code?"
+keywords: [display dimension, GetFirstDisplayDimension, GetSystemValue2, FullName, equation manager, global variable, design table, derived configuration, GetParent, inspect part, dump]
+api: [IFeature.GetFirstDisplayDimension, IFeature.GetNextDisplayDimension, IDisplayDimension.GetDimension, IDimension.FullName, IDimension.GetSystemValue2, IModelDoc2.GetEquationMgr, IEquationMgr.GetCount, IEquationMgr.Equation, IModelDoc2.GetDesignTable, IModelDoc2.GetConfigurationByName, IConfiguration.GetParent]
+language: [csharp-standalone]
 status: partly-verified
 verified_on: SolidWorks 2026 SP1.1 for the open, configuration and size passes; the dimension and equation walks ran in the same tool but their output was not retained
-language: [csharp]
-api: [IFeature.GetFirstDisplayDimension, IFeature.GetNextDisplayDimension, IDisplayDimension.GetDimension, IDimension.FullName, IDimension.GetSystemValue2, IModelDoc2.GetEquationMgr, IEquationMgr.GetCount, IEquationMgr.Equation, IModelDoc2.GetDesignTable, IModelDoc2.GetConfigurationByName, IConfiguration.GetParent]
-keywords: [display dimension, GetFirstDisplayDimension, GetSystemValue2, FullName, equation manager, global variable, design table, derived configuration, GetParent, inspect part, dump]
-answers: "How do I read the dimensions and equations of an existing part from code?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Read every dimension, equation and configuration out of a part

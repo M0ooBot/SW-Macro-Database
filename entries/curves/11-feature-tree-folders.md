@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-11-feature-tree-folders
 title: Put features in a feature-tree folder
+answers: "How do I put features into a folder in the feature tree from code?"
+keywords: [InsertFeatureTreeFolder2, MoveToFolder, swFeatureTreeFolderType_e, FtrFolder, ___EndTag___, ___EndTag___0, end tag, sentinel, reopen, feature tree folder, group features, ungroup, DeleteSelection2, Select2, BODYFEATURE, loose curves]
+api: [IFeatureManager.InsertFeatureTreeFolder2, IFeatureManager.MoveToFolder, IModelDocExtension.DeleteSelection2, IFeature.Select2, IFeature.GetSpecificFeature2, IFeatureFolder.GetFeatureCount, IFeatureFolder.GetFeatures]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026
-language: [python]
-api: [IFeatureManager.InsertFeatureTreeFolder2, IFeatureManager.MoveToFolder, IModelDocExtension.DeleteSelection2, IFeature.Select2, IFeature.GetSpecificFeature2, IFeatureFolder.GetFeatureCount, IFeatureFolder.GetFeatures]
-keywords: [InsertFeatureTreeFolder2, MoveToFolder, swFeatureTreeFolderType_e, FtrFolder, ___EndTag___, ___EndTag___0, end tag, sentinel, reopen, feature tree folder, group features, ungroup, DeleteSelection2, Select2, BODYFEATURE, loose curves]
-answers: "How do I put features into a folder in the feature tree from code?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Put features in a feature-tree folder

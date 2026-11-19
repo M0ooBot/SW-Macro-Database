@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: drawings-09-add-dimensions-and-tolerances
 title: Add dimensions to a drawing view from code, with symmetric and fit tolerances
+answers: "How do I add dimensions to a drawing from code — centre distances, diameters, lengths — and give them a ± tolerance or an ISO fit?"
+keywords: [AddDimension2, add dimension from code, smart dimension, centre distance, diameter dimension, length dimension, face width, symmetric tolerance, plus minus, fit tolerance, H7, g6, p6, SetFitValues, swTolFITWITHTOL, Type 8, Type 4, SetValues, MOD-DIAM prefix, silhouette edge, swViewEntityType_SilhouetteEdge, GetVisibleEntities2 type 4, end view, step shaft, trailing zero, angular dimension, angle between lines, radius prefix R lost, 2X R, suffix, A/F, line to arc centre, hole location from face]
+api: [IView.GetVisibleEntities2, IView.SelectEntity, IModelDoc2.AddDimension2, IDisplayDimension.GetDimension2, IDisplayDimension.SetPrecision3, IDisplayDimension.SetText, IDimension.Tolerance, IDimensionTolerance.Type, IDimensionTolerance.SetValues, IDimensionTolerance.SetFitValues, IDimensionTolerance.GetMaxValue, IDimensionTolerance.GetMinValue, IEdge.GetCurveParams2, ICurve.CircleParams, IDrawingDoc.CreateUnfoldedViewAt3]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IView.GetVisibleEntities2, IView.SelectEntity, IModelDoc2.AddDimension2, IDisplayDimension.GetDimension2, IDisplayDimension.SetPrecision3, IDisplayDimension.SetText, IDimension.Tolerance, IDimensionTolerance.Type, IDimensionTolerance.SetValues, IDimensionTolerance.SetFitValues, IDimensionTolerance.GetMaxValue, IDimensionTolerance.GetMinValue, IEdge.GetCurveParams2, ICurve.CircleParams, IDrawingDoc.CreateUnfoldedViewAt3]
-keywords: [AddDimension2, add dimension from code, smart dimension, centre distance, diameter dimension, length dimension, face width, symmetric tolerance, plus minus, fit tolerance, H7, g6, p6, SetFitValues, swTolFITWITHTOL, Type 8, Type 4, SetValues, MOD-DIAM prefix, silhouette edge, swViewEntityType_SilhouetteEdge, GetVisibleEntities2 type 4, end view, step shaft, trailing zero, angular dimension, angle between lines, radius prefix R lost, 2X R, suffix, A/F, line to arc centre, hole location from face]
-answers: "How do I add dimensions to a drawing from code — centre distances, diameters, lengths — and give them a ± tolerance or an ISO fit?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Add dimensions and tolerances from code

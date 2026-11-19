@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-10-swept-cut
 title: Cut a sketch along a path with a twist, and pattern the cut
+answers: "How do I cut a profile along a straight path with a twist from code, such as a helical gear's tooth space, and pattern that cut around an axis?"
+keywords: [InsertCutSwept5, InsertCutSwept4, swept cut, cut sweep, SweepCut, twisted cut, helical cut, helical tooth space, helical gear, constant twist along path, twist, radians, overrun, lead-in, start ahead of the face, pattern of sweeps, geometry pattern, FeatureCircularPattern5, rebuild time, 22 arguments, selection mark 1, mark 4]
+api: [IFeatureManager.InsertCutSwept5, IFeature.GetDefinition, IFeature.ModifyDefinition, ISweepFeatureData.D1ReverseTwistDir, IFeatureManager.FeatureCircularPattern5, IPartDoc.GetBodies2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IFeatureManager.InsertCutSwept5, IFeature.GetDefinition, IFeature.ModifyDefinition, ISweepFeatureData.D1ReverseTwistDir, IFeatureManager.FeatureCircularPattern5, IPartDoc.GetBodies2]
-keywords: [InsertCutSwept5, InsertCutSwept4, swept cut, cut sweep, SweepCut, twisted cut, helical cut, helical tooth space, helical gear, constant twist along path, twist, radians, overrun, lead-in, start ahead of the face, pattern of sweeps, geometry pattern, FeatureCircularPattern5, rebuild time, 22 arguments, selection mark 1, mark 4]
-answers: "How do I cut a profile along a straight path with a twist from code, such as a helical gear's tooth space, and pattern that cut around an axis?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Cut a sketch along a path with a twist, and pattern the cut

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-02-walk-reference-tree
 title: Walk a full reference tree with a cycle guard
+answers: "How do I build the whole dependency tree from the one-level primitive?"
+keywords: [reference tree, recursion, cycle, depth first, dependency tree, ancestors]
+api: [ISldWorks.GetDocumentDependencies2]
+language: [csharp-standalone]
 status: verified
 verified_on: SolidWorks 2026
-language: [csharp]
-api: [ISldWorks.GetDocumentDependencies2]
-keywords: [reference tree, recursion, cycle, depth first, dependency tree, ancestors]
-answers: "How do I build the whole dependency tree from the one-level primitive?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Walk a full reference tree with a cycle guard

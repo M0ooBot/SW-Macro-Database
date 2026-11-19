@@ -1,17 +1,23 @@
 ---
+schema: 2
 id: connect-04-attach-vba
 title: Attach from VBA, inside SolidWorks
-status: verified
-verified_on: standard across versions
-language: [vba]
-api: [Application.SldWorks, ISldWorks.ActiveDoc]
-keywords: [vba, macro, late binding, swp binary, bas file, Application.SldWorks, paste macro]
 answers: "What is the preamble for a macro that runs inside SolidWorks?"
+keywords: [vba, macro, late binding, swp binary, bas file, Application.SldWorks, paste macro]
+api: [Application.SldWorks, ISldWorks.ActiveDoc]
+language: [vba]
+status: unverified
+verified_on: standard across versions
+majors: []
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Attach from VBA, inside SolidWorks
 
-**Status:** Standard, universally documented
+**Status:** Unverified: standard and documented, but no run against SolidWorks is recorded
 **Language:** VBA, in the SolidWorks macro editor
 
 ## The easy case

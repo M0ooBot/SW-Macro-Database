@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-14-in-context-part-across-configurations
 title: Show an in-context part at a different size in each assembly configuration
+answers: "My in-context part (a spring whose length follows the parts around it) draws at the same size in every configuration's drawing view. How do I make each assembly configuration keep its own size?"
+keywords: [in-context, virtual component, external reference, spring length, configuration specific geometry, same size in every view, drawing view wrong size, ReferencedConfiguration, part configuration, equation driven by in-context dimension, sweep lost body, GetFaceCount 0]
+api: [IConfigurationManager.AddConfiguration2, IComponent2.ReferencedConfiguration, IComponent2.GetModelDoc2, IModelDoc2.GetConfigurationNames, IModelDoc2.Parameter, IFeature.GetFaceCount, IComponent2.GetBodies2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IConfigurationManager.AddConfiguration2, IComponent2.ReferencedConfiguration, IComponent2.GetModelDoc2, IModelDoc2.GetConfigurationNames, IModelDoc2.Parameter, IFeature.GetFaceCount, IComponent2.GetBodies2]
-keywords: [in-context, virtual component, external reference, spring length, configuration specific geometry, same size in every view, drawing view wrong size, ReferencedConfiguration, part configuration, equation driven by in-context dimension, sweep lost body, GetFaceCount 0]
-answers: "My in-context part (a spring whose length follows the parts around it) draws at the same size in every configuration's drawing view. How do I make each assembly configuration keep its own size?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Show an in-context part at a different size in each assembly configuration

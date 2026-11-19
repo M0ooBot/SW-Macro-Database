@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-16-measure-between-two-selections
 title: Measure the distance between two selected entities with IMeasure
+answers: "How do I measure the distance between two things I have selected (an axis and a plane, say) from code, the way the Measure tool does?"
+keywords: [IMeasure, CreateMeasure, Calculate, measure tool from code, distance between axis and plane, NormalDistance, DISPATCH_METHOD, Invoke, property get, bool object is not callable, late binding, measure in an assembly]
+api: [IModelDocExtension.CreateMeasure, IMeasure.Calculate, IMeasure.Distance, IMeasure.NormalDistance, IModelDocExtension.SelectByID2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IModelDocExtension.CreateMeasure, IMeasure.Calculate, IMeasure.Distance, IMeasure.NormalDistance, IModelDocExtension.SelectByID2]
-keywords: [IMeasure, CreateMeasure, Calculate, measure tool from code, distance between axis and plane, NormalDistance, DISPATCH_METHOD, Invoke, property get, bool object is not callable, late binding, measure in an assembly]
-answers: "How do I measure the distance between two things I have selected (an axis and a plane, say) from code, the way the Measure tool does?"
+majors: [32, 34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Measure the distance between two selected entities with IMeasure

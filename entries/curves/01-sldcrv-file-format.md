@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-01-sldcrv-format
 title: The Curve Through XYZ Points file format
+answers: "What exactly do I write into a .sldcrv file so SolidWorks reads it correctly?"
+keywords: [sldcrv, curve through xyz points, file format, mm suffix, units, tab delimited, CRLF, closed curve, duplicate points, near-duplicate, refused file, thin points, natural cubic spline, chord length parametrisation, interpolation]
+api: []
+language: []
 status: verified
 verified_on: SolidWorks 2025 and 2026
-language: [any]
-api: []
-keywords: [sldcrv, curve through xyz points, file format, mm suffix, units, tab delimited, CRLF, closed curve, duplicate points, near-duplicate, refused file, thin points, natural cubic spline, chord length parametrisation, interpolation]
-answers: "What exactly do I write into a .sldcrv file so SolidWorks reads it correctly?"
+majors: [33, 34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # The Curve Through XYZ Points file format

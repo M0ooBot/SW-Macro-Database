@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-10-mate-a-gear-train-that-turns
 title: Mate gears on their shafts into a train that turns, with gear mates and lock mates
+answers: "How do I mate gears to their shafts and to each other from code so the whole gear train turns together at the right ratio and in the right direction?"
+keywords: [gear train, gear mate, planetary gear mate, planet carrier, carrier frame, epicyclic, collinear gear mate, gear mate same axis, coupling gear mate, spline gear mate, slide under gear mate, swMateGEAR, AddMate5 gear, gear ratio order, numerator first selection, Flip, mesh direction, ring gear, internal gear, lock mate, swMateLOCK 16, compound gear, two gears on one shaft, concentric axes refused, coincident axes, swAddMateError_ErrorUknown, status 0, closest alignment, anti-aligned, UnfixComponent, GetConstrainedStatus, one degree of freedom, drive mate, angle mate linked to a global, CreateSelectData Mark, Select4 component]
+api: [IAssemblyDoc.AddMate5, IAssemblyDoc.UnfixComponent, IComponent2.Select4, ISelectionMgr.CreateSelectData, IComponent2.GetCorresponding, IComponent2.GetConstrainedStatus, IFeature.GetDefinition, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IGearMateFeatureData.Reverse, IMate2.Alignment, IMate2.MateEntity, IMateEntity2.ReferenceComponent]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revisions 34.0.0 and 34.1.1) and SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IAssemblyDoc.AddMate5, IAssemblyDoc.UnfixComponent, IComponent2.Select4, ISelectionMgr.CreateSelectData, IComponent2.GetCorresponding, IComponent2.GetConstrainedStatus, IFeature.GetDefinition, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IGearMateFeatureData.Reverse, IMate2.Alignment, IMate2.MateEntity, IMateEntity2.ReferenceComponent]
-keywords: [gear train, gear mate, planetary gear mate, planet carrier, carrier frame, epicyclic, collinear gear mate, gear mate same axis, coupling gear mate, spline gear mate, slide under gear mate, swMateGEAR, AddMate5 gear, gear ratio order, numerator first selection, Flip, mesh direction, ring gear, internal gear, lock mate, swMateLOCK 16, compound gear, two gears on one shaft, concentric axes refused, coincident axes, swAddMateError_ErrorUknown, status 0, closest alignment, anti-aligned, UnfixComponent, GetConstrainedStatus, one degree of freedom, drive mate, angle mate linked to a global, CreateSelectData Mark, Select4 component]
-answers: "How do I mate gears to their shafts and to each other from code so the whole gear train turns together at the right ratio and in the right direction?"
+majors: [32, 34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Mate gears on their shafts into a train that turns

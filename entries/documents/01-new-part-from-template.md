@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: documents-01-new-part-from-template
 title: Make a new part or assembly from a template, in millimetres
+answers: "How do I create a new part or assembly from code, and make sure it is in millimetres?"
+keywords: [NewDocument, GetDocumentTemplate, NewPart, new part, new assembly, prtdot, asmdot, template, inch template, wrong year template, MMGS, swUnitSystem, swUnitsLinear, 263, 47, document units, millimetres]
+api: [ISldWorks.GetDocumentTemplate, ISldWorks.GetUserPreferenceStringValue, ISldWorks.NewDocument, IModelDoc2.GetType, IModelDocExtension.GetUserPreferenceInteger, IModelDocExtension.SetUserPreferenceInteger]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [ISldWorks.GetDocumentTemplate, ISldWorks.GetUserPreferenceStringValue, ISldWorks.NewDocument, IModelDoc2.GetType, IModelDocExtension.GetUserPreferenceInteger, IModelDocExtension.SetUserPreferenceInteger]
-keywords: [NewDocument, GetDocumentTemplate, NewPart, new part, new assembly, prtdot, asmdot, template, inch template, wrong year template, MMGS, swUnitSystem, swUnitsLinear, 263, 47, document units, millimetres]
-answers: "How do I create a new part or assembly from code, and make sure it is in millimetres?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Make a new part or assembly from a template, in millimetres

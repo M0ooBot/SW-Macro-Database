@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-09-keep-an-edited-toolbox-copy
 title: Use an edited copy of a Toolbox part in an assembly without it reverting to the library part
+answers: "I edited a Toolbox part (or a copy of one) and on reopening the assembly my edits are gone and the mates fail — why, and how do I make the edited copy stick?"
+keywords: [Toolbox, toolbox part, edited toolbox part, toolbox copy, sldsetdocprop, Toolbox status, ToolboxPartType, swToolBoxPartType_e, swToolboxStandardPart, swToolboxCopiedPart, swNotAToolboxPart, reverts to library, edits disappeared, SOLIDWORKS Data browser, ReplaceComponents2, replace component, mates lost after reopen, error 51, read-only toolbox part]
+api: [IModelDocExtension.ToolboxPartType, IModelDoc2.Save3, IComponent2.Select4, IAssemblyDoc.ReplaceComponents2, IComponent2.GetPathName, IComponent2.ReferencedConfiguration, ISldWorks.OpenDoc6, ISldWorks.CloseDoc]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IModelDocExtension.ToolboxPartType, IModelDoc2.Save3, IComponent2.Select4, IAssemblyDoc.ReplaceComponents2, IComponent2.GetPathName, IComponent2.ReferencedConfiguration, ISldWorks.OpenDoc6, ISldWorks.CloseDoc]
-keywords: [Toolbox, toolbox part, edited toolbox part, toolbox copy, sldsetdocprop, Toolbox status, ToolboxPartType, swToolBoxPartType_e, swToolboxStandardPart, swToolboxCopiedPart, swNotAToolboxPart, reverts to library, edits disappeared, SOLIDWORKS Data browser, ReplaceComponents2, replace component, mates lost after reopen, error 51, read-only toolbox part]
-answers: "I edited a Toolbox part (or a copy of one) and on reopening the assembly my edits are gone and the mates fail — why, and how do I make the edited copy stick?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Keep an edited copy of a Toolbox part in an assembly

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-09-twisted-sweep
 title: Sweep a profile along a line with a constant twist, and choose which way it turns
+answers: "How do I sweep a sketch along a straight path with a constant twist from code, drive the twist from a global, and make it turn the other way?"
+keywords: [InsertProtrusionSwept4, sweep, swept boss, twist, constant twist along path, swTwistControlConstantTwistAlongPath, 8, twist angle, radians, D1ReverseTwistDir, reverse twist, twist direction, helix, helicoid, right-hand, left-hand, helical gear, ModifyDefinition, GetDefinition, AccessSelections, selection mark 1, mark 4, Sweep, D4, 20 arguments]
+api: [IFeatureManager.InsertProtrusionSwept4, IFeature.GetDefinition, IFeature.ModifyDefinition, ISweepFeatureData.D1ReverseTwistDir, ISweepFeatureData.TwistControlType, ISweepFeatureData.GetTwistAngle, ISweepFeatureData.AccessSelections, IMassProperty.CenterOfMass]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IFeatureManager.InsertProtrusionSwept4, IFeature.GetDefinition, IFeature.ModifyDefinition, ISweepFeatureData.D1ReverseTwistDir, ISweepFeatureData.TwistControlType, ISweepFeatureData.GetTwistAngle, ISweepFeatureData.AccessSelections, IMassProperty.CenterOfMass]
-keywords: [InsertProtrusionSwept4, sweep, swept boss, twist, constant twist along path, swTwistControlConstantTwistAlongPath, 8, twist angle, radians, D1ReverseTwistDir, reverse twist, twist direction, helix, helicoid, right-hand, left-hand, helical gear, ModifyDefinition, GetDefinition, AccessSelections, selection mark 1, mark 4, Sweep, D4, 20 arguments]
-answers: "How do I sweep a sketch along a straight path with a constant twist from code, drive the twist from a global, and make it turn the other way?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Sweep a profile along a line with a constant twist, and choose which way it turns

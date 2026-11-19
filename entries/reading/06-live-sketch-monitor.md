@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-06-live-sketch-monitor
 title: Watch the active sketch while the user works
+answers: "How do I show live information about whatever sketch the user is currently editing?"
+keywords: [ActiveSketch, polling, live monitor, external references, in-context, dangling, watch]
+api: [ISldWorks.ActiveDoc, ISketchManager.ActiveSketch, IFeature.ListExternalFileReferences2, IModelDocExtension.ListExternalFileReferences]
+language: [csharp-standalone, python]
 status: unverified
 verified_on: null
-language: [csharp, python]
-api: [ISldWorks.ActiveDoc, ISketchManager.ActiveSketch, IFeature.ListExternalFileReferences2, IModelDocExtension.ListExternalFileReferences]
-keywords: [ActiveSketch, polling, live monitor, external references, in-context, dangling, watch]
-answers: "How do I show live information about whatever sketch the user is currently editing?"
+majors: []
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Watch the active sketch while the user works

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-05-sketch-to-model-transform
 title: Convert sketch coordinates to model coordinates
+answers: "A sketch point reports coordinates that are not in model space. How do I convert them?"
+keywords: [ModelToSketchTransform, ArrayData, IMathTransform, column major, sketch coordinates, transpose, 16 doubles]
+api: [ISketch.ModelToSketchTransform, IMathTransform.Inverse, IMathTransform.ArrayData, ISelectionMgr.GetSelectedObjectsSketch]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026
-language: [python]
-api: [ISketch.ModelToSketchTransform, IMathTransform.Inverse, IMathTransform.ArrayData, ISelectionMgr.GetSelectedObjectsSketch]
-keywords: [ModelToSketchTransform, ArrayData, IMathTransform, column major, sketch coordinates, transpose, 16 doubles]
-answers: "A sketch point reports coordinates that are not in model space. How do I convert them?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Convert sketch coordinates to model coordinates

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-12-read-the-api-help-offline
 title: Read the SolidWorks API help offline, from the installed .chm files
+answers: "The online API help comes back empty to my fetch tool. How do I read a member's signature, remarks or an enum's values from the docs installed with SolidWorks?"
+keywords: [API help, documentation, chm, sldworksapi.chm, swconst.chm, apihelp.chm, hh.exe, decompile, help.solidworks.com, empty page, JavaScript, enum values, swconst, signature, Remarks, offline docs, spaces in path, Start-Process, silent failure]
+api: []
+language: [shell, powershell]
 status: verified
 verified_on: SolidWorks 2024 SP5 install, Windows 11, driven from WSL2
-language: [shell, powershell]
-api: []
-keywords: [API help, documentation, chm, sldworksapi.chm, swconst.chm, apihelp.chm, hh.exe, decompile, help.solidworks.com, empty page, JavaScript, enum values, swconst, signature, Remarks, offline docs, spaces in path, Start-Process, silent failure]
-answers: "The online API help comes back empty to my fetch tool. How do I read a member's signature, remarks or an enum's values from the docs installed with SolidWorks?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Read the SolidWorks API help offline, from the installed .chm files

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-01-dependencies-closed-file
 title: Read a closed file's references without opening it
+answers: "How do I find out what a part or assembly references without opening it?"
+keywords: [GetDocumentDependencies2, references, dependencies, closed file, virtual component, document manager, opaque format, GetConfigurationNames, VersionHistory, file version, without opening]
+api: [ISldWorks.GetDocumentDependencies2, ISldWorks.GetConfigurationNames, ISldWorks.VersionHistory, ISldWorks.GetLatestSupportedFileVersion]
+language: [csharp-standalone]
 status: verified
 verified_on: SolidWorks 2026
-language: [csharp]
-api: [ISldWorks.GetDocumentDependencies2, ISldWorks.GetConfigurationNames, ISldWorks.VersionHistory, ISldWorks.GetLatestSupportedFileVersion]
-keywords: [GetDocumentDependencies2, references, dependencies, closed file, virtual component, document manager, opaque format, GetConfigurationNames, VersionHistory, file version, without opening]
-answers: "How do I find out what a part or assembly references without opening it?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Read a closed file's references without opening it

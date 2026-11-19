@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-09-launch-versus-attach
 title: Launch versus attach, and never closing someone's session
+answers: "Should my tool start SolidWorks if none is running, and how do I clean up?"
+keywords: [launch solidworks, hidden instance, CreateObject, ExitApp, FinalReleaseComObject, headless, batch, modal dialog blocks]
+api: [ISldWorks.Visible, ISldWorks.ExitApp, Activator.CreateInstance, Type.GetTypeFromProgID]
+language: [csharp-standalone, vbscript]
 status: partly-verified
 verified_on: SolidWorks 2026 for attach; launch path compiles and runs, ExitApp untested; the hidden-instance warning observed on 2026 SP1.1
-language: [csharp, vbscript]
-api: [ISldWorks.Visible, ISldWorks.ExitApp, Activator.CreateInstance, Type.GetTypeFromProgID]
-keywords: [launch solidworks, hidden instance, CreateObject, ExitApp, FinalReleaseComObject, headless, batch, modal dialog blocks]
-answers: "Should my tool start SolidWorks if none is running, and how do I clean up?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Launch versus attach, and never closing someone's session

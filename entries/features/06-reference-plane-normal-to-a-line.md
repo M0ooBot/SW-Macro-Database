@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-06-reference-plane-normal-to-a-line
 title: A reference plane square to a sketch line, through its end
+answers: "How do I make a reference plane perpendicular to a sketch line at its end, and which way does a sketch on that plane face?"
+keywords: [InsertRefPlane, reference plane, perpendicular plane, normal to curve, plane normal to line, plane through point, swRefPlaneReferenceConstraint_Perpendicular, swRefPlaneReferenceConstraint_Coincident, 2, 4, EXTSKETCHPOINT, EXTSKETCHSEGMENT, sketch frame, plane orientation, cone generatrix, bevel heel plane, back cone]
+api: [IFeatureManager.InsertRefPlane, IModelDocExtension.SelectByID2, ISketch.ModelToSketchTransform, IMathTransform.Inverse, IMathTransform.ArrayData]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IFeatureManager.InsertRefPlane, IModelDocExtension.SelectByID2, ISketch.ModelToSketchTransform, IMathTransform.Inverse, IMathTransform.ArrayData]
-keywords: [InsertRefPlane, reference plane, perpendicular plane, normal to curve, plane normal to line, plane through point, swRefPlaneReferenceConstraint_Perpendicular, swRefPlaneReferenceConstraint_Coincident, 2, 4, EXTSKETCHPOINT, EXTSKETCHSEGMENT, sketch frame, plane orientation, cone generatrix, bevel heel plane, back cone]
-answers: "How do I make a reference plane perpendicular to a sketch line at its end, and which way does a sketch on that plane face?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # A reference plane square to a sketch line, through its end

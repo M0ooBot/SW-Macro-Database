@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-05-revolve
 title: Revolve a sketch about a centreline
+answers: "How do I revolve a sketch about a centreline from code, and pick which line is the axis when the sketch has more than one?"
+keywords: [FeatureRevolve2, revolve, revolved boss, Revolution, centreline, centerline, CreateCenterLine, axis of revolution, selection mark 16, mark 16, EXTSKETCHSEGMENT, LineN@Sketch, two centrelines, Pappus, bevel blank, 20 arguments]
+api: [IFeatureManager.FeatureRevolve2, ISketchManager.CreateCenterLine, IModelDocExtension.SelectByID2, ISketchSegment.GetName, IMassProperty.CenterOfMass]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IFeatureManager.FeatureRevolve2, ISketchManager.CreateCenterLine, IModelDocExtension.SelectByID2, ISketchSegment.GetName, IMassProperty.CenterOfMass]
-keywords: [FeatureRevolve2, revolve, revolved boss, Revolution, centreline, centerline, CreateCenterLine, axis of revolution, selection mark 16, mark 16, EXTSKETCHSEGMENT, LineN@Sketch, two centrelines, Pappus, bevel blank, 20 arguments]
-answers: "How do I revolve a sketch about a centreline from code, and pick which line is the axis when the sketch has more than one?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Revolve a sketch about a centreline

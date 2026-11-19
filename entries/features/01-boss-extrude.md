@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-01-boss-extrude
 title: Extrude a closed sketch into a boss
+answers: "How do I extrude a closed sketch into a solid boss from code?"
+keywords: [FeatureExtrusion3, extrude, boss, blind, swEndCondBlind, 23 arguments, depth, solid from sketch, FeatureManager, select sketch, extrude direction, which way, +Z, annulus, ring, two concentric circles, ring gear blank]
+api: [IFeatureManager.FeatureExtrusion3, IFeature.Select2, IModelDocExtension.SelectByID2, IFeature.Name, IMassProperty.CenterOfMass]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IFeatureManager.FeatureExtrusion3, IFeature.Select2, IModelDocExtension.SelectByID2, IFeature.Name, IMassProperty.CenterOfMass]
-keywords: [FeatureExtrusion3, extrude, boss, blind, swEndCondBlind, 23 arguments, depth, solid from sketch, FeatureManager, select sketch, extrude direction, which way, +Z, annulus, ring, two concentric circles, ring gear blank]
-answers: "How do I extrude a closed sketch into a solid boss from code?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Extrude a closed sketch into a boss

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-08-rebuild-once
 title: Suppress rebuilds, change everything, rebuild once
+answers: "Why does my part show errors halfway through my batch update, and how do I make it fast?"
+keywords: [ForceRebuild3, CommandInProgress, suppress rebuild, batch update, transient error, finally, EditRebuild3, ForceRebuild3 slow, rebuild only what changed, EditRebuild3 returns False, feature in error, 25 seconds rebuild]
+api: [ISldWorks.CommandInProgress, IModelDoc2.ForceRebuild3, IModelDoc2.EditRebuild3]
+language: [vbscript, python]
 status: verified
 verified_on: SolidWorks 2026
-language: [vbscript, python]
-api: [ISldWorks.CommandInProgress, IModelDoc2.ForceRebuild3, IModelDoc2.EditRebuild3]
-keywords: [ForceRebuild3, CommandInProgress, suppress rebuild, batch update, transient error, finally, EditRebuild3, ForceRebuild3 slow, rebuild only what changed, EditRebuild3 returns False, feature in error, 25 seconds rebuild]
-answers: "Why does my part show errors halfway through my batch update, and how do I make it fast?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Suppress rebuilds, change everything, rebuild once

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-12-snapshot-suppression-before-you-suppress
 title: Snapshot every feature's suppression before you suppress one, because suppression cascades
+answers: "Why did suppressing one feature suppress 74 others, and how do I put the part back exactly as it was?"
+keywords: [SetSuppression2, IsSuppressed, suppression cascade, suppressed children, unsuppress does not restore, swFeatureSuppressionAction_e, swInConfigurationOpts_e, 74 features, Sketch9<3>, feature name not found, restore by object, parents first, export one body]
+api: [IFeature.SetSuppression2, IFeature.IsSuppressed, IModelDoc2.FirstFeature, IFeature.GetNextFeature, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 SP0.0 (revision 34.0.0)
-language: [python]
-api: [IFeature.SetSuppression2, IFeature.IsSuppressed, IModelDoc2.FirstFeature, IFeature.GetNextFeature, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature]
-keywords: [SetSuppression2, IsSuppressed, suppression cascade, suppressed children, unsuppress does not restore, swFeatureSuppressionAction_e, swInConfigurationOpts_e, 74 features, Sketch9<3>, feature name not found, restore by object, parents first, export one body]
-answers: "Why did suppressing one feature suppress 74 others, and how do I put the part back exactly as it was?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Snapshot suppression before you suppress
