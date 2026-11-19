@@ -5,9 +5,10 @@
 
 Exits non-zero and lists every problem found. It checks, in order:
 
-  1. every entry and gotcha, with the same checks tools/build_manifest.py
-     applies, and that the committed manifest.json, gotchas.json and GOTCHAS.md
-     are exactly what build_manifest.py would write;
+  1. every entry, gotcha, evidence record and ledger row, with the same checks
+     tools/build_manifest.py applies, and that the committed manifest.json,
+     gotchas.json, GOTCHAS.md and API-LEDGER.md are exactly what
+     build_manifest.py would write;
   2. every scripts/<id>/ folder: script.json shape (strict, no unknown keys) and
      a lint of script.csx;
   3. every skills/<name>/ folder: SKILL.md frontmatter, and the template's

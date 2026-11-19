@@ -265,8 +265,9 @@ passing `full` record with `method: smoke` in `recipe_evidence`.
 python3 tools/build_manifest.py
 ```
 
-It rebuilds [`manifest.json`](manifest.json), `gotchas.json` and `GOTCHAS.md` from
-the frontmatter and the gotcha files, and fails if
+It rebuilds [`manifest.json`](manifest.json), `gotchas.json`, `GOTCHAS.md` and
+`API-LEDGER.md` from the frontmatter, the gotcha files and `api-ledger.json`, and
+fails if
 an entry is missing a key or has an unknown one, has a duplicate `id`, lists a
 major its `verified_on` does not name, claims `verified` with no observation,
 or names an evidence record that does not exist or is about something else.
@@ -282,11 +283,32 @@ gotcha takes the next free number; a retired one stays, as a stub pointing to
 its replacement, so no number is reused. Start from
 [`gotchas/_TEMPLATE.md`](gotchas/_TEMPLATE.md), which says what each key holds.
 
+### The API ledger is data
+
+[API-LEDGER.md](API-LEDGER.md) is generated from `api-ledger.json`; edit the JSON
+and run `python3 tools/build_manifest.py`. A row is one call form, in its section:
+
+| Field | What it holds |
+|---|---|
+| `section`, `interface` | The section's title, and its interface when the title names exactly one (else `null`). |
+| `members` | Every API member the Member cell names, `Interface.Member` where the cell (or, when the cell names none, the section) gives the interface. |
+| `form` | The Member cell: the call form as written. |
+| `purpose`, `on` | The Purpose cell; the On cell where the section has that column (in every row of it, or none). |
+| `status` | `verified`, `partly-verified`, `unverified`, `fails` (observed not to work) or `absent` (observed not to exist). |
+| `note` | The Status cell's own wording whenever it says more than the status (a version, a run, a condition), or `null`: the cell shows the note, else the plain status. Change it with the status. |
+| `provenance` | The run the cell cites ("dev runs 2026-09-15"), described in the ledger's preamble. |
+| `languages` | Bindings the row is limited to (`csharp`, `pywin32`, `late-bound`); empty when it does not say. |
+| `majors`, `evidence` | Where it was observed, and evidence record ids. |
+
+`verified` needs `majors`, `evidence`, or the note "no version recorded" (kept for
+rows whose source said only "Verified"); `fails` and `absent` keep their wording in
+`note`.
+
 ### Update the cross-references
 
 - [INDEX.md](INDEX.md) — add the row to the right task table
-- [API-LEDGER.md](API-LEDGER.md) — add any new API member, with its status
-- [`gotchas/`](gotchas/) — add anything that cost you an hour, as a new file (below)
+- [`api-ledger.json`](api-ledger.json) — add any new API member, with its status (below)
+- [`gotchas/`](gotchas/) — add anything that cost you an hour, as a new file (above)
 - The **See also** section of every entry the new one relates to, both directions
 
 An entry nothing links to will not be found.
@@ -337,7 +359,7 @@ asks before installing one that does.
 - [ ] Code copied or generated, not recalled; complete enough to run
 - [ ] Searched the manifest; not a duplicate
 - [ ] Entry stands alone, with no dependency on an external repo
-- [ ] `manifest.json`, `gotchas.json` and `GOTCHAS.md` regenerated
+- [ ] `manifest.json`, `gotchas.json`, `GOTCHAS.md` and `API-LEDGER.md` regenerated
 - [ ] INDEX, API-LEDGER, gotchas and See-also links updated
 - [ ] Scripts: effects declared truthfully, only `ctx.Sw`, nothing closed that the script did not open, preferences restored
 - [ ] `python3 tools/validate.py` passes

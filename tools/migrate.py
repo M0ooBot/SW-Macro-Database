@@ -21,6 +21,7 @@ import sys
 
 import build_manifest
 import gotchas as gotchas_mod
+import ledger as ledger_mod
 from frontmatter import format_value, read_frontmatter
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -514,10 +515,300 @@ def migrate_gotchas() -> int:
     print(f"gotchas: {len(found)} files written, {len(ALWAYS)} always, {len(changed)} member lists changed from the proposal")
     return 0
 
+# ==========================================================================
+# step 5: the API ledger
+
+# Status cells whose wording is not a plain "Verified …", "Unverified …" or
+# "Partly verified …", with the status chosen and why.
+LEDGER_STATUS = {
+    "Observed once (the dialog), SW 2024 SP5 (32.5.0), 2026-11-02; the `0x80010105` verified, tier 7/8 2026-11-13/14": (
+        "fails", "Both halves are failures seen (a hang on a dialog, once; the 0x80010105 exception), on 2024; the note keeps \"observed once\"."),
+    "Verified; crash observed, Airfoil Converter 2026-09-16": (
+        "verified", "The call works; the crash is a condition (a user's pick), which the note and purpose keep."),
+    "Ran, SW 2024 (32.5.0), 2026-10-01": (
+        "partly-verified", "It ran without error; whether it redraws (its purpose) was not observed."),
+    "Read, SW 2024 (32.5.0), 2026-10-01": (
+        "partly-verified", "It was read; what the value means is not known."),
+    "Set, SW 2026 SP0.0, Airfoil Converter 2026-09-23": (
+        "partly-verified", "It was set; its effect on graphics was not observed, only that it did not speed a reload."),
+    "Verified for 1 and 4, verified not to work for 2, SW 2026 SP0.0, Airfoil Converter 2026-09-22": (
+        "partly-verified", "Two actions work and one does not, for one call form: neither verified nor fails as a whole."),
+    "Verified for item 3, SW 2026 SP0.0, Airfoil Converter 2026-09-22": (
+        "partly-verified", "One item of the twelve is identified; the rest were not."),
+    "Verified on a line, SW 2026 (34.0.0)": (
+        "partly-verified", "Verified on a line only; the purpose says other entities vary by version."),
+    "Verified, SW 2024 SP5 (32.5.0), 2026-10-28 (read only)": (
+        "partly-verified", "Read only, and the purpose says the meanings were not checked."),
+    "Verified, SW 2024 SP5 (32.5.0), 2026-10-28 (value suspect)": (
+        "partly-verified", "The cell itself calls the value suspect."),
+    "Verified, SW 2024 SP5 (32.5.0), 2026-11-09; exclusion not reproduced 2026-11-15": (
+        "partly-verified", "A later run found the exclusion array ignored (GOTCHAS §111), so part of the form is not reliable."),
+    "Verified not to carry through gear or lock mates on that train, Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14": (
+        "fails", "Observed not to do what the row is about (carry a drag through the train)."),
+    "Verified absent, Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14": (
+        "absent", "Observed not to exist on both versions."),
+}
+
+# Majors for cells that name no version of their own, from the preamble's
+# account of the run they cite.
+LEDGER_MAJORS = {
+    "Verified; crash observed, Airfoil Converter 2026-09-16": (
+        [34], "The preamble: rows marked \"Airfoil Converter 2026-09-16\" come from that tool's work on SolidWorks 2026."),
+}
+
+PLAIN = {"Verified": "verified", "Unverified": "unverified", "Partly verified": "partly-verified"}
+VERSION_SEGMENT = re.compile(r"\bSW \d{4}|\bSolidWorks\b|\b\d\d\.\d+\.\d+\b")
+
+
+def split_cells(line: str) -> list[str]:
+    cells = re.split(r"(?<!\\)\|", line.strip())[1:-1]
+    return [c.strip().replace("\\|", "|") for c in cells]
+
+
+def top_level_split(text: str) -> list[str]:
+    """Split on ", " outside parentheses."""
+    out, depth, cur = [], 0, ""
+    i = 0
+    while i < len(text):
+        ch = text[i]
+        depth += ch == "("
+        depth -= ch == ")"
+        if depth == 0 and text.startswith(", ", i):
+            out.append(cur)
+            cur = ""
+            i += 2
+            continue
+        cur += ch
+        i += 1
+    return out + [cur]
+
+
+def ledger_status(cell: str):
+    """(status, note, why or None) for a Status cell."""
+    if cell in LEDGER_STATUS:
+        status, why = LEDGER_STATUS[cell]
+        return status, cell, why
+    if cell == "Verified":
+        return "verified", ledger_mod.NO_VERSION, None
+    if cell in PLAIN:
+        return PLAIN[cell], None, None
+    if cell.startswith("Verified not to work"):
+        return "fails", cell, None
+    if cell.startswith("Verified absent"):
+        return "absent", cell, None
+    for word, status in (("Partly verified", "partly-verified"), ("Unverified", "unverified"), ("Verified", "verified"),
+                         ("Put verified", "verified")):
+        if cell.startswith(word):
+            return status, cell, None
+    raise ValueError(f"status cell {cell!r} matches no rule; add it to LEDGER_STATUS")
+
+
+def ledger_majors(cell: str, status: str):
+    if status == "unverified":
+        return [], None
+    if cell in LEDGER_MAJORS:
+        return LEDGER_MAJORS[cell]
+    main = cell.split(";", 1)[0]
+    majors = build_manifest.majors_named(main) or build_manifest.majors_named(cell)
+    return sorted(majors), None
+
+
+def ledger_provenance(cell: str):
+    main = cell.split(";", 1)[0]
+    if len(top_level_split(main)) < 2:
+        main = cell
+    segs = top_level_split(main)
+    last = max((i for i, s in enumerate(segs) if VERSION_SEGMENT.search(s)), default=0)
+    rest = ", ".join(segs[last + 1:]).strip()
+    rest = re.sub(r"\s*\([^()\d]*\)$", "", rest)
+    return rest or None
+
+
+def section_interface(title: str):
+    subject = title.split(" (", 1)[0]
+    names = re.findall(r"\bI[A-Z][A-Za-z0-9_]*", subject)
+    return names[0] if len(names) == 1 else None
+
+
+def row_members(form: str, interface):
+    """Every backticked name in a Member cell, qualified where the cell or the heading says.
+
+    A cell that writes an Interface.Member gives no interface to its other
+    names (they may be another object's, or pywin32's); only a cell that
+    names no interface takes the heading's.
+    """
+    paths = [m.group(0) for span in code_spans(form) for m in [LEADING_PATH.match(span)] if m]
+    def qualified(p):
+        parts = p.split(".")
+        return len(parts) == 2 and re.match(r"^I[A-Z]", parts[0])
+    cell_names_one = any(qualified(p) for p in paths)
+    out = []
+    for path in paths:
+        parts = path.split(".")
+        if qualified(path):
+            name = path
+        elif len(parts) == 1 and interface and not cell_names_one:
+            name = f"{interface}.{parts[0]}"
+        else:
+            name = parts[-1]
+        if name not in out:
+            out.append(name)
+    return out
+
+
+def parse_ledger(text: str):
+    if not text.startswith(ledger_mod.TITLE):
+        raise ValueError("API-LEDGER.md does not start with the title ledger.py holds")
+    body = text[len(ledger_mod.TITLE):]
+    first = body.find("\n## ")
+    preamble, rest = body[:first], body[first + 1:]
+    sections, rows = [], []
+    for block in re.split(r"(?m)^## ", rest)[1:]:
+        title, _, content = block.partition("\n")
+        lines = content.strip("\n").split("\n")
+        table_at = next((i for i, l in enumerate(lines) if l.startswith("| ")), None)
+        note_lines = lines if table_at is None else lines[:table_at]
+        note = "\n".join(note_lines).strip("\n") or None
+        sections.append({"title": title, "note": note})
+        if table_at is None:
+            continue
+        header = split_cells(lines[table_at])
+        interface = section_interface(title)
+        for line in lines[table_at + 2:]:
+            if not line.startswith("|"):
+                raise ValueError(f"section {title!r}: text after its table")
+            cells = dict(zip(header, split_cells(line)))
+            status, note_text, _ = ledger_status(cells["Status"])
+            majors, _ = ledger_majors(cells["Status"], status)
+            rows.append({
+                "section": title,
+                "interface": interface,
+                "members": row_members(cells["Member"], interface),
+                "form": cells["Member"],
+                "purpose": cells["Purpose"],
+                "on": cells.get("On"),
+                "status": status,
+                "note": note_text,
+                "provenance": ledger_provenance(cells["Status"]) if cells["Status"] not in PLAIN else None,
+                "languages": ["pywin32"] if "from Python" in cells["Status"] else [],
+                "majors": majors,
+                "evidence": [],
+                "_cell": cells["Status"],
+            })
+    return {"schema": 1, "preamble": preamble, "sections": sections, "rows": rows}
+
+
+def migrate_ledger() -> int:
+    source = (ROOT / "API-LEDGER.md").read_text(encoding="utf-8")
+    data = parse_ledger(source)
+    cells = [r.pop("_cell") for r in data["rows"]]
+    problems = ledger_mod.check(data, set())
+    if problems:
+        print("the converted ledger does not check:", *problems, sep="\n  ", file=sys.stderr)
+        return 1
+    if ledger_mod.render_md(data) != source:
+        print("the generated API-LEDGER.md would differ from the original; nothing written", file=sys.stderr)
+        return 1
+    (ROOT / "api-ledger.json").write_text(ledger_mod.render_json(data), encoding="utf-8")
+
+    rows = data["rows"]
+    by_cell: dict[str, list[int]] = {}
+    for i, c in enumerate(cells):
+        by_cell.setdefault(c, []).append(i)
+    out = [
+        "# Review list: API ledger (step 5)",
+        "",
+        "API-LEDGER.md is now generated from `api-ledger.json`, one row per call form as before; the",
+        "generated file was checked equal to the original before it was replaced. Each row gains a",
+        "status from the fixed set (verified, partly-verified, unverified, fails, absent), the cell's",
+        "own wording as `note`, the run it cites as `provenance`, `majors`, `members` and `interface`.",
+        "Flag only the rows you disagree with. Written by `tools/migrate.py ledger` from its",
+        "LEDGER_STATUS and LEDGER_MAJORS tables and the rules below.",
+        "",
+        f"## Status cells that needed a decision ({len(LEDGER_STATUS)})",
+        "",
+        "| Status cell (source) | Rows | Member | Chosen status | Majors | Why |",
+        "|---|---|---|---|---|---|",
+    ]
+    for cell, (status, why) in LEDGER_STATUS.items():
+        idx = by_cell.get(cell, [])
+        forms = "; ".join(rows[i]["form"] for i in idx)
+        majors = rows[idx[0]]["majors"] if idx else []
+        extra = f" Majors: {LEDGER_MAJORS[cell][1]}" if cell in LEDGER_MAJORS else ""
+        out.append(f"| {quote(cell)} | {len(idx)} | {md_cell(forms)} | **{status}** | {majors_text(majors)} | {md_cell(why + extra)} |")
+    bare = [i for i, c in enumerate(cells) if c == "Verified"]
+    out += [
+        "",
+        f"## \"Verified\" and nothing more ({len(bare)})",
+        "",
+        "The source says verified and names no version or run. Proposed `verified`, `majors: []`,",
+        f"`note: \"{ledger_mod.NO_VERSION}\"`: the cell still reads \"Verified\", and SW-Agent's `api_status`",
+        "shows the note. Flag a row to have it downgraded instead.",
+        "",
+        "| Section | Member | Purpose |",
+        "|---|---|---|",
+    ]
+    out += [f"| {md_cell(rows[i]['section'])} | {md_cell(rows[i]['form'])} | {md_cell(rows[i]['purpose'])} |" for i in bare]
+    out += [
+        "",
+        "## Every status cell, as read (rules)",
+        "",
+        "Rules: \"Verified not to work …\" is `fails`; \"Verified absent …\" is `absent`; otherwise the",
+        "first words give the status. `majors` are the versions the cell names before any semicolon",
+        "(after it only when nothing before it names one); none for `unverified`. `provenance` is",
+        "what follows the last version named (the run), or `null`. `languages` is `[pywin32]` where the",
+        "cell says \"from Python\", else `[]` (the row does not say).",
+        "",
+        "| Status cell (source) | Rows | Status | Majors | Provenance | Languages |",
+        "|---|---|---|---|---|---|",
+    ]
+    for cell, idx in sorted(by_cell.items(), key=lambda kv: (-len(kv[1]), kv[0])):
+        r = rows[idx[0]]
+        out.append(f"| {quote(cell)} | {len(idx)} | {r['status']} | {majors_text(r['majors'])} | "
+                   f"{quote(r['provenance'])} | {majors_text(r['languages'])} |")
+    out += [
+        "",
+        "## Interface by section",
+        "",
+        "A section's `interface` is the one interface its heading names before any parenthesis;",
+        "`null` when it names none or several. A row's bare members take that interface only when",
+        "the Member cell names none itself: in a cell such as `ITableAnnotation.RowCount` / `ColumnCount`",
+        "the other names stay bare. A dotted path that does not start with an interface",
+        "(`Dimension.Name`, `IDimension.Tolerance.Type`) is kept as its last name only. One heading to",
+        "look at: 'IBomFeature and the table' gives IBomFeature to its rows that name no interface",
+        "(`GetConfigurationCount`, `SetConfigurations`, `FollowAssemblyOrder2`, `TableType`).",
+        "",
+        "| Section (source) | Rows | Interface |",
+        "|---|---|---|",
+    ]
+    for s in data["sections"]:
+        n = sum(1 for r in rows if r["section"] == s["title"])
+        out.append(f"| {quote(s['title'])} | {n} | {section_interface(s['title']) or '*(null)*'} |")
+    no_members = [r for r in rows if not r["members"]]
+    odd = [r for r in rows if any("." in c and c.count(".") > 1 or (c.split(".")[0] and not c.split(".")[0].startswith("I") and "." in c)
+                                  for c in re.findall(r"\x60([A-Za-z_][\w.]*)", r["form"]))]
+    out += [
+        "",
+        "## Rows whose members need a look",
+        "",
+        "| Section | Member cell (source) | Members | Why |",
+        "|---|---|---|---|",
+    ]
+    out += [f"| {md_cell(r['section'])} | {md_cell(r['form'])} | *(none)* | No backticked name in the cell, so `api_status` cannot reach the row by member; it stays in API-LEDGER.md. |" for r in no_members]
+    out += [f"| {md_cell(r['section'])} | {md_cell(r['form'])} | {md_cell(', '.join(r['members']))} | A dotted path not of the form Interface.Member: its last name only. |" for r in odd]
+    REVIEW.mkdir(exist_ok=True)
+    (REVIEW / "review-ledger.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+    counts: dict[str, int] = {}
+    for r in rows:
+        counts[r["status"]] = counts.get(r["status"], 0) + 1
+    print(f"ledger: {len(rows)} rows in {len(data['sections'])} sections, {counts}, "
+          f"{sum(1 for r in rows if r['interface'])} rows with an interface")
+    return 0
+
 
 # ==========================================================================
 
-COMMANDS = {"entries": migrate_entries, "gotchas": migrate_gotchas}
+COMMANDS = {"entries": migrate_entries, "gotchas": migrate_gotchas, "ledger": migrate_ledger}
 
 
 def main(argv: list[str]) -> int:

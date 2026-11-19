@@ -6,7 +6,7 @@ Run from the repo root after adding or changing an entry or a gotcha:
     python3 tools/build_manifest.py
 
 It writes manifest.json (from every entry's frontmatter), gotchas.json and
-GOTCHAS.md (from gotchas/). Exits non-zero and writes nothing if any source
+GOTCHAS.md (from gotchas/), and API-LEDGER.md (from api-ledger.json). Exits non-zero and writes nothing if any source
 is malformed. That is the one automated quality gate this repo has, so it is
 deliberately strict.
 
@@ -23,6 +23,7 @@ import sys
 
 import evidence as evidence_mod
 import gotchas as gotchas_mod
+import ledger as ledger_mod
 import recipes
 from frontmatter import format_value, parse_frontmatter, read_frontmatter  # noqa: F401 (re-exported)
 
@@ -288,13 +289,17 @@ def outputs(root: pathlib.Path = ROOT):
     """(problems, {repo-relative path: text}) for every generated file; no files when any problem."""
     problems, manifest = collect(root)
     gotcha_problems, gotchas = gotchas_mod.load(root)
-    problems = problems + gotcha_problems
+    ledger_problems, ledger = ledger_mod.load(root)
+    if ledger is not None:
+        ledger_problems += ledger_mod.check(ledger, set(evidence_mod.load(root)[1]))
+    problems = problems + gotcha_problems + ledger_problems
     if problems:
         return problems, {}
     return [], {
         "manifest.json": render(manifest),
         "gotchas.json": gotchas_mod.render_json(gotchas),
         "GOTCHAS.md": gotchas_mod.render_md(gotchas),
+        "API-LEDGER.md": ledger_mod.render_md(ledger),
     }
 
 
@@ -310,6 +315,7 @@ def main() -> int:
     manifest = json.loads(files["manifest.json"])
     print(f"manifest.json: {manifest['count']} entries, {manifest['by_status']}")
     print(f"gotchas.json, GOTCHAS.md: {len(json.loads(files['gotchas.json'])['gotchas'])} gotchas")
+    print("API-LEDGER.md: from api-ledger.json")
     return 0
 
 
