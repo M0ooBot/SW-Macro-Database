@@ -276,11 +276,12 @@ python3 tools/build_manifest.py
 ```
 
 It rebuilds [`manifest.json`](manifest.json), `gotchas.json`, `GOTCHAS.md` and
-`API-LEDGER.md` from the frontmatter, the gotcha files and `api-ledger.json`, and
-fails if
-an entry is missing a key or has an unknown one, has a duplicate `id`, lists a
-major its `verified_on` does not name, claims `verified` with no observation,
-or names an evidence record that does not exist or is about something else.
+`API-LEDGER.md` from the frontmatter, the gotcha files and `api-ledger.json`. It
+writes nothing if an entry is missing a key or has an unknown one, has a
+duplicate `id`, lists a major its `verified_on` does not name, claims
+`verified` with no observation, or names an evidence record that does not exist
+or is about something else; the same goes for a gotcha or a ledger row that
+breaks its rules.
 Commit the regenerated files.
 
 ### Gotchas are one file each
@@ -317,7 +318,7 @@ rows whose source said only "Verified"); `fails` and `absent` keep their wording
 ### Update the cross-references
 
 - [INDEX.md](INDEX.md) — add the row to the right task table
-- [`api-ledger.json`](api-ledger.json) — add any new API member, with its status (below)
+- [`api-ledger.json`](api-ledger.json) — add any new API member, with its status (above)
 - [`gotchas/`](gotchas/) — add anything that cost you an hour, as a new file (above)
 - The **See also** section of every entry the new one relates to, both directions
 
@@ -334,8 +335,10 @@ python3 tools/validate.py
 ```
 
 The same check runs on every pull request and must pass before a merge. It
-re-runs the manifest checks, confirms the committed `manifest.json` is current,
-validates every script, and builds the release package once.
+re-runs the source checks, confirms every generated file is current, validates
+every script and its evidence, builds the release package once and runs the
+packaged `lookup.py --self-test` on it, writes the release notes, and runs the
+unit tests in `tools/tests/`.
 
 ### How changes get in
 
