@@ -3,12 +3,12 @@
   "title": "Convert a folder of STEP files to SolidWorks parts and assemblies",
   "entry": "entries/files/01-batch-convert-step.md",
   "status": "unverified",
-  "verified_on": null,
-  "evidence": null,
+  "evidence": [],
   "effects": "writes-new-files",
   "irreversible": false,
   "supportsDryRun": true,
   "timeoutMinutes": 120,
+  "openTargets": false,
   "params": [
     {
       "name": "sourceFolder",

@@ -140,10 +140,11 @@ need new SolidWorks runs.
 ## Prebuilt scripts
 
 `scripts/` holds parameterised C# scripts for common tasks. They ship in every
-release and run inside SolidWorks File Manager, which supplies the SolidWorks
-connection, backs up what a script declares it will modify, and re-checks the
-result. C# is the only runnable format: VBScript is deprecated, Python needs
-installs, and VBA macros (`.swp`) are binary and cannot be reviewed.
+release and run inside SW-Agent, the local bridge that owns the SolidWorks
+connection: it hands the script `ctx`, backs up what the script declares it
+will modify, and re-checks the result. C# is the only runnable format: VBScript
+is deprecated, Python needs installs, and VBA macros (`.swp`) are binary and
+cannot be reviewed.
 
 Each script is a folder `scripts/<id>/` with `script.json` (what it needs and
 what it does) and `script.csx` (the code). Every rule above applies, plus:
@@ -151,15 +152,23 @@ what it does) and `script.csx` (the code). Every rule above applies, plus:
 - **Link an entry.** `entry` names the entry that explains the method. A script
   is the runnable form of knowledge that already lives in an entry.
 - **`status` is about this exact script.** A port of verified code is
-  `unverified` until the script itself has run and been observed. Evidence goes
-  in `evidence`, the version in `verified_on`.
-- **Declare effects truthfully.** `read-only`, `writes-new-files` (only inside
+  `unverified` until the script itself has run and been observed. `verified`
+  needs a passing `full` evidence record of the script, listed in `evidence`
+  (an id list); the script's majors are those of its passing records.
+- **Declare effects truthfully.** `read-only`, `edits-open-document` (edits
+  documents that are open, in memory, and saves nothing: exactly one param with
+  `role: targets`, none with `role: output`), `writes-new-files` (only inside
   the param with `role: output`) or `modifies-models` (only the files in the
   param with `role: targets`, which the host backs up first). Set
   `irreversible: true` when undoing is impossible, such as a file-version upgrade.
+- **`openTargets`** (`true` or `false`): `true` says the script may be given
+  documents the user has open, because it opens and closes only through
+  `Kit.Docs`, which never closes what it did not open; such a script may not
+  call `OpenDoc6`, `OpenDoc7`, `LoadFile4`, `CloseDoc` or `QuitDoc` itself.
+  With `false` the host refuses open targets ("close X first").
 - **Use only `ctx.Sw`.** Never attach to or start SolidWorks yourself.
 - **Never close a document the script did not open.** Close only what you
-  opened, by its own title.
+  opened, by its own title. `CloseAllDocuments` is refused in every script.
 - **Restore any user preference you change**, in `finally`. If you cannot read
   a preference first, do not change it.
 - **Report every file** through `ctx.Wrote` / `ctx.Modified`, and failures
@@ -170,7 +179,8 @@ what it does) and `script.csx` (the code). Every rule above applies, plus:
 - Synchronous code only: no asynchronous waits, no network, no processes, no
   `#r` directives.
 
-`python3 tools/validate.py` checks the header and the forbidden calls.
+`python3 tools/validate.py` checks `script.json`, the evidence and the forbidden
+calls.
 
 ---
 
@@ -361,5 +371,5 @@ asks before installing one that does.
 - [ ] Entry stands alone, with no dependency on an external repo
 - [ ] `manifest.json`, `gotchas.json`, `GOTCHAS.md` and `API-LEDGER.md` regenerated
 - [ ] INDEX, API-LEDGER, gotchas and See-also links updated
-- [ ] Scripts: effects declared truthfully, only `ctx.Sw`, nothing closed that the script did not open, preferences restored
+- [ ] Scripts: effects declared truthfully, `openTargets` set, only `ctx.Sw`, nothing closed that the script did not open, preferences restored
 - [ ] `python3 tools/validate.py` passes

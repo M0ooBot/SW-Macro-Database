@@ -3,12 +3,12 @@
   "title": "Re-save files in the running SolidWorks version's file format",
   "entry": "entries/files/03-upgrade-file-version.md",
   "status": "unverified",
-  "verified_on": null,
-  "evidence": null,
+  "evidence": [],
   "effects": "modifies-models",
   "irreversible": true,
   "supportsDryRun": true,
   "timeoutMinutes": 120,
+  "openTargets": false,
   "params": [
     {
       "name": "targets",

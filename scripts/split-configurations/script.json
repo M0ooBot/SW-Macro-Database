@@ -3,12 +3,12 @@
   "title": "Write one part file per configuration of a configurable part",
   "entry": "entries/files/02-explode-configurations.md",
   "status": "unverified",
-  "verified_on": null,
-  "evidence": null,
+  "evidence": [],
   "effects": "writes-new-files",
   "irreversible": false,
   "supportsDryRun": true,
   "timeoutMinutes": 60,
+  "openTargets": false,
   "params": [
     {
       "name": "masters",
