@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-01-attach-vbscript
 title: Attach to a running SolidWorks from VBScript
+answers: "How do I reach an already-open SolidWorks from a standalone script?"
+keywords: [attach, connect, running object table, progid, GetObject, error 429, cscript, generated script]
+api: [GetObject, CreateObject, ISldWorks.Visible]
+language: [vbscript]
 status: verified
 verified_on: SolidWorks 2026
-language: [vbscript]
-api: [GetObject, CreateObject, ISldWorks.Visible]
-keywords: [attach, connect, running object table, progid, GetObject, error 429, cscript, generated script]
-answers: "How do I reach an already-open SolidWorks from a standalone script?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Attach to a running SolidWorks from VBScript

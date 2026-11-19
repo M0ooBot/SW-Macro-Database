@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: documents-02-save-as-and-close
 title: Save a document to a new path, and close it
+answers: "How do I save a new document to a path from code, and close a document without a prompt?"
+keywords: [SaveAs3, save as, overwrite, silent overwrite, swSaveAsOptions_Silent, swSaveAsCurrentVersion, out parameter, tuple, CloseDoc, close without saving, GetSaveFlag, GetPathName, unsaved changes, QuitDoc, Save Modified Documents dialog, modal dialog hangs, SOLIDWORKS CAM Warning, close an assembly, 0x80010105, document will not close]
+api: [IModelDocExtension.SaveAs3, IModelDoc2.SaveAs3, IModelDoc2.GetPathName, IModelDoc2.GetTitle, IModelDoc2.GetSaveFlag, ISldWorks.CloseDoc, ISldWorks.QuitDoc]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0); closing assemblies also on 34.1.1 and SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IModelDocExtension.SaveAs3, IModelDoc2.SaveAs3, IModelDoc2.GetPathName, IModelDoc2.GetTitle, IModelDoc2.GetSaveFlag, ISldWorks.CloseDoc, ISldWorks.QuitDoc]
-keywords: [SaveAs3, save as, overwrite, silent overwrite, swSaveAsOptions_Silent, swSaveAsCurrentVersion, out parameter, tuple, CloseDoc, close without saving, GetSaveFlag, GetPathName, unsaved changes, QuitDoc, Save Modified Documents dialog, modal dialog hangs, SOLIDWORKS CAM Warning, close an assembly, 0x80010105, document will not close]
-answers: "How do I save a new document to a path from code, and close a document without a prompt?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Save a document to a new path, and close it

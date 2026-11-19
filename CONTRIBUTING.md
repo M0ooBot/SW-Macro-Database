@@ -52,6 +52,13 @@ a test passed that did not involve SolidWorks. Only running it counts.
 **Downgrading is always allowed and never needs permission.** If you find
 something that contradicts an entry, change the status and say what you found.
 
+The status is the entry's whole claim, and there is one. The code an entry
+shows may be in several languages; `verified_on` says what was run, so a
+`verified` earned in Python reads as such. A C# recipe (below) has its own
+`recipe_status`, because it is separate code that was or was not run.
+`verified` also needs an observation the tools can see: `majors` named in
+`verified_on`, or a passing `full` evidence record.
+
 ## Rule 3 — Code must be real
 
 Copy it from something that ran, or generate it with the tool that generates
@@ -102,7 +109,9 @@ have cost real time when omitted.
 ## Rule 8 — Say which version, and do not generalise past it
 
 "Verified on SolidWorks 2026" is a fact. "Works on SolidWorks" is a guess
-dressed as a fact. Majors: 32 is 2024, 33 is 2025, 34 is 2026.
+dressed as a fact. Majors: 32 is 2024, 33 is 2025, 34 is 2026. `majors` lists
+the revision majors the whole claim was run on, and only those: a part of the
+claim seen "also on 2024" does not make 2024 a major of the entry.
 
 ## Rule 9 — The entry must stand alone
 
@@ -116,8 +125,17 @@ If an entry turns out to be wrong, correct it and say what was wrong. Deleting
 the claim loses the information that someone once believed it, which is the
 thing that stops it being rediscovered.
 
-Retire an entry by setting `status: superseded` and linking to what replaced it.
-Keep the file.
+Retire an entry by setting `superseded_by` to the id of the entry that replaced
+it, and linking to that entry in the body. Keep the file and its last `status`;
+the manifest shows it as `superseded`.
+
+## Rule 11 — New code is Python or a C# recipe
+
+Going forward, the code in a new entry is **Python** (pywin32) or a **C# recipe**
+(the entry's `.csx` sidecar, below). VBA or VBScript only in an entry about VBA
+or VBScript themselves. Existing VBA, VBScript, TypeScript, shell and stand-alone
+C# code stays where it is: it is verified knowledge, and translating it would
+need new SolidWorks runs.
 
 ## Prebuilt scripts
 
@@ -162,19 +180,84 @@ what it does) and `script.csx` (the code). Every rule above applies, plus:
 
 ```yaml
 ---
-id: curves-02-insert-curve-from-file      # unique, kebab-case, stable forever
+schema: 2
+id: curves-02-insert-curve-from-file
 title: Insert a curve from a file as a new feature
-status: verified                          # verified | partly-verified | unverified | superseded
-verified_on: SolidWorks 2026              # or null
-language: [vbscript, python]              # vba | vbscript | python | csharp | typescript | any | n/a
-api: [IModelDoc2.InsertCurveFile]         # members this entry teaches, Interface.Member
-keywords: [InsertCurveFile, error 438]    # what someone would grep for, including error numbers
 answers: "How do I import a .sldcrv file as a feature from code?"
+keywords: [InsertCurveFile, error 438]
+api: [IModelDoc2.InsertCurveFile]
+language: [vbscript, python]
+status: verified
+verified_on: SolidWorks 2026
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 ```
 
-`id` never changes once published. Other entries link by path, and the manifest
-keys on it.
+Every key is always present, in this order, and no others. One `key: value` per
+line: a value is text (quote it if it starts with a quote or a bracket), `null`,
+`true`/`false`, or an inline list `[a, b]`. No comments after a value.
+
+| Key | What it holds |
+|---|---|
+| `schema` | `2` |
+| `id` | Unique, kebab-case, stable forever. Other entries link by path, and the manifest keys on it. |
+| `title` | What the entry teaches, as a noun phrase. |
+| `answers` | The question a future agent would type, ending in `?`. |
+| `keywords` | What someone would search for, including error numbers. Not empty. |
+| `api` | Members this entry teaches, as `Interface.Member`. May be empty for a file format or a convention. |
+| `language` | The code the entry shows: `python`, `csharp-standalone`, `vba`, `vbscript`, `typescript`, `shell`, `powershell`; empty when it shows none. Not `csharp`: C# that SW-Agent runs is the recipe sidecar, and any other C# is `csharp-standalone`. |
+| `status` | `verified`, `partly-verified` or `unverified` (Rule 2). |
+| `verified_on` | What was run, on what, as text, or `null`. |
+| `majors` | The revision majors the whole claim was run on, ascending, e.g. `[32, 34]`. Each must be named in `verified_on`, as a revision (`34.1.1`) or a year (2026). |
+| `evidence` | Ids of evidence records (below) for this entry. |
+| `recipe_status` | The C# recipe's status, or `null` when the entry has no recipe. |
+| `recipe_evidence` | Ids of evidence records for the recipe. |
+| `superseded_by` | The id of the entry that replaced this one, or `null` (Rule 10). |
+
+### Evidence records
+
+A verification made from now on gets a record, `evidence/<id>.json`, and its id
+goes in the subject's `evidence` (an entry's, a recipe's `recipe_evidence`, or a
+script's `evidence` in its `script.json`). Start from
+[`evidence/_TEMPLATE.json`](evidence/_TEMPLATE.json):
+
+| Field | What it holds |
+|---|---|
+| `id` | The file name without `.json`, kebab-case: date, subject, language, major. |
+| `subject` | The entry id or script id the record is about. |
+| `language` | The code that ran: an entry `language` value, or `csharp` for a recipe or script. |
+| `swRevision`, `major` | `RevisionNumber` as read (`"32.5.0"`, or `null` if only the major is known) and its major. |
+| `date` | `YYYY-MM-DD`. |
+| `method` | `smoke` (SW-Agent's smoke run), `contribution`, `probe` or `manual`. |
+| `result`, `scope` | `pass` or `fail`; `full` (the whole claim) or `partial`. |
+| `observed` | What was seen: counts, return values, errors. No paths, user names or file names: this is published. |
+
+A failed run is recorded too (Rule 6). A subject's effective majors are its
+own `majors` plus those of its passing records.
+
+### C# recipes
+
+A recipe is an entry's C# in the form SW-Agent runs: a script body using `ctx`
+and `Kit`, in a sidecar next to the entry, `NN-slug.csx`. The sidecar exists if
+and only if `recipe_status` is set. It starts with its header, before any code:
+
+```
+// recipe-effects: read-only
+// recipe-param: depth number required Extrusion depth in mm.
+// recipe-param: name string optional Feature name; default "Boss".
+```
+
+`recipe-effects` is exactly one of `read-only`, `edits-open-document`,
+`modifies-models` or `writes-new-files`. Each `recipe-param` gives a camelCase
+name, a type (`string`, `bool`, `int`, `number`, `file`, `files`, `folder`),
+`required` or `optional`, and a description. The code reads its inputs only
+through `ctx.Params`: the declared names, plus `targets` and `output`, which the
+host supplies and which are never declared. `recipe_status: verified` needs a
+passing `full` record with `method: smoke` in `recipe_evidence`.
 
 ### After any change, regenerate the manifest
 
@@ -183,8 +266,10 @@ python3 tools/build_manifest.py
 ```
 
 It rebuilds [`manifest.json`](manifest.json) from the frontmatter and fails if
-an entry is missing a required field, has a duplicate `id`, or claims
-`status: verified` with no `verified_on`. Commit the regenerated file.
+an entry is missing a key or has an unknown one, has a duplicate `id`, lists a
+major its `verified_on` does not name, claims `verified` with no observation,
+or names an evidence record that does not exist or is about something else.
+Commit the regenerated file.
 
 ### Update the cross-references
 
@@ -231,9 +316,10 @@ asks before installing one that does.
 
 ## Checklist before you commit
 
-- [ ] Frontmatter complete, `id` unique, `answers` is a real question
-- [ ] `status` matches the evidence actually in the body
+- [ ] Frontmatter complete (schema 2, every key), `id` unique, `answers` is a real question
+- [ ] `status` matches the evidence actually in the body; `majors` only the versions the whole claim ran on
 - [ ] `verified` entries name the version and say what was observed
+- [ ] New code is Python or a C# recipe (Rule 11); a new verification has its evidence record
 - [ ] Every API member attributed to its interface
 - [ ] Units stated wherever the boundary is crossed
 - [ ] No guessed calls; limits named instead

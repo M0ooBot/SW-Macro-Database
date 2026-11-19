@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: drawings-06-alternate-position-views
 title: Show an assembly's other positions as phantom lines in a drawing view
+answers: "How do I draw an assembly in one position with its other positions overlaid as phantom lines, from configurations, and make sure each pose is the right one?"
+keywords: [alternate position view, phantom lines, motion drawing, range of motion, two positions one view, InsertAlternateView, ReferencedConfiguration, configuration in drawing view, wrong pose in drawing, view shows wrong configuration, last solved position, delete alternate position, Alternate Position1, DRAWINGVIEW]
+api: [IView.InsertAlternateView, IView.ReferencedConfiguration, IView.Type, IModelDoc2.ShowConfiguration2, IModelDoc2.ForceRebuild3, IModelDocExtension.SelectByID2, IModelDoc2.EditDelete, ISldWorks.ActivateDoc3]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IView.InsertAlternateView, IView.ReferencedConfiguration, IView.Type, IModelDoc2.ShowConfiguration2, IModelDoc2.ForceRebuild3, IModelDocExtension.SelectByID2, IModelDoc2.EditDelete, ISldWorks.ActivateDoc3]
-keywords: [alternate position view, phantom lines, motion drawing, range of motion, two positions one view, InsertAlternateView, ReferencedConfiguration, configuration in drawing view, wrong pose in drawing, view shows wrong configuration, last solved position, delete alternate position, Alternate Position1, DRAWINGVIEW]
-answers: "How do I draw an assembly in one position with its other positions overlaid as phantom lines, from configurations, and make sure each pose is the right one?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Show an assembly's other positions as phantom lines in a drawing view

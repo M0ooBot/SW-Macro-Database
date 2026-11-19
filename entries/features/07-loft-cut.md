@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-07-loft-cut
 title: Cut a loft between two sketched sections
+answers: "How do I make a lofted cut between two closed sketches from code?"
+keywords: [InsertCutBlend, lofted cut, loft cut, cut loft, blend, BlendCut, loft profiles, selection mark 1, section order, frustum, tapered cut, bevel tooth space, 12 arguments]
+api: [IFeatureManager.InsertCutBlend, IFeature.Select2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IFeatureManager.InsertCutBlend, IFeature.Select2]
-keywords: [InsertCutBlend, lofted cut, loft cut, cut loft, blend, BlendCut, loft profiles, selection mark 1, section order, frustum, tapered cut, bevel tooth space, 12 arguments]
-answers: "How do I make a lofted cut between two closed sketches from code?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Cut a loft between two sketched sections

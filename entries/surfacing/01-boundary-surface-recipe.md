@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: surfacing-01-boundary-surface-recipe
 title: The boundary surface recipe, and generating it
+answers: "Which parts of building a surface from curves are automatable, and what stays manual?"
+keywords: [boundary surface, loft, knit, trim, planar, fill, manual steps, recipe, surface]
+api: []
+language: []
 status: verified
 verified_on: SolidWorks 2026
-language: [n/a]
-api: []
-keywords: [boundary surface, loft, knit, trim, planar, fill, manual steps, recipe, surface]
-answers: "Which parts of building a surface from curves are automatable, and what stays manual?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # The boundary surface recipe, and generating it

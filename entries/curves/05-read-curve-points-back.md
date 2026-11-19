@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-05-read-curve-points-back
 title: Read a curve's points back out
+answers: "How do I check what a curve feature actually contains?"
+keywords: [PointArray, read curve, curve points, metres, round trip, verify]
+api: [IFeature.GetDefinition, PointArray]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026
-language: [python]
-api: [IFeature.GetDefinition, PointArray]
-keywords: [PointArray, read curve, curve points, metres, round trip, verify]
-answers: "How do I check what a curve feature actually contains?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Read a curve's points back out

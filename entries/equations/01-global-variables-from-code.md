@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: equations-01-global-variables-from-code
 title: Add, read and change global variables in the Equation Manager
+answers: "How do I add, read and change global variables in the Equation Manager from code?"
+keywords: [equation manager, global variable, IEquationMgr, Add2, Add3, -1, Equation, indexed property, property put, SetEquationAndConfigurationOption, sqr, sqr(0), IIF, precedence, comparison, degrees, radians, sin, pi, parametric, Status, atn, arctan, arcsin, arccos, inverse trig, inverse tangent, Delete removes equation, Add3 -1 multi configuration, virtual part equation, in-context equation, swInConfigurationOpts_e]
+api: [IModelDoc2.GetEquationMgr, IEquationMgr.Add2, IEquationMgr.Add3, IEquationMgr.GetCount, IEquationMgr.Equation, IEquationMgr.Value, IEquationMgr.GlobalVariable, IEquationMgr.Delete, IEquationMgr.Status, IEquationMgr.SetEquationAndConfigurationOption, IEquationMgr.AngularEquationUnits, IModelDoc2.ForceRebuild3]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IModelDoc2.GetEquationMgr, IEquationMgr.Add2, IEquationMgr.Add3, IEquationMgr.GetCount, IEquationMgr.Equation, IEquationMgr.Value, IEquationMgr.GlobalVariable, IEquationMgr.Delete, IEquationMgr.Status, IEquationMgr.SetEquationAndConfigurationOption, IEquationMgr.AngularEquationUnits, IModelDoc2.ForceRebuild3]
-keywords: [equation manager, global variable, IEquationMgr, Add2, Add3, -1, Equation, indexed property, property put, SetEquationAndConfigurationOption, sqr, sqr(0), IIF, precedence, comparison, degrees, radians, sin, pi, parametric, Status, atn, arctan, arcsin, arccos, inverse trig, inverse tangent, Delete removes equation, Add3 -1 multi configuration, virtual part equation, in-context equation, swInConfigurationOpts_e]
-answers: "How do I add, read and change global variables in the Equation Manager from code?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Add, read and change global variables in the Equation Manager

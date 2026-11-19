@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: files-01-batch-convert-step
 title: Batch-convert a tree of STEP files to SolidWorks parts
+answers: "How do I import a folder of STEP files and save each one as a SolidWorks part?"
+keywords: [STEP, stp, neutral format, import, batch convert, LoadFile4, OpenDoc6, error 2097152, swFileRequiresRepairError, swInvalidFileTypeError, 1024, task scheduler, SLDPRT, resumable]
+api: [ISldWorks.LoadFile4, ISldWorks.CloseDoc, ISldWorks.SetUserPreferenceToggle, IModelDoc2.GetType, IModelDoc2.SaveAs3, IModelDocExtension.SaveAs]
+language: [vba, csharp-standalone]
 status: partly-verified
 verified_on: SolidWorks 2026 SP1.1 for the C# converter; the VBA macro is the same sequence with a different save call and was not run end to end
-language: [vba, csharp]
-api: [ISldWorks.LoadFile4, ISldWorks.CloseDoc, ISldWorks.SetUserPreferenceToggle, IModelDoc2.GetType, IModelDoc2.SaveAs3, IModelDocExtension.SaveAs]
-keywords: [STEP, stp, neutral format, import, batch convert, LoadFile4, OpenDoc6, error 2097152, swFileRequiresRepairError, swInvalidFileTypeError, 1024, task scheduler, SLDPRT, resumable]
-answers: "How do I import a folder of STEP files and save each one as a SolidWorks part?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Batch-convert a tree of STEP files to SolidWorks parts

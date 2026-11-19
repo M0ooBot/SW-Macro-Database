@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-02-mates-from-code
 title: Add coincident, distance and angle mates
+answers: "How do I add coincident, distance and angle mates between assembly components from code?"
+keywords: [AddMate5, mate, coincident mate, distance mate, angle mate, swMateType_e, swMateCOINCIDENT, swMateDISTANCE, swMateANGLE, swMateAlign_e, MateGroup, MateCoincident, MateDistanceDim, MatePlanarAngleDim, FeatureByName, selection mark 1, drive mate from global, mate refused, AddMate5 status 0, AddMate5 status 5, over-defined assembly, swAddMateError_OverDefinedAssembly, GetErrorCode2 46, GetErrorCode2 47, GetErrorCode2 51, IsWarning, GetWhatsWrong, GetConstrainedStatus 4, delete a mate, EditDelete, DeleteSelection2, rename a mate, find a mate by name, suppressed mate error code 0, unsuppress marks modified]
+api: [IAssemblyDoc.AddMate5, IComponent2.FeatureByName, IFeature.Select2, IModelDocExtension.SelectByID2, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IEquationMgr.Add2, IFeature.GetErrorCode2, IComponent2.GetConstrainedStatus, IModelDocExtension.GetWhatsWrongCount, IModelDocExtension.GetWhatsWrong, IModelDoc2.EditDelete, IFeature.Name, IModelDoc2.FeatureByName]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revisions 34.0.0 and 34.1.1); failing mates, deleting and renaming also on SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IAssemblyDoc.AddMate5, IComponent2.FeatureByName, IFeature.Select2, IModelDocExtension.SelectByID2, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IEquationMgr.Add2, IFeature.GetErrorCode2, IComponent2.GetConstrainedStatus, IModelDocExtension.GetWhatsWrongCount, IModelDocExtension.GetWhatsWrong, IModelDoc2.EditDelete, IFeature.Name, IModelDoc2.FeatureByName]
-keywords: [AddMate5, mate, coincident mate, distance mate, angle mate, swMateType_e, swMateCOINCIDENT, swMateDISTANCE, swMateANGLE, swMateAlign_e, MateGroup, MateCoincident, MateDistanceDim, MatePlanarAngleDim, FeatureByName, selection mark 1, drive mate from global, mate refused, AddMate5 status 0, AddMate5 status 5, over-defined assembly, swAddMateError_OverDefinedAssembly, GetErrorCode2 46, GetErrorCode2 47, GetErrorCode2 51, IsWarning, GetWhatsWrong, GetConstrainedStatus 4, delete a mate, EditDelete, DeleteSelection2, rename a mate, find a mate by name, suppressed mate error code 0, unsuppress marks modified]
-answers: "How do I add coincident, distance and angle mates between assembly components from code?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Add coincident, distance and angle mates

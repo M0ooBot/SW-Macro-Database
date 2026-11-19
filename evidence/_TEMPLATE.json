@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-25-sketches-04-cs-32",
+  "subject": "sketches-04-dimensions",
+  "language": "csharp",
+  "swRevision": "32.5.0",
+  "major": 32,
+  "date": "2026-11-25",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "Closed profile of 4 lines on Front Plane; sketch fully defined."
+}

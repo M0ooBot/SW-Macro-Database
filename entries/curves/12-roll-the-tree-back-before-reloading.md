@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-12-roll-the-tree-back-before-reloading
 title: Roll the tree back before reloading curves, because a reload is charged for the tree below it
+answers: "Why does reloading each curve take 25 seconds on a big part, and how do I make it half a second?"
+keywords: [EditRollback, swMoveRollbackBarTo_e, rollback bar, roll back, roll forward, previous position, slow reload, LoadPointsFromFile slow, ModifyDefinition slow, 25 seconds per curve, IsRolledBack, FeatureByPositionReverse, GetRollbackBarPosition, rolled back part, loft with no faces, insert at the bar]
+api: [IFeatureManager.EditRollback, IModelDoc2.FeatureByPositionReverse, IFeature.IsRolledBack, IFeature.ModifyDefinition, IModelDoc2.EditRebuild3, IFeatureManager.EnableFeatureTree, IModelView.EnableGraphicsUpdate]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 SP0.0 (revision 34.0.0)
-language: [python]
-api: [IFeatureManager.EditRollback, IModelDoc2.FeatureByPositionReverse, IFeature.IsRolledBack, IFeature.ModifyDefinition, IModelDoc2.EditRebuild3, IFeatureManager.EnableFeatureTree, IModelView.EnableGraphicsUpdate]
-keywords: [EditRollback, swMoveRollbackBarTo_e, rollback bar, roll back, roll forward, previous position, slow reload, LoadPointsFromFile slow, ModifyDefinition slow, 25 seconds per curve, IsRolledBack, FeatureByPositionReverse, GetRollbackBarPosition, rolled back part, loft with no faces, insert at the bar]
-answers: "Why does reloading each curve take 25 seconds on a big part, and how do I make it half a second?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Roll the tree back before reloading curves

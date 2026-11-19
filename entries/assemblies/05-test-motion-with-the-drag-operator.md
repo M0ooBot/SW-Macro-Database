@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-05-test-motion-with-the-drag-operator
 title: Test whether an assembly can move, with the drag operator
+answers: "How do I find out from code whether an assembly can move, and which mate is stopping it?"
+keywords: [gear mate does not propagate, DragAsUI, TransformType 0 1 2, drag operator, GetDragOperator, IDragOperator, BeginDrag, EndDrag, move component, rotate component, motion test, mechanism will not move, linkage locked, gear mate, mate diagnosis, which mate locks, suppress mate, EntityParams, error 51, Transform2 put, EditRebuild3, DragMode 0 1 2 3, SetTransformAndSolve2, gear train will not turn from code, drag does not carry through gear mate, lock mate drag, axis coincident]
+api: [IAssemblyDoc.GetDragOperator, IDragOperator.AddComponent, IDragOperator.TransformType, IDragOperator.UseAbsoluteTransform, IDragOperator.BeginDrag, IDragOperator.Drag, IDragOperator.EndDrag, IMateEntity2.EntityParams, IFeature.SetSuppression2, IFeature.GetErrorCode2, IComponent2.Transform2, IDragOperator.DragAsUI, IDragOperator.DragMode, IComponent2.SetTransformAndSolve2]
+language: [python]
 status: partly-verified
 verified_on: SolidWorks 2024 SP5 (32.5.0); the gear-train drags also on SolidWorks 2026 (revisions 34.0.0 and 34.1.1)
-language: [python]
-api: [IAssemblyDoc.GetDragOperator, IDragOperator.AddComponent, IDragOperator.TransformType, IDragOperator.UseAbsoluteTransform, IDragOperator.BeginDrag, IDragOperator.Drag, IDragOperator.EndDrag, IMateEntity2.EntityParams, IFeature.SetSuppression2, IFeature.GetErrorCode2, IComponent2.Transform2, IDragOperator.DragAsUI, IDragOperator.DragMode, IComponent2.SetTransformAndSolve2]
-keywords: [gear mate does not propagate, DragAsUI, TransformType 0 1 2, drag operator, GetDragOperator, IDragOperator, BeginDrag, EndDrag, move component, rotate component, motion test, mechanism will not move, linkage locked, gear mate, mate diagnosis, which mate locks, suppress mate, EntityParams, error 51, Transform2 put, EditRebuild3, DragMode 0 1 2 3, SetTransformAndSolve2, gear train will not turn from code, drag does not carry through gear mate, lock mate drag, axis coincident]
-answers: "How do I find out from code whether an assembly can move, and which mate is stopping it?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Test whether an assembly can move, with the drag operator

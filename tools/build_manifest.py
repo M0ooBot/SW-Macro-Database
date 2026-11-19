@@ -29,16 +29,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 STATUSES = {"verified", "partly-verified", "unverified", "superseded"}
 
 # --------------------------------------------------------------------------
-# schema 1 (read until every entry is migrated)
-
-REQUIRED = ["id", "title", "status", "language", "api", "keywords", "answers"]
-# `api` may legitimately be empty: an entry about a file format or a convention
-# teaches no member. It must still be present, so its absence is a decision.
-MAY_BE_EMPTY = {"api"}
-LIST_FIELDS = {"language", "api", "keywords"}
-
-# --------------------------------------------------------------------------
-# schema 2 (SPEC: one status for the entry, one for its C# recipe)
+# Entry frontmatter, schema 2: one status for the entry, one for its C# recipe
 
 KEYS_2 = ["schema", "id", "title", "answers", "keywords", "api", "language", "status",
           "verified_on", "majors", "evidence", "recipe_status", "recipe_evidence", "superseded_by"]
@@ -112,22 +103,6 @@ def check_index(root: pathlib.Path, paths: list[str]) -> list[str]:
 
 def entry_paths(root: pathlib.Path) -> list[pathlib.Path]:
     return sorted(p for p in (root / "entries").rglob("*.md") if not p.name.startswith("_"))
-
-
-def check_entry_1(rel: str, fm: dict, problems: list[str]) -> None:
-    for field in REQUIRED:
-        if field not in fm:
-            problems.append(f"{rel}: missing field '{field}'")
-        elif fm[field] in (None, "", []) and field not in MAY_BE_EMPTY:
-            problems.append(f"{rel}: empty field '{field}'")
-    status = fm.get("status")
-    if status not in STATUSES:
-        problems.append(f"{rel}: status {status!r} is not one of {sorted(STATUSES)}")
-    if status == "verified" and not fm.get("verified_on"):
-        problems.append(f"{rel}: status 'verified' requires verified_on naming the version")
-    for field in LIST_FIELDS:
-        if field in fm and not isinstance(fm[field], list):
-            problems.append(f"{rel}: '{field}' must be an inline list, e.g. [a, b]")
 
 
 def check_entry_2(rel: str, path: pathlib.Path, fm: dict, records: dict, problems: list[str]) -> dict:
@@ -237,14 +212,8 @@ def collect(root: pathlib.Path = ROOT):
             continue
         problems.extend(f"{rel}: {p}" for p in fm_problems)
 
-        schema = fm.get("schema")
-        if schema is None:
-            check_entry_1(rel, fm, problems)
-            status = fm.get("status")
-            extra = None
-        else:
-            extra = check_entry_2(rel, path, fm, evidence_records, problems)
-            status = fm.get("status")
+        extra = check_entry_2(rel, path, fm, evidence_records, problems)
+        status = fm.get("status")
 
         entry_id = fm.get("id")
         if entry_id:
@@ -268,11 +237,10 @@ def collect(root: pathlib.Path = ROOT):
             "keywords": fm.get("keywords", []),
             "answers": answers,
         })
-        if extra is not None:
-            superseded_by = fm.get("superseded_by")
-            if superseded_by is not None:
-                records[-1]["status"] = "superseded"
-            records[-1]["_superseded_by"] = superseded_by
+        superseded_by = fm.get("superseded_by")
+        if superseded_by is not None:
+            records[-1]["status"] = "superseded"
+        records[-1]["_superseded_by"] = superseded_by
 
     for r in records:
         target = r.pop("_superseded_by", None)

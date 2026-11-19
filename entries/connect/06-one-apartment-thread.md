@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-06-one-apartment-thread
 title: Put every COM call on one apartment thread
+answers: "How do I stop COM calls blowing up or freezing my UI?"
+keywords: [STA, apartment, thread, marshalling, BlockingCollection, CoInitializeEx, COINIT_APARTMENTTHREADED, modal dialog, blocking]
+api: [CoInitializeEx, Marshal.FinalReleaseComObject]
+language: [csharp-standalone, python]
 status: verified
 verified_on: SolidWorks 2026
-language: [csharp, python]
-api: [CoInitializeEx, Marshal.FinalReleaseComObject]
-keywords: [STA, apartment, thread, marshalling, BlockingCollection, CoInitializeEx, COINIT_APARTMENTTHREADED, modal dialog, blocking]
-answers: "How do I stop COM calls blowing up or freezing my UI?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Put every COM call on one apartment thread

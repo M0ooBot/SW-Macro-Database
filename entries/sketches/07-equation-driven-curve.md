@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: sketches-07-equation-driven-curve
 title: Draw an equation driven curve, and drive it from globals
+answers: "How do I draw an equation driven curve from code, and make it follow global variables?"
+keywords: [equation driven curve, CreateEquationSpline2, parametric curve, involute, x(t) y(t), radians, degrees, 180/pi, refused, returns None, global variable in curve, GetPoints2, sgFIXED, curve end point, spline]
+api: [ISketchManager.CreateEquationSpline2, ISketchSpline.GetPoints2, ISketchSegment.GetType, ISketch.GetSketchPoints2, IModelDoc2.SketchAddConstraints]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [ISketchManager.CreateEquationSpline2, ISketchSpline.GetPoints2, ISketchSegment.GetType, ISketch.GetSketchPoints2, IModelDoc2.SketchAddConstraints]
-keywords: [equation driven curve, CreateEquationSpline2, parametric curve, involute, x(t) y(t), radians, degrees, 180/pi, refused, returns None, global variable in curve, GetPoints2, sgFIXED, curve end point, spline]
-answers: "How do I draw an equation driven curve from code, and make it follow global variables?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Draw an equation driven curve, and drive it from globals

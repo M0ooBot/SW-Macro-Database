@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: files-05-rename-a-component-file
 title: Rename a component's part file from inside its assembly, keeping references
+answers: "How do I rename the part files of an assembly's components from code without breaking the assembly's references?"
+keywords: [rename part, rename component, rename file, RenameDocument, HasRenamedDocuments, swRenameDocumentError_e, keep references, rename without breaking assembly, Save3 save referenced, swSaveAsOptions_SaveReferenced, case-only rename, Pack and Go alternative, BOM part number]
+api: [IModelDocExtension.RenameDocument, IModelDocExtension.HasRenamedDocuments, IComponent2.Select4, IComponent2.Name2, IComponent2.GetPathName, IModelDoc2.Save3, IConfiguration.GetRootComponent3, IComponent2.GetChildren]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IModelDocExtension.RenameDocument, IModelDocExtension.HasRenamedDocuments, IComponent2.Select4, IComponent2.Name2, IComponent2.GetPathName, IModelDoc2.Save3, IConfiguration.GetRootComponent3, IComponent2.GetChildren]
-keywords: [rename part, rename component, rename file, RenameDocument, HasRenamedDocuments, swRenameDocumentError_e, keep references, rename without breaking assembly, Save3 save referenced, swSaveAsOptions_SaveReferenced, case-only rename, Pack and Go alternative, BOM part number]
-answers: "How do I rename the part files of an assembly's components from code without breaking the assembly's references?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Rename a component's part file from inside its assembly

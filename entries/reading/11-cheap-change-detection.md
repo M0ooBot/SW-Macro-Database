@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-11-cheap-change-detection
 title: Notice that the part changed without making SolidWorks stutter
+answers: "My tool polls SolidWorks every second and orbiting the model stutters. What can I ask that is cheap and still tells me the part changed?"
+keywords: [polling, poll, change detection, GetUpdateStamp, GetFeatureCount, GetFeatures, stutter, lag, orbit, feature tree walk, UI thread, slow, every second, watch the part, 397 features, tree walk cost, ten seconds, nothing changed push]
+api: [IModelDoc2.GetFeatureCount, IModelDoc2.GetUpdateStamp, IFeatureManager.GetFeatures]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026
-language: [python]
-api: [IModelDoc2.GetFeatureCount, IModelDoc2.GetUpdateStamp, IFeatureManager.GetFeatures]
-keywords: [polling, poll, change detection, GetUpdateStamp, GetFeatureCount, GetFeatures, stutter, lag, orbit, feature tree walk, UI thread, slow, every second, watch the part, 397 features, tree walk cost, ten seconds, nothing changed push]
-answers: "My tool polls SolidWorks every second and orbiting the model stutters. What can I ask that is cheap and still tells me the part changed?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Notice that the part changed without making SolidWorks stutter

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: drawings-03-notes-title-block-and-deleting-annotations
 title: Add, edit and delete notes on a drawing, including the title block
+answers: "How do I add a note to a drawing sheet from code, fill in the title block, change a note's text, and delete notes or balloons reliably?"
+keywords: [note, drawing note, InsertNote, sheet note, note attached to view, note moves with view, multi-line note, line break, newline, "<CR>", title block, sheet format, EditTemplate, EditSheet, DRAWING TITLE, placeholder text, change note text, SetText, leader, GetLeaderCount, delete note, delete balloon, delete annotation, Select3 does nothing, EditDelete, DetailItem, NOTE select type]
+api: [IModelDoc2.InsertNote, IDrawingDoc.EditSheet, IDrawingDoc.EditTemplate, IView.GetNotes, IView.GetFirstNote, INote.GetNext, INote.GetText, INote.SetText, INote.GetName, INote.GetExtent, INote.GetTextPoint2, INote.GetAnnotation, IAnnotation.SetPosition2, IAnnotation.GetPosition, IAnnotation.GetLeaderCount, IAnnotation.Select3, IModelDocExtension.SelectByID2, IModelDoc2.EditDelete]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IModelDoc2.InsertNote, IDrawingDoc.EditSheet, IDrawingDoc.EditTemplate, IView.GetNotes, IView.GetFirstNote, INote.GetNext, INote.GetText, INote.SetText, INote.GetName, INote.GetExtent, INote.GetTextPoint2, INote.GetAnnotation, IAnnotation.SetPosition2, IAnnotation.GetPosition, IAnnotation.GetLeaderCount, IAnnotation.Select3, IModelDocExtension.SelectByID2, IModelDoc2.EditDelete]
-keywords: [note, drawing note, InsertNote, sheet note, note attached to view, note moves with view, multi-line note, line break, newline, "<CR>", title block, sheet format, EditTemplate, EditSheet, DRAWING TITLE, placeholder text, change note text, SetText, leader, GetLeaderCount, delete note, delete balloon, delete annotation, Select3 does nothing, EditDelete, DetailItem, NOTE select type]
-answers: "How do I add a note to a drawing sheet from code, fill in the title block, change a note's text, and delete notes or balloons reliably?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Add, edit and delete notes on a drawing, including the title block

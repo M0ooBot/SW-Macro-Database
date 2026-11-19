@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-09-curves-as-loft-profiles
 title: Imported curves are selectable as loft and boundary profiles
+answers: "Do I need to convert imported curves into sketches before lofting them?"
+keywords: [loft profile, boundary surface, convert entities, 3d sketch, reference curve, guide curve, pierce]
+api: []
+language: []
 status: verified
 verified_on: SolidWorks 2026
-language: [n/a]
-api: []
-keywords: [loft profile, boundary surface, convert entities, 3d sketch, reference curve, guide curve, pierce]
-answers: "Do I need to convert imported curves into sketches before lofting them?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Imported curves are selectable as loft and boundary profiles

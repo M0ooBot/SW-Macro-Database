@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-12-guided-loft
 title: Insert a loft through curves along guide curves, as a hand-made loft would be
+answers: "How do I make a solid loft through two curves, held by guide curves, from code, with the same settings as one made in the Loft property page?"
+keywords: [InsertProtrusionBlend2, InsertLoftRefSurface2, loft, boss loft, surface loft, guide curves, guide curve influence, swGuideCurveInfluence_e, To next guide, maintain tangency, selection mark 2, Blend, BlendRefSurface, REFERENCECURVES, composite profile, surface fallback, 18 arguments, guide order, returns Nothing, silent refusal, solid refused, capped loft, end sections must be planar, 3D section that does not bound a face, many profiles, BlendRefSurface GetDefinition Nothing, edit a loft's profiles, loft follows reloaded curves]
+api: [IFeatureManager.InsertProtrusionBlend2, IFeature.GetDefinition, IModelDoc2.InsertLoftRefSurface2, IModelDocExtension.SelectByID2, IModelDoc2.ClearSelection2, IModelDoc2.ForceRebuild3, ISketchManager.ActiveSketch]
+language: [python]
 status: partly-verified
 verified_on: SolidWorks 2026 for the solid loft and its settings; the surface fallback's arguments were not examined
-language: [python]
-api: [IFeatureManager.InsertProtrusionBlend2, IFeature.GetDefinition, IModelDoc2.InsertLoftRefSurface2, IModelDocExtension.SelectByID2, IModelDoc2.ClearSelection2, IModelDoc2.ForceRebuild3, ISketchManager.ActiveSketch]
-keywords: [InsertProtrusionBlend2, InsertLoftRefSurface2, loft, boss loft, surface loft, guide curves, guide curve influence, swGuideCurveInfluence_e, To next guide, maintain tangency, selection mark 2, Blend, BlendRefSurface, REFERENCECURVES, composite profile, surface fallback, 18 arguments, guide order, returns Nothing, silent refusal, solid refused, capped loft, end sections must be planar, 3D section that does not bound a face, many profiles, BlendRefSurface GetDefinition Nothing, edit a loft's profiles, loft follows reloaded curves]
-answers: "How do I make a solid loft through two curves, held by guide curves, from code, with the same settings as one made in the Loft property page?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Insert a loft through curves along guide curves

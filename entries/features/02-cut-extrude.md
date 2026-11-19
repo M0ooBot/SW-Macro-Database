@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-02-cut-extrude
 title: Cut-extrude a sketch through the part
+answers: "How do I cut-extrude a sketch through a part from code, and be sure it removed material?"
+keywords: [FeatureCut4, cut extrude, through all, swEndCondThroughAll, swEndCondThroughAllBoth, 9, flip direction, cut removed nothing, returns None, hole, 27 arguments]
+api: [IFeatureManager.FeatureCut4]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IFeatureManager.FeatureCut4]
-keywords: [FeatureCut4, cut extrude, through all, swEndCondThroughAll, swEndCondThroughAllBoth, 9, flip direction, cut removed nothing, returns None, hole, 27 arguments]
-answers: "How do I cut-extrude a sketch through a part from code, and be sure it removed material?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Cut-extrude a sketch through the part

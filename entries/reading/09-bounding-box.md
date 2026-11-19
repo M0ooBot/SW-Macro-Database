@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-09-bounding-box
 title: Measure a part's bounding box, and use it as a check
+answers: "How big is this part, and how do I check that a generated file is the size it should be?"
+keywords: [GetPartBox, bounding box, extents, units, document units, metres, inches, verification, sanity check, ShowConfiguration2]
+api: [IPartDoc.GetPartBox, IModelDoc2.ShowConfiguration2, IModelDoc2.EditRebuild3]
+language: [csharp-standalone]
 status: verified
 verified_on: SolidWorks 2026 SP1.1
-language: [csharp]
-api: [IPartDoc.GetPartBox, IModelDoc2.ShowConfiguration2, IModelDoc2.EditRebuild3]
-keywords: [GetPartBox, bounding box, extents, units, document units, metres, inches, verification, sanity check, ShowConfiguration2]
-answers: "How big is this part, and how do I check that a generated file is the size it should be?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Measure a part's bounding box, and use it as a check

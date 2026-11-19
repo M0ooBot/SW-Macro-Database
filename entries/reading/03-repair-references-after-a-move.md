@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-03-repair-references
 title: Rename or move a file and repair every reference to it
+answers: "How do I move a part on disk without breaking the assemblies that use it?"
+keywords: [ReplaceReferencedDocument, rename, move, broken reference, repair, where used, preflight]
+api: [ISldWorks.ReplaceReferencedDocument, ISldWorks.GetOpenDocumentByName]
+language: [csharp-standalone]
 status: unverified
 verified_on: null
-language: [csharp]
-api: [ISldWorks.ReplaceReferencedDocument, ISldWorks.GetOpenDocumentByName]
-keywords: [ReplaceReferencedDocument, rename, move, broken reference, repair, where used, preflight]
-answers: "How do I move a part on disk without breaking the assemblies that use it?"
+majors: []
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Rename or move a file and repair every reference to it

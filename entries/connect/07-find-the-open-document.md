@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-07-find-open-document
 title: Find the open document you want to work on
+answers: "How do I get the ModelDoc2 for the part I care about, rather than whatever is on top?"
+keywords: [active document, open documents, walk documents, GetTitle, part not open]
+api: [ISldWorks.ActiveDoc, ISldWorks.GetFirstDocument, IModelDoc2.GetNext, IModelDoc2.GetTitle]
+language: [vbscript, python]
 status: verified
 verified_on: SolidWorks 2026
-language: [vbscript, python]
-api: [ISldWorks.ActiveDoc, ISldWorks.GetFirstDocument, IModelDoc2.GetNext, IModelDoc2.GetTitle]
-keywords: [active document, open documents, walk documents, GetTitle, part not open]
-answers: "How do I get the ModelDoc2 for the part I care about, rather than whatever is on top?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Find the open document you want to work on

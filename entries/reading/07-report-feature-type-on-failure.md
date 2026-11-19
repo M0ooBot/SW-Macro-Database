@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-07-report-feature-type-on-failure
 title: Make a failing call say what it found
+answers: "My macro fails on a feature and I can't tell why. How do I make the error useful?"
+keywords: [GetTypeName2, error handling, diagnostics, CurveInFile, CompositeCurve, failure message]
+api: [IFeature.GetTypeName2]
+language: [vbscript, python]
 status: verified
 verified_on: SolidWorks 2026
-language: [vbscript, python]
-api: [IFeature.GetTypeName2]
-keywords: [GetTypeName2, error handling, diagnostics, CurveInFile, CompositeCurve, failure message]
-answers: "My macro fails on a feature and I can't tell why. How do I make the error useful?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Make a failing call say what it found

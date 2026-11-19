@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-11-mirror-body
 title: Mirror a part's body about a plane and merge it into one
+answers: "How do I mirror a part's solid body about a reference plane from code so the result is one merged body?"
+keywords: [InsertMirrorFeature2, mirror, mirror body, MirrorSolid, merge, one body, selection mark 256, mark 2, CreateSelectData, IBody2.Select2, herringbone, double helical, symmetric part, nothing mirrored, returned None]
+api: [IFeatureManager.InsertMirrorFeature2, ISelectionMgr.CreateSelectData, IBody2.Select2, IPartDoc.GetBodies2, IFeature.Select2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IFeatureManager.InsertMirrorFeature2, ISelectionMgr.CreateSelectData, IBody2.Select2, IPartDoc.GetBodies2, IFeature.Select2]
-keywords: [InsertMirrorFeature2, mirror, mirror body, MirrorSolid, merge, one body, selection mark 256, mark 2, CreateSelectData, IBody2.Select2, herringbone, double helical, symmetric part, nothing mirrored, returned None]
-answers: "How do I mirror a part's solid body about a reference plane from code so the result is one merged body?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Mirror a part's body about a plane and merge it into one

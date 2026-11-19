@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-02-attach-python
 title: Attach to a running SolidWorks from Python
+answers: "How do I connect to SolidWorks from Python without launching a second copy?"
+keywords: [pywin32, pythoncom, running object table, EnumRunning, IDispatch, VARIANT, late binding, SolidWorks_PID, indexed property, property put, DISPATCH_PROPERTYPUT, Invoke, _oleobj_, Equation(i), zero-argument method not invoked, method object, method object is not iterable, GetEdges, GetTessTriangles, ReleaseSelectionAccess, AddBodies, bool object is not callable, DeleteDisplayStateSpecificRenderMaterial, GetIDsOfNames, member exists, PyInstaller, hidden-import, onefile exe, frozen app]
+api: [ISldWorks.RevisionNumber, ISldWorks.ActiveDoc]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024, 2025 and 2026 side by side
-language: [python]
-api: [ISldWorks.RevisionNumber, ISldWorks.ActiveDoc]
-keywords: [pywin32, pythoncom, running object table, EnumRunning, IDispatch, VARIANT, late binding, SolidWorks_PID, indexed property, property put, DISPATCH_PROPERTYPUT, Invoke, _oleobj_, Equation(i), zero-argument method not invoked, method object, method object is not iterable, GetEdges, GetTessTriangles, ReleaseSelectionAccess, AddBodies, bool object is not callable, DeleteDisplayStateSpecificRenderMaterial, GetIDsOfNames, member exists, PyInstaller, hidden-import, onefile exe, frozen app]
-answers: "How do I connect to SolidWorks from Python without launching a second copy?"
+majors: [32, 33, 34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Attach to a running SolidWorks from Python

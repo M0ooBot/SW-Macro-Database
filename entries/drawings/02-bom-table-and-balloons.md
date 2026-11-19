@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: drawings-02-bom-table-and-balloons
 title: Add a bill of materials and balloons to an assembly drawing
+answers: "How do I put a bill of materials on an assembly drawing from code, make it actually list the parts with descriptions, and balloon every part?"
+keywords: [BOM, bill of materials, parts list, InsertBomTable5, empty BOM, BOM shows only header, no QTY column, BomFeature, SetConfigurations, top-level only, bom-standard.sldbomtbt, item number, FollowAssemblyOrder2, balloons, auto balloon, AutoBalloon5, CreateAutoBalloonOptions, missing balloons, hidden parts not ballooned, IsBomBalloon, Description column, custom property, CustomPropertyManager, Add3, swCustomInfoText, BOM cell edit writes to part, description write-back, custom BOM column, InsertColumn2, PART NUMBER alternate name, BOMPartNoSource, balloon quantity, ShowQuantity, InsertBOMBalloon2, CreateBalloonOptions member not found, leader attach point, crossing leaders, one configuration BOM, QTY column per configuration, suppressed components in BOM, SetConfigurations False, virtual component part number, AlternateName every configuration]
+api: [IView.InsertBomTable5, IBomTableAnnotation.BomFeature, IBomFeature.GetConfigurationCount, IBomFeature.GetConfigurations, IBomFeature.SetConfigurations, IBomFeature.FollowAssemblyOrder2, IBomFeature.TableType, IView.GetTableAnnotations, ITableAnnotation.Type, ITableAnnotation.RowCount, ITableAnnotation.ColumnCount, ITableAnnotation.Text, IDrawingDoc.CreateAutoBalloonOptions, IDrawingDoc.AutoBalloon5, INote.IsBomBalloon, INote.GetText, IAnnotation.SetPosition2, IAnnotation.GetPosition, IModelDocExtension.CustomPropertyManager, ICustomPropertyManager.Add3, ITableAnnotation.Text, ITableAnnotation.InsertColumn2, ITableAnnotation.SetTextFormat, ITableAnnotation.SetColumnWidth, ITableAnnotation.SetRowHeight, IConfiguration.AlternateName, IConfiguration.UseAlternateNameInBOM, IConfiguration.BOMPartNoSource, IModelDocExtension.CreateBalloonOptions, IModelDocExtension.InsertBOMBalloon2, IView.GetVisibleComponents, IAnnotation.GetLeaderPointsAtIndex, IModelDoc2.GetConfigurationByName, IModelDoc2.GetConfigurationNames]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IView.InsertBomTable5, IBomTableAnnotation.BomFeature, IBomFeature.GetConfigurationCount, IBomFeature.GetConfigurations, IBomFeature.SetConfigurations, IBomFeature.FollowAssemblyOrder2, IBomFeature.TableType, IView.GetTableAnnotations, ITableAnnotation.Type, ITableAnnotation.RowCount, ITableAnnotation.ColumnCount, ITableAnnotation.Text, IDrawingDoc.CreateAutoBalloonOptions, IDrawingDoc.AutoBalloon5, INote.IsBomBalloon, INote.GetText, IAnnotation.SetPosition2, IAnnotation.GetPosition, IModelDocExtension.CustomPropertyManager, ICustomPropertyManager.Add3, ITableAnnotation.Text, ITableAnnotation.InsertColumn2, ITableAnnotation.SetTextFormat, ITableAnnotation.SetColumnWidth, ITableAnnotation.SetRowHeight, IConfiguration.AlternateName, IConfiguration.UseAlternateNameInBOM, IConfiguration.BOMPartNoSource, IModelDocExtension.CreateBalloonOptions, IModelDocExtension.InsertBOMBalloon2, IView.GetVisibleComponents, IAnnotation.GetLeaderPointsAtIndex, IModelDoc2.GetConfigurationByName, IModelDoc2.GetConfigurationNames]
-keywords: [BOM, bill of materials, parts list, InsertBomTable5, empty BOM, BOM shows only header, no QTY column, BomFeature, SetConfigurations, top-level only, bom-standard.sldbomtbt, item number, FollowAssemblyOrder2, balloons, auto balloon, AutoBalloon5, CreateAutoBalloonOptions, missing balloons, hidden parts not ballooned, IsBomBalloon, Description column, custom property, CustomPropertyManager, Add3, swCustomInfoText, BOM cell edit writes to part, description write-back, custom BOM column, InsertColumn2, PART NUMBER alternate name, BOMPartNoSource, balloon quantity, ShowQuantity, InsertBOMBalloon2, CreateBalloonOptions member not found, leader attach point, crossing leaders, one configuration BOM, QTY column per configuration, suppressed components in BOM, SetConfigurations False, virtual component part number, AlternateName every configuration]
-answers: "How do I put a bill of materials on an assembly drawing from code, make it actually list the parts with descriptions, and balloon every part?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Add a bill of materials and balloons to an assembly drawing

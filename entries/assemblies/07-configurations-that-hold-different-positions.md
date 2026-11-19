@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-07-configurations-that-hold-different-positions
 title: Make assembly configurations that each hold a mechanism in a different position
+answers: "How do I make configurations of an assembly that each put a mechanism in a different position, so switching configuration moves it and each position is exact?"
+keywords: [configuration, positions, motion positions, end of stroke, mechanism position, configuration specific mate, suppress mate in configuration, SetSuppression2, swInConfigurationOpts_e, IsSuppressed2, AddConfiguration2, positions not per configuration, configuration shows wrong position, over defined, AddMate5 error 5, mate error 51, limit mate, extreme distance, point coincident mate, assembly sketch point, exact point, rounding, limit mate entities, anti-aligned coincident, mate with no entities, stale reference, server threw an exception, -2147417851, ShowConfiguration2 raises, suppress component in one configuration]
+api: [IConfigurationManager.AddConfiguration2, IModelDoc2.ShowConfiguration2, IModelDoc2.GetConfigurationNames, IAssemblyDoc.AddMate5, IFeature.SetSuppression2, IFeature.IsSuppressed2, IFeature.IsSuppressed, IFeature.GetErrorCode2, ISketchManager.InsertSketch, ISketchManager.CreatePoint, ISketchManager.AddToDB, ISketch.GetSketchPoints2, IModelDoc2.BlankSketch, IMate2.MateEntity, IMateEntity2.Reference, IMateEntity2.EntityParams, IComponent2.SetSuppression2, IModelDocExtension.DeleteSelection2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IConfigurationManager.AddConfiguration2, IModelDoc2.ShowConfiguration2, IModelDoc2.GetConfigurationNames, IAssemblyDoc.AddMate5, IFeature.SetSuppression2, IFeature.IsSuppressed2, IFeature.IsSuppressed, IFeature.GetErrorCode2, ISketchManager.InsertSketch, ISketchManager.CreatePoint, ISketchManager.AddToDB, ISketch.GetSketchPoints2, IModelDoc2.BlankSketch, IMate2.MateEntity, IMateEntity2.Reference, IMateEntity2.EntityParams, IComponent2.SetSuppression2, IModelDocExtension.DeleteSelection2]
-keywords: [configuration, positions, motion positions, end of stroke, mechanism position, configuration specific mate, suppress mate in configuration, SetSuppression2, swInConfigurationOpts_e, IsSuppressed2, AddConfiguration2, positions not per configuration, configuration shows wrong position, over defined, AddMate5 error 5, mate error 51, limit mate, extreme distance, point coincident mate, assembly sketch point, exact point, rounding, limit mate entities, anti-aligned coincident, mate with no entities, stale reference, server threw an exception, -2147417851, ShowConfiguration2 raises, suppress component in one configuration]
-answers: "How do I make configurations of an assembly that each put a mechanism in a different position, so switching configuration moves it and each position is exact?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Make assembly configurations that each hold a mechanism in a different position

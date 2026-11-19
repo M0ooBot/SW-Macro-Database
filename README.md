@@ -3,7 +3,9 @@
 A reference for driving SolidWorks from outside itself: VBA macros, VBScript,
 Python and C#. Every entry is something that has already been built, and each
 one says plainly whether it has been run against a real SolidWorks or only
-written against the documented API.
+written against the documented API. New entries are written in two languages:
+Python, and C# recipes that SW-Agent runs (CONTRIBUTING.md, Rule 11); the VBA,
+VBScript and other code already here stays as it ran.
 
 The point is that the next time something needs automating, you check here
 first instead of rediscovering it.
@@ -80,7 +82,7 @@ code. You never need to open the projects the entries came from.
 
 ## The status field is the whole point
 
-Every entry declares one:
+Every entry declares one status, for the entry as a whole:
 
 | Value | Means |
 |---|---|
@@ -89,7 +91,11 @@ Every entry declares one:
 | `unverified` | Well-formed against the documented API. Nobody has watched it run. |
 | `superseded` | Do not use. The entry links to what replaced it. |
 
-Currently: **85 verified, 11 partly verified, 2 unverified.**
+Currently: **83 verified, 11 partly verified, 4 unverified.**
+
+`verified_on` says what was run, on what, and `majors` lists the SolidWorks
+revision majors (32 = 2024, 34 = 2026) the claim was run on. An entry with a C#
+recipe, the code SW-Agent runs, gives that recipe a status of its own.
 
 This distinction is the most valuable thing here, so it is never blurred. An
 entry that guesses says so.

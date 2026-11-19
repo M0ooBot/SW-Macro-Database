@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-12-rebuild-scope-and-the-save-flag
 title: Rebuild an assembly without marking every part modified, and what sets GetSaveFlag
+answers: "Which rebuild should I call on an assembly after changing it from code, so that SolidWorks only asks to save the documents I actually changed — and what marks a document modified in the first place?"
+keywords: [ForceRebuild3 True, ForceRebuild3 False, top only, EditRebuild3, rebuild marks parts modified, save prompt for parts not changed, GetSaveFlag, unsaved changes, dirty flag, modified flag, NeedsRebuild, NeedsRebuild2, rebuild returns False, failed component, interference check marks modified, OpenDoc6 warning 128, swFileLoadWarning_AlreadyOpen, ActivateDoc3, skeleton part, layout part, opened from file reads unmodified, CommandInProgress mates, origin noise, reading feature data marks nothing, unsuppress marks modified]
+api: [IModelDoc2.ForceRebuild3, IModelDoc2.EditRebuild3, IModelDoc2.GetSaveFlag, ISldWorks.CommandInProgress, IFeature.GetDefinition, IModelDocExtension.NeedsRebuild, IModelDocExtension.NeedsRebuild2, ISldWorks.OpenDoc6, ISldWorks.ActivateDoc3, IModelDocExtension.GetWhatsWrongCount, IComponent2.Transform2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.1.1) and SolidWorks 2024 SP5 (32.5.0), each in a session started fresh for the run
-language: [python]
-api: [IModelDoc2.ForceRebuild3, IModelDoc2.EditRebuild3, IModelDoc2.GetSaveFlag, ISldWorks.CommandInProgress, IFeature.GetDefinition, IModelDocExtension.NeedsRebuild, IModelDocExtension.NeedsRebuild2, ISldWorks.OpenDoc6, ISldWorks.ActivateDoc3, IModelDocExtension.GetWhatsWrongCount, IComponent2.Transform2]
-keywords: [ForceRebuild3 True, ForceRebuild3 False, top only, EditRebuild3, rebuild marks parts modified, save prompt for parts not changed, GetSaveFlag, unsaved changes, dirty flag, modified flag, NeedsRebuild, NeedsRebuild2, rebuild returns False, failed component, interference check marks modified, OpenDoc6 warning 128, swFileLoadWarning_AlreadyOpen, ActivateDoc3, skeleton part, layout part, opened from file reads unmodified, CommandInProgress mates, origin noise, reading feature data marks nothing, unsuppress marks modified]
-answers: "Which rebuild should I call on an assembly after changing it from code, so that SolidWorks only asks to save the documents I actually changed — and what marks a document modified in the first place?"
+majors: [32, 34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Rebuild an assembly without marking every part modified

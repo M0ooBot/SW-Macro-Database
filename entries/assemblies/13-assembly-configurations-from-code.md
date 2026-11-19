@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-13-assembly-configurations-from-code
 title: Add, show and delete assembly configurations from code, with mates and distances set per configuration
+answers: "How do I add, show and delete assembly configurations from code, and give a mate's suppression or a distance mate's value per configuration, without stale component handles misleading me?"
+keywords: [assembly configuration, AddConfiguration2, ShowConfiguration2, DeleteConfiguration2, configuration from code, stale component handle, Transform2 None, IsFixed False, GetComponentByName after configuration change, SetSuppression2 configuration, swSpecifyConfiguration 3, SetSuppression2 0x80010105, SetSuppression2 returns False, IsSuppressed2, mate made in another configuration, SetSystemValue3, GetSystemValue3, swSetValue_InSpecificConfigurations, distance per configuration, SystemValue does not follow configuration, GetSystemValue3 reads 0, Add2 returns -1, positions per configuration, component position per configuration, put per configuration, ShowConfiguration2 marks modified]
+api: [IConfigurationManager.AddConfiguration2, IConfigurationManager.ActiveConfiguration, IModelDoc2.ShowConfiguration2, IModelDoc2.DeleteConfiguration2, IModelDoc2.GetConfigurationNames, IFeature.SetSuppression2, IFeature.IsSuppressed2, IDimension.SetSystemValue3, IDimension.GetSystemValue3, IDimension.SystemValue, IAssemblyDoc.GetComponentByName, IComponent2.Transform2, IComponent2.IsFixed, IEquationMgr.Add2, IModelDoc2.GetSaveFlag]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (34.1.1) and SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IConfigurationManager.AddConfiguration2, IConfigurationManager.ActiveConfiguration, IModelDoc2.ShowConfiguration2, IModelDoc2.DeleteConfiguration2, IModelDoc2.GetConfigurationNames, IFeature.SetSuppression2, IFeature.IsSuppressed2, IDimension.SetSystemValue3, IDimension.GetSystemValue3, IDimension.SystemValue, IAssemblyDoc.GetComponentByName, IComponent2.Transform2, IComponent2.IsFixed, IEquationMgr.Add2, IModelDoc2.GetSaveFlag]
-keywords: [assembly configuration, AddConfiguration2, ShowConfiguration2, DeleteConfiguration2, configuration from code, stale component handle, Transform2 None, IsFixed False, GetComponentByName after configuration change, SetSuppression2 configuration, swSpecifyConfiguration 3, SetSuppression2 0x80010105, SetSuppression2 returns False, IsSuppressed2, mate made in another configuration, SetSystemValue3, GetSystemValue3, swSetValue_InSpecificConfigurations, distance per configuration, SystemValue does not follow configuration, GetSystemValue3 reads 0, Add2 returns -1, positions per configuration, component position per configuration, put per configuration, ShowConfiguration2 marks modified]
-answers: "How do I add, show and delete assembly configurations from code, and give a mate's suppression or a distance mate's value per configuration, without stale component handles misleading me?"
+majors: [32, 34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Add, show and delete assembly configurations from code, with mates and distances set per configuration

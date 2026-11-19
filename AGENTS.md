@@ -29,6 +29,12 @@ already been solved, and is the solution trustworthy?**
 Do not upgrade your confidence beyond what `status` says just because the code
 reads well. That distinction is the repo's whole value.
 
+`status` is one claim for the whole entry; `verified_on` says what was run (a
+`verified` earned in Python is a Python run). `majors` lists the SolidWorks
+revision majors the claim was run on (32 = 2024, 33 = 2025, 34 = 2026): on
+another major the evidence is weaker, so say so. An entry with a C# recipe (its
+`.csx` sidecar) gives the recipe its own `recipe_status`.
+
 ## If the answer is not here
 
 Say so plainly rather than improvising something that looks like an entry. Then,

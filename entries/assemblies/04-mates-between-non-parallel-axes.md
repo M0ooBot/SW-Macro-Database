@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-04-mates-between-non-parallel-axes
 title: Place and mate components whose axes are not parallel
+answers: "How do I set a component's rotation from code and mate it so its axis sits at an angle to another component's, such as bevel or crossed gears?"
+keywords: [gear mate between non-parallel axes, bevel gear mate, crossed gear mate, skew gear mate, gear mate sense, gear mate Reverse, gear mate Flip, turned gear mate, CreateTransform, IMathUtility, GetMathUtility, DISP_E_MEMBERNOTFOUND, Member not found, DISPATCH_METHOD, VT_ARRAY, VT_R8, Transform2 put, set component transform, component frame, rotation by columns, AddComponent5 offset, component origin, Point1@Origin, EXTSKETCHPOINT, angle mate between axes, point to plane distance mate, Flip, mate flip, negative side, bevel gears, crossed helical, skew axes, shaft angle]
+api: [ISldWorks.GetMathUtility, IMathUtility.CreateTransform, IComponent2.Transform2, IComponent2.GetModelDoc2, IModelDocExtension.SelectByID2, IAssemblyDoc.AddMate5, IGearMateFeatureData.Reverse, IMateEntity2.EntityParams]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revisions 34.0.0 and 34.1.1); the gear mate sense also on SolidWorks 2024 SP5 (32.5.0), three meshes
-language: [python]
-api: [ISldWorks.GetMathUtility, IMathUtility.CreateTransform, IComponent2.Transform2, IComponent2.GetModelDoc2, IModelDocExtension.SelectByID2, IAssemblyDoc.AddMate5, IGearMateFeatureData.Reverse, IMateEntity2.EntityParams]
-keywords: [gear mate between non-parallel axes, bevel gear mate, crossed gear mate, skew gear mate, gear mate sense, gear mate Reverse, gear mate Flip, turned gear mate, CreateTransform, IMathUtility, GetMathUtility, DISP_E_MEMBERNOTFOUND, Member not found, DISPATCH_METHOD, VT_ARRAY, VT_R8, Transform2 put, set component transform, component frame, rotation by columns, AddComponent5 offset, component origin, Point1@Origin, EXTSKETCHPOINT, angle mate between axes, point to plane distance mate, Flip, mate flip, negative side, bevel gears, crossed helical, skew axes, shaft angle]
-answers: "How do I set a component's rotation from code and mate it so its axis sits at an angle to another component's, such as bevel or crossed gears?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Place and mate components whose axes are not parallel

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-14-the-journal-records-api-calls
 title: Read what a program did to a part from the SolidWorks journal
+answers: "How can I find out afterwards which API calls a program made on a part, and in what order, when it kept no log?"
+keywords: [swxJRNL.swj, swxJRNL.BAK, journal, macro journal, what did the macro do, post-mortem, audit, InsertCurveFileBegin, InsertCurveFilePoint, SelectByID2, InsertFeatureTreeFolder2, InsertProtrusionBlend, Save3, SaveAs, rename not recorded, Select2 not recorded, diagnose after the fact]
+api: []
+language: []
 status: verified
 verified_on: SolidWorks 2026 SP0.0 (revision 34.0.0)
-language: [n/a]
-api: []
-keywords: [swxJRNL.swj, swxJRNL.BAK, journal, macro journal, what did the macro do, post-mortem, audit, InsertCurveFileBegin, InsertCurveFilePoint, SelectByID2, InsertFeatureTreeFolder2, InsertProtrusionBlend, Save3, SaveAs, rename not recorded, Select2 not recorded, diagnose after the fact]
-answers: "How can I find out afterwards which API calls a program made on a part, and in what order, when it kept no log?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Read what a program did to a part from the SolidWorks journal

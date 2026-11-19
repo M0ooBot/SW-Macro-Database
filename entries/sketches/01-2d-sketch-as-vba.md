@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: sketches-01-2d-sketch-as-vba
 title: Generate a 2D sketch as a VBA macro
+answers: "How do I emit a VBA macro that draws a fully-defined 2D sketch?"
+keywords: [2d sketch, InsertSketch, CreateLine2, CreateSpline, sketch macro, generate vba, weld, construction geometry, shared end point, CreateArc direction]
+api: [ISketchManager.InsertSketch, CreatePoint, CreateLine2, CreateArc, CreateCircleByRadius, CreateSpline, AddConstraint, Select4, GetStartPoint2, GetEndPoint2, GetCenterPoint2]
+language: [vba]
 status: partly-verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [vba]
-api: [ISketchManager.InsertSketch, CreatePoint, CreateLine2, CreateArc, CreateCircleByRadius, CreateSpline, AddConstraint, Select4, GetStartPoint2, GetEndPoint2, GetCenterPoint2]
-keywords: [2d sketch, InsertSketch, CreateLine2, CreateSpline, sketch macro, generate vba, weld, construction geometry, shared end point, CreateArc direction]
-answers: "How do I emit a VBA macro that draws a fully-defined 2D sketch?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Generate a 2D sketch as a VBA macro

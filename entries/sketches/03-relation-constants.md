@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: sketches-03-relation-constants
 title: Sketch relation constants for AddConstraint
+answers: "What string do I pass to AddConstraint for a given sketch relation?"
+keywords: [AddConstraint, SketchAddConstraints, sgCOINCIDENT, sgVERTICAL2D, sgSYMMETRIC, sgCOLINEAR, sgEQUAL, sgSAMELENGTH, sgTANGENT, sgFIXED, sgHORIZONTAL2D, equal radius, relation constants, swConstraintType]
+api: [ISketchManager.AddConstraint, IModelDoc2.SketchAddConstraints]
+language: [vba, python]
 status: partly-verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [vba, python]
-api: [ISketchManager.AddConstraint, IModelDoc2.SketchAddConstraints]
-keywords: [AddConstraint, SketchAddConstraints, sgCOINCIDENT, sgVERTICAL2D, sgSYMMETRIC, sgCOLINEAR, sgEQUAL, sgSAMELENGTH, sgTANGENT, sgFIXED, sgHORIZONTAL2D, equal radius, relation constants, swConstraintType]
-answers: "What string do I pass to AddConstraint for a given sketch relation?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Sketch relation constants for `AddConstraint`

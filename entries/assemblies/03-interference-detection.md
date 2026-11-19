@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-03-interference-detection
 title: Check an assembly for interference and read the volumes
+answers: "How do I check an assembly for interfering components from code and get the interference volume?"
+keywords: [InterferenceDetectionManager, interference detection, clash detection, collision, GetInterferenceCount, GetInterferences, IInterference, Volume, Done, TreatCoincidenceAsInterference, IgnoreHiddenBodies, UseTransform, property or method, late binding, negative control, gear mesh check]
+api: [IAssemblyDoc.InterferenceDetectionManager, IInterferenceDetectionMgr.GetInterferenceCount, IInterferenceDetectionMgr.GetInterferences, IInterferenceDetectionMgr.Done, IInterference.Volume]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IAssemblyDoc.InterferenceDetectionManager, IInterferenceDetectionMgr.GetInterferenceCount, IInterferenceDetectionMgr.GetInterferences, IInterferenceDetectionMgr.Done, IInterference.Volume]
-keywords: [InterferenceDetectionManager, interference detection, clash detection, collision, GetInterferenceCount, GetInterferences, IInterference, Volume, Done, TreatCoincidenceAsInterference, IgnoreHiddenBodies, UseTransform, property or method, late binding, negative control, gear mesh check]
-answers: "How do I check an assembly for interfering components from code and get the interference volume?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Check an assembly for interference and read the volumes

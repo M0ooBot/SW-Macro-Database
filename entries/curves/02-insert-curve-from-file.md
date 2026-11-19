@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-02-insert-curve-from-file
 title: Insert a curve from a file as a new feature
+answers: "How do I import a .sldcrv file as a feature from code, and get hold of what it made?"
+keywords: [InsertCurveFile, CurveInFile, import curve, error 438, IFeatureManager, insert feature]
+api: [IModelDoc2.InsertCurveFile, IFeature.Name, IModelDoc2.GetFeatureCount, IModelDocExtension.GetLastFeatureAdded]
+language: [vbscript, python]
 status: verified
 verified_on: SolidWorks 2026
-language: [vbscript, python]
-api: [IModelDoc2.InsertCurveFile, IFeature.Name, IModelDoc2.GetFeatureCount, IModelDocExtension.GetLastFeatureAdded]
-keywords: [InsertCurveFile, CurveInFile, import curve, error 438, IFeatureManager, insert feature]
-answers: "How do I import a .sldcrv file as a feature from code, and get hold of what it made?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Insert a curve from a file as a new feature

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-05-choosing-among-versions
 title: Choosing among several installed versions
+answers: "Several SolidWorks versions are installed. Which one should my tool drive?"
+keywords: [version, revision number, major 32 33 34, 2024 2025 2026, minimum version, choose session, multiple installs, WrongVersion, connect refuses 2024, This needs SolidWorks 2026, MINIMUM_MAJOR, find_candidates, read-only tool on an older version]
+api: [ISldWorks.RevisionNumber]
+language: [python]
 status: verified
 verified_on: a machine carrying SolidWorks 2024, 2025 and 2026
-language: [python]
-api: [ISldWorks.RevisionNumber]
-keywords: [version, revision number, major 32 33 34, 2024 2025 2026, minimum version, choose session, multiple installs, WrongVersion, connect refuses 2024, This needs SolidWorks 2026, MINIMUM_MAJOR, find_candidates, read-only tool on an older version]
-answers: "Several SolidWorks versions are installed. Which one should my tool drive?"
+majors: [32, 34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Choosing among several installed versions

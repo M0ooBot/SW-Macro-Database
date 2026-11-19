@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-04-read-the-selection
 title: Find out what the user just clicked
+answers: "How do I let a user click something in SolidWorks and read what it was?"
+keywords: [selection manager, GetSelectedObject6, GetSelectedObjectType3, pick, click, vertex, edge, plane, duck typing, ClearSelection2 crash, access violation, ClearSelectionsNotify, read-only pick, selection changed, ActiveSketch]
+api: [ISelectionMgr.GetSelectedObjectCount2, GetSelectedObject6, GetSelectedObjectType3, GetSelectedObjectsSketch, GetPoint, GetCurve, IsLine, GetSurface, IsPlane, PlaneParams]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026
-language: [python]
-api: [ISelectionMgr.GetSelectedObjectCount2, GetSelectedObject6, GetSelectedObjectType3, GetSelectedObjectsSketch, GetPoint, GetCurve, IsLine, GetSurface, IsPlane, PlaneParams]
-keywords: [selection manager, GetSelectedObject6, GetSelectedObjectType3, pick, click, vertex, edge, plane, duck typing, ClearSelection2 crash, access violation, ClearSelectionsNotify, read-only pick, selection changed, ActiveSketch]
-answers: "How do I let a user click something in SolidWorks and read what it was?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Find out what the user just clicked

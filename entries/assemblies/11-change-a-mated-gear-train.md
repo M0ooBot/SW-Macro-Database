@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: assemblies-11-change-a-mated-gear-train
 title: Change a mated gear train in place — re-phase a gear, move a shaft, re-take a lock, change a gear mate's ratio
+answers: "My gear train is mated and turns; how do I change it from code afterwards — turn one gear to a new phase, move a shaft, change a compound gear's angle or position, or give a gear mate a new ratio — without breaking the mates?"
+keywords: [change gear ratio, gear mate ratio, ModifyDefinition gear mate, IGearMateFeatureData put, AccessSelections AttributeError, 0x80010105, server threw an exception, CloseDoc cannot close, assembly will not close, remake gear mate, delete and re-add mate, lock mate re-take, suppress lock, re-phase gear, mesh phase, Transform2 put with gear mate, lock does not hold against put, shaft moved by globals, skeleton part, axial distance global, tooth count change, idler gear, remade mate goes last, half pitch interference control, lightweight, GetSuppression2, swComponentFullyResolved, first drive wrong while lightweight, LoadLightweight, OverrideDefaultLoadLightweight, SOLIDWORKS CAM Error]
+api: [IComponent2.Transform2, IFeature.SetSuppression2, IFeature.IsSuppressed2, IFeature.GetDefinition, IFeature.ModifyDefinition, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IModelDoc2.EditDelete, IAssemblyDoc.GetComponentByName, IAssemblyDoc.AddMate5, ISldWorks.CloseDoc, ISldWorks.OpenDoc6, IComponent2.GetSuppression2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revisions 34.0.0 and 34.1.1) and SolidWorks 2024 SP5 (32.5.0), each in a session started fresh for the run
-language: [python]
-api: [IComponent2.Transform2, IFeature.SetSuppression2, IFeature.IsSuppressed2, IFeature.GetDefinition, IFeature.ModifyDefinition, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IModelDoc2.EditDelete, IAssemblyDoc.GetComponentByName, IAssemblyDoc.AddMate5, ISldWorks.CloseDoc, ISldWorks.OpenDoc6, IComponent2.GetSuppression2]
-keywords: [change gear ratio, gear mate ratio, ModifyDefinition gear mate, IGearMateFeatureData put, AccessSelections AttributeError, 0x80010105, server threw an exception, CloseDoc cannot close, assembly will not close, remake gear mate, delete and re-add mate, lock mate re-take, suppress lock, re-phase gear, mesh phase, Transform2 put with gear mate, lock does not hold against put, shaft moved by globals, skeleton part, axial distance global, tooth count change, idler gear, remade mate goes last, half pitch interference control, lightweight, GetSuppression2, swComponentFullyResolved, first drive wrong while lightweight, LoadLightweight, OverrideDefaultLoadLightweight, SOLIDWORKS CAM Error]
-answers: "My gear train is mated and turns; how do I change it from code afterwards — turn one gear to a new phase, move a shaft, change a compound gear's angle or position, or give a gear mate a new ratio — without breaking the mates?"
+majors: [32, 34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Change a mated gear train in place

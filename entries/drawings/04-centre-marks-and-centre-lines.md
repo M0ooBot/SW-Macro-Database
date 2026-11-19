@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: drawings-04-centre-marks-and-centre-lines
 title: Add and remove centre marks and axis centre lines in a drawing view
+answers: "How do I put centre marks on the holes and arcs I choose in a drawing view, a centre line on a cylinder's axis, and remove the centre marks I don't want?"
+keywords: [centre mark, center mark, centre line, center line, InsertCenterMark3, InsertCenterLine2, slot arc, cut slot, centre mark missing, fillet centre marks, duplicate centre mark, auto centre marks, delete centre mark, GetFirstCenterMark, GetVisibleEntities2, SelectEntity, visible edges, cylinder axis, axis line in side view]
+api: [IView.GetVisibleEntities2, IView.SelectEntity, IEdge.GetCurve, ICurve.IsCircle, ICurve.CircleParams, IFace2.GetSurface, ISurface.IsCylinder, ISurface.CylinderParams, IModelDoc2.InsertCenterMark3, IModelDoc2.InsertCenterLine2, IView.GetFirstCenterMark, ICenterMark.GetNext, ICenterMark.GetPosition, ICenterMark.Select]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IView.GetVisibleEntities2, IView.SelectEntity, IEdge.GetCurve, ICurve.IsCircle, ICurve.CircleParams, IFace2.GetSurface, ISurface.IsCylinder, ISurface.CylinderParams, IModelDoc2.InsertCenterMark3, IModelDoc2.InsertCenterLine2, IView.GetFirstCenterMark, ICenterMark.GetNext, ICenterMark.GetPosition, ICenterMark.Select]
-keywords: [centre mark, center mark, centre line, center line, InsertCenterMark3, InsertCenterLine2, slot arc, cut slot, centre mark missing, fillet centre marks, duplicate centre mark, auto centre marks, delete centre mark, GetFirstCenterMark, GetVisibleEntities2, SelectEntity, visible edges, cylinder axis, axis line in side view]
-answers: "How do I put centre marks on the holes and arcs I choose in a drawing view, a centre line on a cylinder's axis, and remove the centre marks I don't want?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Add and remove centre marks and axis centre lines in a drawing view

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-10-persistent-references
 title: Track a feature that might get renamed
+answers: "How do I keep a handle on a feature that survives the user renaming it?"
+keywords: [GetPersistReference3, GetObjectByPersistReference3, persistent reference, rename, stable handle, VT_BYREF]
+api: [IModelDocExtension.GetPersistReference3, IModelDocExtension.GetObjectByPersistReference3]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026
-language: [python]
-api: [IModelDocExtension.GetPersistReference3, IModelDocExtension.GetObjectByPersistReference3]
-keywords: [GetPersistReference3, GetObjectByPersistReference3, persistent reference, rename, stable handle, VT_BYREF]
-answers: "How do I keep a handle on a feature that survives the user renaming it?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Track a feature that might get renamed

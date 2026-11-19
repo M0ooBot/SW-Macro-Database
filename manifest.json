@@ -4,8 +4,8 @@
   "count": 98,
   "by_status": {
     "partly-verified": 11,
-    "unverified": 2,
-    "verified": 85
+    "unverified": 4,
+    "verified": 83
   },
   "entries": [
     {
@@ -895,7 +895,7 @@
       "status": "partly-verified",
       "verified_on": "SolidWorks 2026 for attach and dependency read",
       "language": [
-        "csharp"
+        "csharp-standalone"
       ],
       "api": [
         "GetActiveObject",
@@ -920,7 +920,7 @@
       "title": "Attach from VBA, inside SolidWorks",
       "path": "entries/connect/04-attach-from-vba.md",
       "category": "connect",
-      "status": "verified",
+      "status": "unverified",
       "verified_on": "standard across versions",
       "language": [
         "vba"
@@ -978,7 +978,7 @@
       "status": "verified",
       "verified_on": "SolidWorks 2026",
       "language": [
-        "csharp",
+        "csharp-standalone",
         "python"
       ],
       "api": [
@@ -1068,7 +1068,7 @@
       "status": "partly-verified",
       "verified_on": "SolidWorks 2026 for attach; launch path compiles and runs, ExitApp untested; the hidden-instance warning observed on 2026 SP1.1",
       "language": [
-        "csharp",
+        "csharp-standalone",
         "vbscript"
       ],
       "api": [
@@ -1202,9 +1202,7 @@
       "category": "curves",
       "status": "verified",
       "verified_on": "SolidWorks 2025 and 2026",
-      "language": [
-        "any"
-      ],
+      "language": [],
       "api": [],
       "keywords": [
         "sldcrv",
@@ -1441,9 +1439,7 @@
       "category": "curves",
       "status": "verified",
       "verified_on": "SolidWorks 2026",
-      "language": [
-        "n/a"
-      ],
+      "language": [],
       "api": [],
       "keywords": [
         "loft profile",
@@ -2777,7 +2773,7 @@
       "verified_on": "SolidWorks 2026 SP1.1 for the C# converter; the VBA macro is the same sequence with a different save call and was not run end to end",
       "language": [
         "vba",
-        "csharp"
+        "csharp-standalone"
       ],
       "api": [
         "ISldWorks.LoadFile4",
@@ -2814,7 +2810,7 @@
       "verified_on": "SolidWorks 2026 SP1.1",
       "language": [
         "vba",
-        "csharp"
+        "csharp-standalone"
       ],
       "api": [
         "ISldWorks.GetConfigurationNames",
@@ -2846,7 +2842,7 @@
       "status": "verified",
       "verified_on": "SolidWorks 2026 SP1.1",
       "language": [
-        "csharp"
+        "csharp-standalone"
       ],
       "api": [
         "ISldWorks.VersionHistory",
@@ -2952,7 +2948,7 @@
       "status": "verified",
       "verified_on": "SolidWorks 2026",
       "language": [
-        "csharp"
+        "csharp-standalone"
       ],
       "api": [
         "ISldWorks.GetDocumentDependencies2",
@@ -2983,7 +2979,7 @@
       "status": "verified",
       "verified_on": "SolidWorks 2026",
       "language": [
-        "csharp"
+        "csharp-standalone"
       ],
       "api": [
         "ISldWorks.GetDocumentDependencies2"
@@ -3006,7 +3002,7 @@
       "status": "unverified",
       "verified_on": null,
       "language": [
-        "csharp"
+        "csharp-standalone"
       ],
       "api": [
         "ISldWorks.ReplaceReferencedDocument",
@@ -3099,7 +3095,7 @@
       "status": "unverified",
       "verified_on": null,
       "language": [
-        "csharp",
+        "csharp-standalone",
         "python"
       ],
       "api": [
@@ -3151,7 +3147,7 @@
       "status": "partly-verified",
       "verified_on": "SolidWorks 2026 SP1.1 for the open, configuration and size passes; the dimension and equation walks ran in the same tool but their output was not retained",
       "language": [
-        "csharp"
+        "csharp-standalone"
       ],
       "api": [
         "IFeature.GetFirstDisplayDimension",
@@ -3189,7 +3185,7 @@
       "status": "verified",
       "verified_on": "SolidWorks 2026 SP1.1",
       "language": [
-        "csharp"
+        "csharp-standalone"
       ],
       "api": [
         "IPartDoc.GetPartBox",
@@ -3361,9 +3357,7 @@
       "category": "reading",
       "status": "verified",
       "verified_on": "SolidWorks 2026 SP0.0 (revision 34.0.0)",
-      "language": [
-        "n/a"
-      ],
+      "language": [],
       "api": [],
       "keywords": [
         "swxJRNL.swj",
@@ -3639,7 +3633,7 @@
       "title": "What the sketch API cannot do, and how to handle it",
       "path": "entries/sketches/06-what-the-sketch-api-cannot-do.md",
       "category": "sketches",
-      "status": "verified",
+      "status": "unverified",
       "verified_on": "documented API surface as of SW 2026",
       "language": [
         "vba"
@@ -3731,9 +3725,7 @@
       "category": "surfacing",
       "status": "verified",
       "verified_on": "SolidWorks 2026",
-      "language": [
-        "n/a"
-      ],
+      "language": [],
       "api": [],
       "keywords": [
         "boundary surface",
@@ -3780,9 +3772,7 @@
       "category": "surfacing",
       "status": "verified",
       "verified_on": "SolidWorks 2026",
-      "language": [
-        "n/a"
-      ],
+      "language": [],
       "api": [],
       "keywords": [
         "loft accuracy",

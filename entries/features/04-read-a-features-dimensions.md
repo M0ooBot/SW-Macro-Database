@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-04-read-a-features-dimensions
 title: Read a feature's dimensions, and find one by value
+answers: "How do I list a feature's dimensions from code and pick out one, such as an extrusion's depth or a pattern's count?"
+keywords: [GetFirstDisplayDimension, GetNextDisplayDimension, GetDimension2, display dimension, D1, D3, feature dimensions, extrusion depth, pattern count, mate distance, rename dimension, find by value, FullName]
+api: [IFeature.GetFirstDisplayDimension, IFeature.GetNextDisplayDimension, IDisplayDimension.GetDimension2, IDimension.Name, IDimension.SystemValue, IDimension.FullName]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IFeature.GetFirstDisplayDimension, IFeature.GetNextDisplayDimension, IDisplayDimension.GetDimension2, IDimension.Name, IDimension.SystemValue, IDimension.FullName]
-keywords: [GetFirstDisplayDimension, GetNextDisplayDimension, GetDimension2, display dimension, D1, D3, feature dimensions, extrusion depth, pattern count, mate distance, rename dimension, find by value, FullName]
-answers: "How do I list a feature's dimensions from code and pick out one, such as an extrusion's depth or a pattern's count?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Read a feature's dimensions, and find one by value

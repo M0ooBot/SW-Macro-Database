@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: files-04-export-a-body-to-step
 title: Write one body of a part to its own STEP file
+answers: "How do I write a part, or just one of its lofts, to a STEP file from code without the open document changing name?"
+keywords: [STEP, export STEP, SaveAs, swSaveAsOptions_Copy, save as copy, neutral format export, one body, suppress, SetSuppression2, swFeatureSuppressionAction_e, swInConfigurationOpts_e, measure loft, out parameter, suppression cascade, 74 features, suppression_state, restore_suppression, SewRefSurface, MANIFOLD_SOLID_BREP]
+api: [IModelDocExtension.SaveAs, IFeature.SetSuppression2, IFeature.IsSuppressed, IModelDoc2.ForceRebuild3]
+language: [python]
 status: partly-verified
 verified_on: SolidWorks 2026 for the STEP export and for the suppression and its cascade; that each file of an earlier batch held only its own loft was never checked file by file
-language: [python]
-api: [IModelDocExtension.SaveAs, IFeature.SetSuppression2, IFeature.IsSuppressed, IModelDoc2.ForceRebuild3]
-keywords: [STEP, export STEP, SaveAs, swSaveAsOptions_Copy, save as copy, neutral format export, one body, suppress, SetSuppression2, swFeatureSuppressionAction_e, swInConfigurationOpts_e, measure loft, out parameter, suppression cascade, 74 features, suppression_state, restore_suppression, SewRefSurface, MANIFOLD_SOLID_BREP]
-answers: "How do I write a part, or just one of its lofts, to a STEP file from code without the open document changing name?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Write one body of a part to its own STEP file

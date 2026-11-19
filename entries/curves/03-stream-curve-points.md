@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: curves-03-stream-curve-points
 title: Create a curve by streaming points, with no file
+answers: "Can I make a Curve Through XYZ Points feature without writing a file first?"
+keywords: [InsertCurveFileBegin, InsertCurveFilePoint, InsertCurveFileEnd, streaming, metres, no file]
+api: [IModelDoc2.InsertCurveFileBegin, IModelDoc2.InsertCurveFilePoint, IModelDoc2.InsertCurveFileEnd]
+language: [vba, vbscript, python]
 status: verified
 verified_on: SolidWorks 2025
-language: [vba, vbscript, python]
-api: [IModelDoc2.InsertCurveFileBegin, IModelDoc2.InsertCurveFilePoint, IModelDoc2.InsertCurveFileEnd]
-keywords: [InsertCurveFileBegin, InsertCurveFilePoint, InsertCurveFileEnd, streaming, metres, no file]
-answers: "Can I make a Curve Through XYZ Points feature without writing a file first?"
+majors: [33]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Create a curve by streaming points, with no file

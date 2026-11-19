@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-08-offset-reference-plane
 title: A reference plane at a distance from another, on the side you choose
+answers: "How do I make a reference plane offset from the Front plane from code, choose which side it lands on, and drive the offset from a global?"
+keywords: [InsertRefPlane, offset plane, reference plane, distance, parallel plane, swRefPlaneReferenceConstraint_Distance, swRefPlaneReferenceConstraint_OptionFlip, 8, 256, flip, which side, RefPlane, D1, Offset, linked plane, plane follows a global, profile plane, mid plane]
+api: [IFeatureManager.InsertRefPlane, IFeature.Name, IDimension.Name, IEquationMgr.Add2, ISketch.ModelToSketchTransform]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IFeatureManager.InsertRefPlane, IFeature.Name, IDimension.Name, IEquationMgr.Add2, ISketch.ModelToSketchTransform]
-keywords: [InsertRefPlane, offset plane, reference plane, distance, parallel plane, swRefPlaneReferenceConstraint_Distance, swRefPlaneReferenceConstraint_OptionFlip, 8, 256, flip, which side, RefPlane, D1, Offset, linked plane, plane follows a global, profile plane, mid plane]
-answers: "How do I make a reference plane offset from the Front plane from code, choose which side it lands on, and drive the offset from a global?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # A reference plane at a distance from another, on the side you choose

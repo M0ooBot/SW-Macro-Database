@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: features-03-circular-pattern
 title: Pattern a feature around an axis
+answers: "How do I make a circular pattern of a feature about an axis from code?"
+keywords: [FeatureCircularPattern5, circular pattern, InsertAxis2, reference axis, RefAxis, axis from sketch line, GetRefAxisParams, CirPattern, selection mark, mark 1, mark 4, DName NULL, instance count, equal spacing, teeth]
+api: [IModelDoc2.InsertAxis2, IFeatureManager.FeatureCircularPattern5, IFeature.Select2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [IModelDoc2.InsertAxis2, IFeatureManager.FeatureCircularPattern5, IFeature.Select2]
-keywords: [FeatureCircularPattern5, circular pattern, InsertAxis2, reference axis, RefAxis, axis from sketch line, GetRefAxisParams, CirPattern, selection mark, mark 1, mark 4, DName NULL, instance count, equal spacing, teeth]
-answers: "How do I make a circular pattern of a feature about an axis from code?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Pattern a feature around an axis

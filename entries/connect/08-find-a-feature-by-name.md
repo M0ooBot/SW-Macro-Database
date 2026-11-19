@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-08-find-feature-by-name
 title: Find a feature by name in the tree
+answers: "How do I get an IFeature by its name so I can modify or reference it?"
+keywords: [feature tree, walk features, FirstFeature, GetNextFeature, find feature, GetFirstSubFeature, GetNextSubFeature, sub-feature, absorbed sketch, repeated names, FeatureByName, fast lookup, feature in a folder]
+api: [IPartDoc.FeatureByName, IModelDoc2.FirstFeature, IFeature.GetNextFeature, IFeature.Name, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature]
+language: [vbscript, python]
 status: verified
 verified_on: SolidWorks 2026
-language: [vbscript, python]
-api: [IPartDoc.FeatureByName, IModelDoc2.FirstFeature, IFeature.GetNextFeature, IFeature.Name, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature]
-keywords: [feature tree, walk features, FirstFeature, GetNextFeature, find feature, GetFirstSubFeature, GetNextSubFeature, sub-feature, absorbed sketch, repeated names, FeatureByName, fast lookup, feature in a folder]
-answers: "How do I get an IFeature by its name so I can modify or reference it?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Find a feature by name in the tree

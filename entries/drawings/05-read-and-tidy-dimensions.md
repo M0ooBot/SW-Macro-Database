@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: drawings-05-read-and-tidy-dimensions
 title: Read every dimension on a drawing with its tolerance, and fix its precision and text
+answers: "How do I list every dimension on a drawing with its tolerance or fit, and fix trailing zeros, tolerance decimals and prefix text from code?"
+keywords: [drawing dimensions, read dimensions, review a drawing, trailing zeros, 24.70, precision, decimal places, SetPrecision3, tolerance precision, fit tolerance, H7, h9, hole fit, shaft fit, GetHoleFitValue, GetShaftFitValue, swTolType_e, bilateral, symmetric, limit, reference dimension, parentheses, ShowParenthesis, prefix, suffix, 2X, THRU, MOD-DIAM, diameter symbol, GetText, SetText, swDimensionTextParts_e]
+api: [IView.GetFirstDisplayDimension5, IDisplayDimension.GetNext5, IDisplayDimension.GetDimension2, IDimension.SystemValue, IDimension.FullName, IDimension.Tolerance, IDimensionTolerance.Type, IDimensionTolerance.GetMaxValue, IDimensionTolerance.GetMinValue, IDimensionTolerance.GetHoleFitValue, IDimensionTolerance.GetShaftFitValue, IDisplayDimension.ShowParenthesis, IDisplayDimension.GetText, IDisplayDimension.SetText, IDisplayDimension.SetPrecision3, IDisplayDimension.Type2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IView.GetFirstDisplayDimension5, IDisplayDimension.GetNext5, IDisplayDimension.GetDimension2, IDimension.SystemValue, IDimension.FullName, IDimension.Tolerance, IDimensionTolerance.Type, IDimensionTolerance.GetMaxValue, IDimensionTolerance.GetMinValue, IDimensionTolerance.GetHoleFitValue, IDimensionTolerance.GetShaftFitValue, IDisplayDimension.ShowParenthesis, IDisplayDimension.GetText, IDisplayDimension.SetText, IDisplayDimension.SetPrecision3, IDisplayDimension.Type2]
-keywords: [drawing dimensions, read dimensions, review a drawing, trailing zeros, 24.70, precision, decimal places, SetPrecision3, tolerance precision, fit tolerance, H7, h9, hole fit, shaft fit, GetHoleFitValue, GetShaftFitValue, swTolType_e, bilateral, symmetric, limit, reference dimension, parentheses, ShowParenthesis, prefix, suffix, 2X, THRU, MOD-DIAM, diameter symbol, GetText, SetText, swDimensionTextParts_e]
-answers: "How do I list every dimension on a drawing with its tolerance or fit, and fix trailing zeros, tolerance decimals and prefix text from code?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Read every dimension on a drawing with its tolerance, and fix its precision and text

@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-11-probe-an-api-member-on-a-live-session
 title: Probe an API member on a live session before relying on it
+answers: "How do I find out whether a SolidWorks API call really works before my tool depends on it?"
+keywords: [probe, harness, verify API, test against SolidWorks, scratch document, timeout, modal dialog, hang, HRESULT, argerror, com_error, evidence, latest.json, API ledger, skip cascade, cleanup]
+api: [ISldWorks.NewDocument, ISldWorks.CloseDoc, ISldWorks.GetFirstDocument, IModelDoc2.GetNext, ISelectionMgr.GetSelectedObjectCount2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [ISldWorks.NewDocument, ISldWorks.CloseDoc, ISldWorks.GetFirstDocument, IModelDoc2.GetNext, ISelectionMgr.GetSelectedObjectCount2]
-keywords: [probe, harness, verify API, test against SolidWorks, scratch document, timeout, modal dialog, hang, HRESULT, argerror, com_error, evidence, latest.json, API ledger, skip cascade, cleanup]
-answers: "How do I find out whether a SolidWorks API call really works before my tool depends on it?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Probe an API member on a live session before relying on it

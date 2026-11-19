@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: sketches-10-is-the-sketch-fully-defined
 title: Check whether a sketch is fully defined
+answers: "How do I check from code whether a sketch is fully defined?"
+keywords: [GetConstrainedStatus, fully defined, under defined, over defined, swConstrainedStatus_e, swUnderConstrained, swFullyConstrained, 2, 3, sketch status, black sketch, blue sketch]
+api: [ISketch.GetConstrainedStatus, ISketchManager.ActiveSketch, IFeature.GetSpecificFeature2]
+language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
-language: [python]
-api: [ISketch.GetConstrainedStatus, ISketchManager.ActiveSketch, IFeature.GetSpecificFeature2]
-keywords: [GetConstrainedStatus, fully defined, under defined, over defined, swConstrainedStatus_e, swUnderConstrained, swFullyConstrained, 2, 3, sketch status, black sketch, blue sketch]
-answers: "How do I check from code whether a sketch is fully defined?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Check whether a sketch is fully defined

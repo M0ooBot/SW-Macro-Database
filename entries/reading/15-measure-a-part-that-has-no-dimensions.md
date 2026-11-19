@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: reading-15-measure-a-part-that-has-no-dimensions
 title: Measure a part's sizes from its faces when it has no dimensions to read
+answers: "My part was derived or imported and has no dimensions of its own — how do I get its real sizes (lengths, slot widths, hole diameters, positions) from code?"
+keywords: [derived part, SavedExtBody, inserted part, imported body, no dimensions, dumb solid, measure part, face positions, planar faces, cylinder radius, hole diameter, slot width, wall thickness, PlaneParams, CylinderParams, GetBodyBox, reverse engineer dimensions, dimension table from geometry]
+api: [IPartDoc.GetBodies2, IBody2.GetBodyBox, IBody2.GetFaces, IFace2.GetSurface, IFace2.GetBox, ISurface.IsPlane, ISurface.PlaneParams, ISurface.IsCylinder, ISurface.CylinderParams, ISurface.Identity, IFeature.GetTypeName2, IFeature.GetFirstDisplayDimension, IFeature.GetNextDisplayDimension]
+language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0)
-language: [python]
-api: [IPartDoc.GetBodies2, IBody2.GetBodyBox, IBody2.GetFaces, IFace2.GetSurface, IFace2.GetBox, ISurface.IsPlane, ISurface.PlaneParams, ISurface.IsCylinder, ISurface.CylinderParams, ISurface.Identity, IFeature.GetTypeName2, IFeature.GetFirstDisplayDimension, IFeature.GetNextDisplayDimension]
-keywords: [derived part, SavedExtBody, inserted part, imported body, no dimensions, dumb solid, measure part, face positions, planar faces, cylinder radius, hole diameter, slot width, wall thickness, PlaneParams, CylinderParams, GetBodyBox, reverse engineer dimensions, dimension table from geometry]
-answers: "My part was derived or imported and has no dimensions of its own — how do I get its real sizes (lengths, slot widths, hole diameters, positions) from code?"
+majors: [32]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Measure a part's sizes from its faces when it has no dimensions to read

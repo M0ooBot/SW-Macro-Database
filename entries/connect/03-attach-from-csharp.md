@@ -1,12 +1,18 @@
 ---
+schema: 2
 id: connect-03-attach-csharp
 title: Attach to a running SolidWorks from C# on .NET 8
+answers: "Marshal.GetActiveObject is gone on .NET 8. How do I attach to SolidWorks?"
+keywords: [dotnet 8, Marshal.GetActiveObject, P/Invoke, ole32, oleaut32, interop, EmbedInteropTypes, wpf]
+api: [GetActiveObject, GetRunningObjectTable, CreateBindCtx, CLSIDFromProgID]
+language: [csharp-standalone]
 status: partly-verified
 verified_on: SolidWorks 2026 for attach and dependency read
-language: [csharp]
-api: [GetActiveObject, GetRunningObjectTable, CreateBindCtx, CLSIDFromProgID]
-keywords: [dotnet 8, Marshal.GetActiveObject, P/Invoke, ole32, oleaut32, interop, EmbedInteropTypes, wpf]
-answers: "Marshal.GetActiveObject is gone on .NET 8. How do I attach to SolidWorks?"
+majors: [34]
+evidence: []
+recipe_status: null
+recipe_evidence: []
+superseded_by: null
 ---
 
 # Attach to a running SolidWorks from C# on .NET 8
