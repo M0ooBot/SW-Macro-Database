@@ -771,6 +771,7 @@ the probe's source, not in a kept result. See
 than a SolidWorks one: it returns nothing, so `call(app, "ExitApp")` only
 fetched it and SolidWorks stayed open (seen once, on 2026, in a run whose
 results were not kept); `app.ExitApp()` ended it, on 2026 (34.1.1) and 2024 SP5. See [`code/python/gear_train/`](code/python/gear_train/README.md).
+
 ## 56. Reloading a curve is charged for the whole tree below it
 
 `IFeature.ModifyDefinition` after `LoadPointsFromFile` cost **25 seconds per
