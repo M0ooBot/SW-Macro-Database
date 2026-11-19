@@ -118,6 +118,10 @@
       "text": "\"emoji\"*"
     },
     {
+      "query": "\ud835\udc00\ud835\udc01c x",
+      "text": "\"\ud835\udc00\ud835\udc01c\"* OR \"x\"*"
+    },
+    {
       "query": "\u02b0ello",
       "text": "\"\u02b0ello\"*"
     },

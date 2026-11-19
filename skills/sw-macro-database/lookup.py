@@ -14,8 +14,11 @@ alike), and prints ranked ids, statuses and titles. It never writes a file.
 --self-test runs search-tests.json: the match-text vectors and the test
 questions, each of which must find its entry in the top 5.
 
-It looks for the package beside itself (the release's skill folder), else two
+It reads the package beside itself (the release's skill folder), else two
 folders up (the repository); --root names another folder holding manifest.json.
+search.sql and search-tests.json are read from that folder when it has them
+(a release), else from beside this script (the repository layout). Every file
+is read as strict UTF-8 without a byte-order mark.
 
 Needs Python 3.9 or later whose SQLite has FTS5 (python.org builds and
 Ubuntu's do). Standard library only.
@@ -80,24 +83,88 @@ def match_text(query: str):
 
 
 def read_blocks(text: str) -> dict:
-    """search.sql's named blocks: exactly BLOCKS, after a known format line."""
+    """search.sql's named blocks, read as SW-Agent's SearchSql.Parse reads them.
+
+    The first line is '-- @format 1'; only blank lines come before the first
+    block; each block runs to the next '-- @block' line or the end and holds
+    exactly one statement (comments allowed); the blocks are exactly BLOCKS.
+    """
     lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
-    if not lines or lines[0].strip() != "-- @format " + SQL_FORMAT:
+    if not lines[0].startswith("-- @format "):
         raise PackageError(f"search.sql: the first line must be '-- @format {SQL_FORMAT}'")
-    blocks, name = {}, None
-    for line in lines[1:]:
+    fmt = lines[0][len("-- @format "):].strip()
+    if fmt != SQL_FORMAT:
+        raise PackageError(f"search.sql: format {fmt} is not supported; this lookup.py reads format {SQL_FORMAT}")
+    blocks: dict = {}
+    name, body = None, []
+
+    def close():
+        if name is None:
+            return
+        statement = "\n".join(body).strip()
+        code, one = has_code(statement)
+        if not code:
+            raise PackageError(f"search.sql: block {name!r} is empty")
+        if not one:
+            raise PackageError(f"search.sql: block {name!r} holds more than one statement")
+        blocks[name] = statement
+
+    for i, line in enumerate(lines[1:], 2):
         if line.startswith("-- @block "):
-            name = line[len("-- @block "):].strip()
+            close()
+            name, body = line[len("-- @block "):].strip(), []
+            if name not in BLOCKS:
+                raise PackageError(f"search.sql: unknown block {name!r}; the blocks are {', '.join(BLOCKS)}")
             if name in blocks:
                 raise PackageError(f"search.sql: block {name!r} appears twice")
-            blocks[name] = []
         elif name is not None:
-            blocks[name].append(line)
+            body.append(line)
         elif line.strip():
-            raise PackageError("search.sql: text before the first block")
-    if sorted(blocks) != sorted(BLOCKS):
-        raise PackageError(f"search.sql: the blocks must be exactly {list(BLOCKS)}, found {list(blocks)}")
-    return {k: "\n".join(v).strip() for k, v in blocks.items()}
+            raise PackageError(f"search.sql: line {i} is outside every block")
+    close()
+    missing = [b for b in BLOCKS if b not in blocks]
+    if missing:
+        raise PackageError(f"search.sql: block {', '.join(repr(m) for m in missing)} is missing")
+    return blocks
+
+
+def has_code(sql: str):
+    """(code, one statement): whether SQL holds code outside comments, and whether
+    nothing but whitespace and comments follows its first ';' outside quotes."""
+    code = ended = False
+    one = True
+    i, n = 0, len(sql)
+    while i < n:
+        c = sql[i]
+        if sql.startswith("--", i):
+            end = sql.find("\n", i)
+            i = n if end < 0 else end + 1
+            continue
+        if sql.startswith("/*", i):
+            end = sql.find("*/", i + 2)
+            i = n if end < 0 else end + 2
+            continue
+        if c.isspace():
+            i += 1
+            continue
+        if ended:
+            one = False
+        if c == ";":
+            ended = code
+            i += 1
+            continue
+        code = True
+        close = {"'": "'", '"': '"', "\x60": "\x60", "[": "]"}.get(c)
+        i += 1
+        if close is None:
+            continue
+        # A quoted literal or name; a doubled closing quote stays inside it.
+        while i < n:
+            if sql[i] == close and not (close != "]" and i + 1 < n and sql[i + 1] == close):
+                break
+            i += 2 if sql[i] == close else 1
+        i += 1
+    return code, one
 
 
 def body_of(markdown: str) -> str:
@@ -128,10 +195,18 @@ def find_root(explicit) -> pathlib.Path:
 
 
 def read_text(path: pathlib.Path, root: pathlib.Path) -> str:
+    """A package text file: UTF-8 without a byte-order mark, decoded strictly."""
+    rel = path.relative_to(root).as_posix() if path.is_relative_to(root) else str(path)
     try:
-        return path.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError) as exc:
-        raise PackageError(f"{path.relative_to(root).as_posix() if path.is_relative_to(root) else path}: {exc}")
+        data = path.read_bytes()
+    except OSError as exc:
+        raise PackageError(f"{rel}: cannot be read ({exc.strerror or exc})")
+    if data.startswith(b"\xef\xbb\xbf"):
+        raise PackageError(f"{rel}: starts with a byte-order mark; package files are UTF-8 without one")
+    try:
+        return data.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise PackageError(f"{rel}: not valid UTF-8 ({exc.reason} at byte {exc.start})")
 
 
 def read_json(path: pathlib.Path, root: pathlib.Path):
@@ -141,10 +216,17 @@ def read_json(path: pathlib.Path, root: pathlib.Path):
         raise PackageError(f"{path.name}: not valid JSON ({exc})")
 
 
+def beside(root: pathlib.Path, name: str) -> pathlib.Path:
+    """search.sql and search-tests.json: the package's own when the root has them
+    (a release's skill folder), else the ones beside this script (the repository)."""
+    return root / name if (root / name).is_file() else HERE / name
+
+
 class Package:
     def __init__(self, root: pathlib.Path):
         self.root = root
-        self.blocks = read_blocks(read_text(HERE / "search.sql", HERE))
+        sql = beside(root, "search.sql")
+        self.blocks = read_blocks(read_text(sql, sql.parent))
         manifest = read_json(root / "manifest.json", root)
         gotchas = read_json(root / "gotchas.json", root)
         try:
@@ -167,13 +249,17 @@ class Package:
             if "fts5" in str(exc).lower():
                 raise RuntimeError(NO_FTS5)
             raise PackageError(f"search.sql: {exc}")
-        for e in self.entries:
-            body = body_of(read_text(self.root / e["path"], self.root))
-            conn.execute("INSERT INTO entries (id, title, answers, keywords, api, body) VALUES (?, ?, ?, ?, ?, ?)",
-                         (e["id"], e["title"], e["answers"], " ".join(e["keywords"]), " ".join(e["api"]), body))
-        for g in sorted(self.gotchas, key=lambda g: g["number"]):
-            body = body_of(read_text(self.root / g["path"], self.root))
-            conn.execute("INSERT INTO gotchas (number, title, body) VALUES (?, ?, ?)", (int(g["number"]), g["title"], body))
+        try:
+            for e in self.entries:
+                body = body_of(read_text(self.root / e["path"], self.root))
+                conn.execute("INSERT INTO entries (id, title, answers, keywords, api, body) VALUES (?, ?, ?, ?, ?, ?)",
+                             (e["id"], e["title"], e["answers"], " ".join(e["keywords"]), " ".join(e["api"]), body))
+            for g in sorted(self.gotchas, key=lambda g: g["number"]):
+                body = body_of(read_text(self.root / g["path"], self.root))
+                conn.execute("INSERT INTO gotchas (number, title, body) VALUES (?, ?, ?)", (int(g["number"]), g["title"], body))
+        except BaseException:
+            conn.close()
+            raise
         return conn
 
 
@@ -199,7 +285,8 @@ def search(conn: sqlite3.Connection, sql: str, query: str, k: int) -> list:
 
 
 def self_test(pkg: Package, conn: sqlite3.Connection, out) -> bool:
-    tests = read_json(HERE / "search-tests.json", HERE)
+    path = beside(pkg.root, "search-tests.json")
+    tests = read_json(path, path.parent)
     if not isinstance(tests, dict) or tests.get("format") != 1:
         raise PackageError("search-tests.json: 'format' must be 1")
     failures = 0

@@ -17,7 +17,8 @@ The package holds two skills plus the prebuilt scripts:
     skills/sw-macro-contribute/SKILL.md, CONTRIBUTING.md, _TEMPLATE.md, _GOTCHA_TEMPLATE.md
     scripts/<id>/script.json, script.csx
 
-The zip is deterministic: sorted entries, a fixed timestamp, fixed modes.
+Every file is UTF-8 text without a byte-order mark (SPEC/03 §8.3); a file
+that is not is refused. The zip is deterministic: sorted entries, a fixed timestamp, fixed modes.
 Building the same commit twice gives byte-identical output, so the sha256
 values in package.json can be trusted. Every path keeps the path rule SW-Agent
 enforces when it installs a package (check_path), so no release can be built
@@ -48,6 +49,7 @@ import zipfile
 
 import build_manifest
 import evidence as evidence_mod
+import textfile
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -108,6 +110,15 @@ def _read(root: pathlib.Path, rel: str) -> bytes:
     return path.read_bytes()
 
 
+def _text(root: pathlib.Path, rel: str) -> str:
+    """A repo text file the build reads, refused like any package file when it is not UTF-8 text."""
+    data = _read(root, rel)
+    why = textfile.problem(data)
+    if why:
+        raise BuildError(f"{rel}: {why}")
+    return data.decode("utf-8")
+
+
 def _tree(root: pathlib.Path, rel_dir: str, dest: str) -> dict[str, bytes]:
     """Every file under root/rel_dir, keyed by its path inside the package."""
     base = root / rel_dir
@@ -122,7 +133,7 @@ def _tree(root: pathlib.Path, rel_dir: str, dest: str) -> dict[str, bytes]:
 
 
 def read_kit_version(root: pathlib.Path) -> str:
-    text = _read(root, "kit.version").decode("utf-8").strip()
+    text = _text(root, "kit.version").strip()
     if not VERSION_RE.match(text):
         raise BuildError(f"kit.version {text!r} is not a SemVer version such as 0.1.0")
     return text
@@ -146,6 +157,9 @@ def load_scripts(root: pathlib.Path) -> dict[str, dict]:
     for folder in sorted(p for p in base.iterdir() if p.is_dir() and p.name not in SKIP_NAMES):
         raw_json = _read(root, f"scripts/{folder.name}/script.json")
         raw_csx = _read(root, f"scripts/{folder.name}/script.csx")
+        why = textfile.problem(raw_json)
+        if why:
+            raise BuildError(f"scripts/{folder.name}/script.json: {why}")
         try:
             meta = json.loads(raw_json.decode("utf-8"))
         except ValueError as exc:
@@ -302,13 +316,13 @@ def assemble(root: pathlib.Path, version: str) -> tuple[dict[str, bytes], list[s
     min_kit = read_kit_version(root)
 
     manifest_bytes = _read(root, "manifest.json")
-    manifest = json.loads(manifest_bytes.decode("utf-8"))
+    manifest = json.loads(_text(root, "manifest.json"))
     gotchas_bytes = _read(root, "gotchas.json")
-    gotchas = json.loads(gotchas_bytes.decode("utf-8"))
+    gotchas = json.loads(_text(root, "gotchas.json"))
     if manifest.get("schema") != 2:
         raise BuildError("manifest.json is not schema 2: run python3 tools/build_manifest.py")
     scripts = load_scripts(root)
-    template = _read(root, f"{SKILL}/SKILL.template.md").decode("utf-8")
+    template = _text(root, f"{SKILL}/SKILL.template.md")
 
     files: dict[str, bytes] = {
         f"{SKILL}/SKILL.md": render_skill(template, version, manifest, gotchas, scripts).encode("utf-8"),
@@ -334,6 +348,13 @@ def assemble(root: pathlib.Path, version: str) -> tuple[dict[str, bytes], list[s
         files[f"scripts/{sid}/script.json"] = s["json"]
         files[f"scripts/{sid}/script.csx"] = s["csx"]
 
+    errors: list[str] = []
+    for p in sorted(files):
+        why = textfile.problem(files[p])
+        if why:
+            errors.append(f"{p}: {why} (every package file is UTF-8 text without a BOM)")
+    if errors:
+        raise BuildError("the package would be refused:\n  " + "\n  ".join(errors))
     errors, warnings = check_package_links(files)
     seen: dict[str, str] = {}
     for p in sorted(files) + ["package.json"]:
@@ -447,7 +468,7 @@ def release_notes(root: pathlib.Path, ref: str | None) -> str:
     first = old_manifest is None
     if first:
         old_manifest, old_scripts = {"entries": []}, {}
-    new_manifest = json.loads(_read(root, "manifest.json").decode("utf-8"))
+    new_manifest = json.loads(_text(root, "manifest.json"))
     new_scripts = {
         sid: (s["meta"], s["sha256"]) for sid, s in load_scripts(root).items()
     }

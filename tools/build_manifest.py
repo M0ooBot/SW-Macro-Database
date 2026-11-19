@@ -25,6 +25,7 @@ import evidence as evidence_mod
 import gotchas as gotchas_mod
 import ledger as ledger_mod
 import recipes
+import textfile
 from frontmatter import format_value, parse_frontmatter, read_frontmatter  # noqa: F401 (re-exported)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -86,7 +87,11 @@ def check_links(root: pathlib.Path = ROOT) -> list[str]:
     for md in sorted(root.rglob("*.md")):
         if ".git" in md.parts or md.name.startswith("_"):
             continue
-        for m in LINK.finditer(md.read_text(encoding="utf-8")):
+        text, why = textfile.read(md, md.relative_to(root).as_posix())
+        if why:
+            bad.append(why)
+            continue
+        for m in LINK.finditer(text):
             target = m.group(1)
             if target.startswith(("http://", "https://", "mailto:")):
                 continue
@@ -100,7 +105,10 @@ def check_index(root: pathlib.Path, paths: list[str]) -> list[str]:
     index = root / "INDEX.md"
     if not index.is_file():
         return ["INDEX.md is missing"]
-    linked = {(root / m.group(1)).resolve() for m in LINK.finditer(index.read_text(encoding="utf-8"))}
+    text, why = textfile.read(index, "INDEX.md")
+    if why:
+        return [why]
+    linked = {(root / m.group(1)).resolve() for m in LINK.finditer(text)}
     return [f"{rel}: not linked from INDEX.md" for rel in paths if (root / rel).resolve() not in linked]
 
 
@@ -119,6 +127,8 @@ def check_entry_2(rel: str, path: pathlib.Path, fm: dict, records: dict, problem
             problems.append(f"{rel}: missing field '{k}'")
     for k in sorted(set(fm) - set(KEYS_2)):
         problems.append(f"{rel}: unknown field '{k}'")
+    if all(k in fm for k in KEYS_2) and [k for k in fm if k in KEYS_2] != KEYS_2:
+        problems.append(f"{rel}: write the keys in this order: {', '.join(KEYS_2)}")
     if fm.get("schema") != "2":
         problems.append(f"{rel}: 'schema' must be 2")
     for field in ("id", "title", "answers"):
@@ -167,7 +177,7 @@ def check_entry_2(rel: str, path: pathlib.Path, fm: dict, records: dict, problem
         problems.append(f"{rel}: 'id' {entry_id!r} must be kebab-case")
     ev_ids = fm.get("evidence") if isinstance(fm.get("evidence"), list) else []
     rec_ids = fm.get("recipe_evidence") if isinstance(fm.get("recipe_evidence"), list) else []
-    evidence_mod.check_refs(rel, "evidence", ev_ids, entry_id, records, problems)
+    evidence_mod.check_refs(rel, "evidence", ev_ids, entry_id, records, problems, not_language="csharp")
     evidence_mod.check_refs(rel, "recipe_evidence", rec_ids, entry_id, records, problems, language="csharp")
     if status == "verified" and not majors and not evidence_mod.has_full_pass(ev_ids, records):
         problems.append(f"{rel}: status 'verified' needs an observation: majors named in verified_on, "
@@ -179,8 +189,12 @@ def check_entry_2(rel: str, path: pathlib.Path, fm: dict, records: dict, problem
     if sidecar.is_file():
         if recipe_status not in CLAIMS:
             problems.append(f"{rel}: {sidecar.name} exists, so 'recipe_status' must be one of {sorted(CLAIMS)}")
-        header, header_problems = recipes.check(sidecar.read_text(encoding="utf-8"))
-        problems.extend(f"{rel[:-3]}.csx: {p}" for p in header_problems)
+        code, why = textfile.read(sidecar, rel[:-3] + ".csx")
+        if why:
+            problems.append(why)
+        else:
+            header, header_problems = recipes.check(code)
+            problems.extend(f"{rel[:-3]}.csx: {p}" for p in header_problems)
         if recipe_status == "verified" and not evidence_mod.has_full_pass(rec_ids, records, method="smoke"):
             problems.append(f"{rel}: recipe_status 'verified' needs a passing 'full' evidence record "
                             f"with method 'smoke' in recipe_evidence")
@@ -209,7 +223,11 @@ def collect(root: pathlib.Path = ROOT):
     for path in paths:
         rel = path.relative_to(root).as_posix()
         rels.append(rel)
-        fm, fm_problems = read_frontmatter(path.read_text(encoding="utf-8"))
+        text, why = textfile.read(path, rel)
+        if why:
+            problems.append(why)
+            continue
+        fm, fm_problems = read_frontmatter(text)
         if fm is None:
             problems.append(f"{rel}: no frontmatter block")
             continue
@@ -265,7 +283,7 @@ def collect(root: pathlib.Path = ROOT):
     problems.extend(check_index(root, rels))
     problems.extend(check_links(root))
     if problems:
-        return problems, None
+        return list(dict.fromkeys(problems)), None
 
     by_status: dict[str, int] = {}
     for r in records:
@@ -306,7 +324,8 @@ def outputs(root: pathlib.Path = ROOT):
     ledger_problems, ledger = ledger_mod.load(root)
     if ledger is not None:
         ledger_problems += ledger_mod.check(ledger, set(evidence_mod.load(root)[1]))
-    problems = problems + gotcha_problems + ledger_problems
+    # A file that cannot be read is met by more than one check; say so once.
+    problems = list(dict.fromkeys(problems + gotcha_problems + ledger_problems))
     if problems:
         return problems, {}
     return [], {

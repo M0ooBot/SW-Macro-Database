@@ -40,6 +40,7 @@ import build_manifest
 import build_package
 import evidence as evidence_mod
 import recipes
+import textfile
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -261,10 +262,9 @@ def check_scripts(root: pathlib.Path) -> list[str]:
         for name in ("script.json", "script.csx"):
             if name not in names:
                 continue
-            try:
-                text = (folder / name).read_text(encoding="utf-8")
-            except (UnicodeDecodeError, OSError) as exc:
-                problems.append(f"{rel}/{name}: cannot read as UTF-8 ({exc})")
+            text, why = textfile.read(folder / name, f"{rel}/{name}")
+            if why:
+                problems.append(why)
                 continue
             if name == "script.json":
                 problems.extend(check_script_json(root, folder.name, text, records))
@@ -305,7 +305,10 @@ def check_skills(root: pathlib.Path) -> list[str]:
             if not path.is_file():
                 problems.append(f"{rel} is missing (the release package is generated from it)")
                 continue
-            text = path.read_text(encoding="utf-8")
+            text, why = textfile.read(path, rel)
+            if why:
+                problems.append(why)
+                continue
             for ph in build_package.PLACEHOLDERS:
                 if "{{" + ph + "}}" not in text:
                     problems.append(f"{rel}: missing placeholder {{{{{ph}}}}}")
@@ -316,7 +319,8 @@ def check_skills(root: pathlib.Path) -> list[str]:
             if not path.is_file():
                 problems.append(f"{rel} is missing")
                 continue
-            problems.extend(check_frontmatter(rel, path.read_text(encoding="utf-8"), name))
+            text, why = textfile.read(path, rel)
+            problems.extend([why] if why else check_frontmatter(rel, text, name))
     return problems
 
 
@@ -342,7 +346,11 @@ def check_search(zip_path: pathlib.Path, into: pathlib.Path) -> list[str]:
     report = io.StringIO()
     try:
         package = lookup.Package(skill)
-        ok = lookup.self_test(package, package.index(), report)
+        conn = package.index()
+        try:
+            ok = lookup.self_test(package, conn, report)
+        finally:
+            conn.close()
     except (lookup.PackageError, KeyError, TypeError) as exc:
         return [f"search: the packaged lookup.py cannot read the package: {exc}"]
     if ok:
@@ -370,7 +378,7 @@ def run_unit_tests(root: pathlib.Path) -> list[str]:
 # --------------------------------------------------------------------------
 
 
-def validate(root: pathlib.Path) -> tuple[list[str], list[str]]:
+def validate(root: pathlib.Path, unit_tests: bool = True) -> tuple[list[str], list[str]]:
     """(problems, warnings) for the repo at root."""
     problems: list[str] = []
     warnings: list[str] = []
@@ -396,7 +404,8 @@ def validate(root: pathlib.Path) -> tuple[list[str], list[str]]:
         build_package.release_notes(root, build_package.latest_tag(root))
     except (build_package.BuildError, ValueError, KeyError, TypeError) as exc:
         problems.append(f"release notes cannot be written: {exc}")
-    problems.extend(run_unit_tests(root))
+    if unit_tests:
+        problems.extend(run_unit_tests(root))
     return problems, warnings
 
 

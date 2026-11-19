@@ -154,7 +154,7 @@ what it does) and `script.csx` (the code). Every rule above applies, plus:
 - **`status` is about this exact script.** A port of verified code is
   `unverified` until the script itself has run and been observed. `verified`
   needs a passing `full` evidence record of the script, listed in `evidence`
-  (an id list); the script's majors are those of its passing records.
+  (an id list); the script's majors are those of its passing `full` records.
 - **Declare effects truthfully.** `read-only`, `edits-open-document` (edits
   documents that are open, in memory, and saves nothing: exactly one param with
   `role: targets`, none with `role: output`), `writes-new-files` (only inside
@@ -247,7 +247,10 @@ script's `evidence` in its `script.json`). Start from
 | `observed` | What was seen: counts, return values, errors. No paths, user names or file names: this is published. |
 
 A failed run is recorded too (Rule 6). A subject's effective majors are its
-own `majors` plus those of its passing records.
+own `majors` plus those of its passing `full` records: a partial pass verified
+only part of the claim on that major, so it does not add the major (Rule 8). An
+entry's `evidence` holds runs of the code the entry shows; a run of its C#
+recipe goes in `recipe_evidence`.
 
 ### C# recipes
 

@@ -9,7 +9,7 @@ A record says what was run, on which SolidWorks, how, and what was observed:
 
 Entries list their records in `evidence` (and a C# recipe's in `recipe_evidence`);
 a script lists its own in script.json. A subject's effective majors are its own
-plus the majors of its passing records. Files starting with `_` are templates.
+plus the majors of its passing full records. Files starting with `_` are templates.
 Python 3 stdlib only.
 """
 
@@ -19,6 +19,8 @@ import datetime
 import json
 import pathlib
 import re
+
+import textfile
 
 KEYS = ["id", "subject", "language", "swRevision", "major", "date", "method", "result", "scope", "observed"]
 LANGUAGES = {"csharp", "python", "csharp-standalone", "vba", "vbscript", "typescript", "shell", "powershell"}
@@ -103,9 +105,13 @@ def load(root: pathlib.Path):
         if not path.is_file() or path.suffix != ".json":
             problems.append(f"{rel}: only <id>.json records belong in evidence/")
             continue
+        text, why = textfile.read(path, rel)
+        if why:
+            problems.append(why)
+            continue
         try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except (ValueError, UnicodeDecodeError) as exc:
+            data = json.loads(text)
+        except ValueError as exc:
             problems.append(f"{rel}: not valid JSON ({exc})")
             continue
         found = check_record(rel, path.stem, data)
@@ -115,8 +121,9 @@ def load(root: pathlib.Path):
     return problems, records
 
 
-def check_refs(rel: str, field: str, ids, subject, records: dict, problems: list[str], language=None) -> None:
-    """Every id in a subject's list names a record about that subject."""
+def check_refs(rel: str, field: str, ids, subject, records: dict, problems: list[str], language=None,
+               not_language=None) -> None:
+    """Every id in a subject's list names a record about that subject (in that language, or not in another)."""
     if len(set(ids)) != len(ids):
         problems.append(f"{rel}: '{field}' lists a record twice")
     for rid in ids:
@@ -128,6 +135,9 @@ def check_refs(rel: str, field: str, ids, subject, records: dict, problems: list
             problems.append(f"{rel}: '{field}' names {rid!r}, whose subject is {rec['subject']!r}")
         if language is not None and rec["language"] != language:
             problems.append(f"{rel}: '{field}' names {rid!r}, whose language is {rec['language']!r}, not {language!r}")
+        if not_language is not None and rec["language"] == not_language:
+            problems.append(f"{rel}: '{field}' names {rid!r}, a {not_language} run: a C# recipe's run goes in "
+                            f"recipe_evidence, and the entry's evidence records the code the entry shows")
 
 
 def has_full_pass(ids, records: dict, method=None) -> bool:
@@ -139,7 +149,15 @@ def has_full_pass(ids, records: dict, method=None) -> bool:
 
 
 def passing_majors(ids, records: dict) -> set[int]:
-    return {records[rid]["major"] for rid in ids if rid in records and records[rid]["result"] == "pass"}
+    """The majors a subject's records add to its own: passing full runs only.
+
+    A partial pass verified part of the claim on that major, so it does not
+    make the major one the whole claim ran on (CONTRIBUTING Rule 8).
+    """
+    return {
+        records[rid]["major"] for rid in ids
+        if rid in records and records[rid]["result"] == "pass" and records[rid]["scope"] == "full"
+    }
 
 
 def check_subjects(records: dict, entry_ids: set[str], script_ids: set[str]) -> list[str]:

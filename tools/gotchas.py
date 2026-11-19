@@ -23,6 +23,7 @@ import json
 import pathlib
 import re
 
+import textfile
 from frontmatter import read_frontmatter
 
 # GOTCHAS.md's first lines, held here so the generated file has one source.
@@ -96,7 +97,10 @@ def load(root: pathlib.Path):
         if not path.is_file() or not m:
             problems.append(f"{rel}: a gotcha file is named NNN-slug.md (three-digit number, kebab-case slug)")
             continue
-        text = path.read_text(encoding="utf-8")
+        text, why = textfile.read(path, rel)
+        if why:
+            problems.append(why)
+            continue
         fm, fm_problems = read_frontmatter(text)
         if fm is None:
             problems.append(f"{rel}: no frontmatter block")

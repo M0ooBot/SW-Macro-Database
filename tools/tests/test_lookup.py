@@ -1,6 +1,8 @@
 import importlib.util
+import json
 import pathlib
 import sys
+import tempfile
 import unittest
 
 LOOKUP = pathlib.Path(__file__).resolve().parents[2] / "skills" / "sw-macro-database" / "lookup.py"
@@ -36,9 +38,48 @@ class BlockTests(unittest.TestCase):
                 lookup.read_blocks(bad)
 
 
+class PackageTests(unittest.TestCase):
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = pathlib.Path(tmp.name)
+        (self.root / "entries").mkdir()
+        (self.root / "gotchas").mkdir()
+        (self.root / "entries" / "01-a.md").write_text("---\nid: a\n---\nAlpha body\n", encoding="utf-8")
+        (self.root / "gotchas" / "001-g.md").write_text("---\nid: G1\n---\n\nGamma body\n", encoding="utf-8")
+        (self.root / "manifest.json").write_text(json.dumps({"schema": 2, "entries": [
+            {"id": "a", "title": "Alpha", "answers": "How?", "keywords": [], "api": [], "path": "entries/01-a.md",
+             "status": "verified", "recipe": None}]}), encoding="utf-8")
+        (self.root / "gotchas.json").write_text(json.dumps({"schema": 1, "gotchas": [
+            {"number": 1, "title": "Gamma", "always": True, "path": "gotchas/001-g.md"}]}), encoding="utf-8")
+
+    def search(self, query):
+        package = lookup.Package(self.root)
+        conn = package.index()
+        try:
+            return lookup.search(conn, package.blocks["entries.search"], query, 5)
+        finally:
+            conn.close()
+
+    def test_reads_the_roots_own_search_sql(self):
+        self.assertEqual(self.search("alpha"), ["a"])
+        (self.root / "search.sql").write_text(SQL, encoding="utf-8")
+        self.assertEqual(lookup.Package(self.root).blocks["entries.search"], "C;")
+
+    def test_a_bom_in_a_package_file_is_refused(self):
+        path = self.root / "entries" / "01-a.md"
+        path.write_bytes(b"\xef\xbb\xbf" + path.read_bytes())
+        with self.assertRaises(lookup.PackageError) as caught:
+            self.search("alpha")
+        self.assertIn("entries/01-a.md: starts with a byte-order mark", str(caught.exception))
+
+
 class MatchTests(unittest.TestCase):
     def test_none(self):
         self.assertIsNone(lookup.match_text(" -- ; "))
+
+    def test_astral_letters_are_one_token(self):
+        self.assertEqual(lookup.match_text("\U0001d400\U0001d401c x"), '"\U0001d400\U0001d401c"* OR "x"*')
 
     def test_dedupe_is_ascii_only(self):
         self.assertEqual(lookup.match_text("Ab aB É é"), '"Ab"* OR "É"* OR "é"*')

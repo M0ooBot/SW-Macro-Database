@@ -29,6 +29,8 @@ import json
 import pathlib
 import re
 
+import textfile
+
 TITLE = "# API ledger\n\n"
 STATUSES = ["verified", "partly-verified", "unverified", "fails", "absent"]
 LABELS = {"verified": "Verified", "partly-verified": "Partly verified", "unverified": "Unverified"}
@@ -56,9 +58,12 @@ def load(root: pathlib.Path):
     path = root / "api-ledger.json"
     if not path.is_file():
         return ["api-ledger.json is missing"], None
+    text, why = textfile.read(path, "api-ledger.json")
+    if why:
+        return [why], None
     try:
-        return [], json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=_no_duplicate_keys)
-    except (ValueError, UnicodeDecodeError) as exc:
+        return [], json.loads(text, object_pairs_hook=_no_duplicate_keys)
+    except ValueError as exc:
         return [f"api-ledger.json: not valid JSON ({exc})"], None
 
 
