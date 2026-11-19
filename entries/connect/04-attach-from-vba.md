@@ -17,7 +17,7 @@ superseded_by: null
 
 # Attach from VBA, inside SolidWorks
 
-**Status:** Standard, universally documented
+**Status:** Unverified: standard and documented, but no run against SolidWorks is recorded
 **Language:** VBA, in the SolidWorks macro editor
 
 ## The easy case
