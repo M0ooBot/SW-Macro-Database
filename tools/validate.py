@@ -11,7 +11,8 @@ Exits non-zero and lists every problem found. It checks, in order:
      a lint of script.csx;
   3. every skills/<name>/ folder: SKILL.md frontmatter, and the template's
      placeholders;
-  4. that the release package builds (into a temp dir, version 0.0.0-ci).
+  4. that the release package builds (into a temp dir, version 0.0.0-ci);
+  5. the unit tests in tools/tests/.
 
 Python 3 stdlib only.
 """
@@ -19,11 +20,13 @@ Python 3 stdlib only.
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import pathlib
 import re
 import sys
 import tempfile
+import unittest
 
 import build_manifest
 import build_package
@@ -286,6 +289,23 @@ def check_skills(root: pathlib.Path) -> list[str]:
 
 
 # --------------------------------------------------------------------------
+# unit tests
+
+
+def run_unit_tests(root: pathlib.Path) -> list[str]:
+    """tools/tests/, run in-process, so this one command is the whole check."""
+    tests = root / "tools" / "tests"
+    if not tests.is_dir():
+        return []
+    suite = unittest.defaultTestLoader.discover(str(tests), top_level_dir=str(root / "tools"))
+    result = unittest.TextTestRunner(stream=io.StringIO(), verbosity=0).run(suite)
+    problems = [f"tools/tests: {test.id()} failed:\n{trace}" for test, trace in result.failures + result.errors]
+    if result.testsRun == 0:
+        problems.append("tools/tests: no tests found")
+    return problems
+
+
+# --------------------------------------------------------------------------
 
 
 def validate(root: pathlib.Path) -> tuple[list[str], list[str]]:
@@ -308,6 +328,7 @@ def validate(root: pathlib.Path) -> tuple[list[str], list[str]]:
             _, warnings = build_package.build(root, "0.0.0-ci", pathlib.Path(tmp))
         except build_package.BuildError as exc:
             problems.append(f"package build failed: {exc}")
+    problems.extend(run_unit_tests(root))
     return problems, warnings
 
 
