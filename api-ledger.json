@@ -4750,7 +4750,7 @@
       "interface": "ISelectionMgr",
       "members": [
         "ISelectionMgr.CreateSelectData",
-        "Mark",
+        "ISelectData.Mark",
         "IComponent2.Select4"
       ],
       "form": "`CreateSelectData` with `Mark = 1`, for `IComponent2.Select4`",
@@ -4884,7 +4884,7 @@
       "interface": null,
       "members": [
         "Transform",
-        "ArrayData"
+        "IMathTransform.ArrayData"
       ],
       "form": "`Transform` → `ArrayData`",
       "purpose": "Sixteen doubles: rotation **by columns**, translation, scale",
@@ -4901,8 +4901,8 @@
       "interface": null,
       "members": [
         "ModelToSketchTransform",
-        "Inverse",
-        "ArrayData"
+        "IMathTransform.Inverse",
+        "IMathTransform.ArrayData"
       ],
       "form": "`ModelToSketchTransform` → `Inverse` → `ArrayData`",
       "purpose": "Sketch space to model space",
@@ -4919,7 +4919,7 @@
       "interface": null,
       "members": [
         "Transform2",
-        "ArrayData"
+        "IMathTransform.ArrayData"
       ],
       "form": "`Transform2` → `ArrayData`",
       "purpose": "Items 9–11 are the component's translation, in metres",
@@ -6059,7 +6059,7 @@
       "members": [
         "IComponent2.Select4",
         "ISelectionMgr.CreateSelectData",
-        "Mark"
+        "ISelectData.Mark"
       ],
       "form": "`Select4(append, data, False)` with `CreateSelectData`, `Mark = 1`",
       "purpose": "Select a whole component at mark 1, for a lock mate",

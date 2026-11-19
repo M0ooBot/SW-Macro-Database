@@ -159,7 +159,10 @@ written `Interface.Member` stays so; a bare one takes the interface last written
 else the section's. Names after prose ("after", "with", "then") are context, from another
 object: `AddConfiguration2`, `ShowConfiguration2`, `AddMate5` and `CreateSelectData` are
 qualified by hand with the interface the ledger gives them (`IConfigurationManager`,
-`IModelDoc2`, `IAssemblyDoc`, `ISelectionMgr`), others stay bare. pywin32's `Invoke`,
+`IModelDoc2`, `IAssemblyDoc`, `ISelectionMgr`), `ArrayData` and `Inverse` with `IMathTransform`
+(its ledger row), and `Mark` with `ISelectData` (the API's owner, though the ledger has no
+row for it); others stay bare. A bare context name would carry the row's interface at
+query time (§12.3), so it gets the right one here. pywin32's `Invoke`,
 `DISPATCH_*` and `VARIANT` are never members. A dotted path that does not start with an
 interface (`Dimension.Name`, `IDimension.Tolerance.Type`) is kept as its last name only. Every
 row these rules or a hand edit touched is listed under "Rows whose members need a look".
@@ -224,15 +227,19 @@ row these rules or a hand edit touched is listed under "Rows whose members need 
 | IDisplayDimension and IDimension (from a feature) | `IFeature.GetFirstDisplayDimension` / `GetNextDisplayDimension(dd)` | IFeature.GetFirstDisplayDimension, IFeature.GetNextDisplayDimension | GetNextDisplayDimension takes IFeature from the name before it in the list. |
 | IFeature | `SetSuppression2(0 / 1, 3, VARIANT(VT_ARRAY \| VT_BSTR, names))` on a mate, straight after `AddConfiguration2` | IFeature.SetSuppression2, IConfigurationManager.AddConfiguration2 | AddConfiguration2 is context, qualified by hand as IConfigurationManager.AddConfiguration2. |
 | IFeature | `Name` (put) straight after `AddMate5` | IFeature.Name, IAssemblyDoc.AddMate5 | AddMate5 is context, qualified by hand as IAssemblyDoc.AddMate5. |
-| ISelectionMgr | `CreateSelectData` with `Mark = 1`, for `IComponent2.Select4` | ISelectionMgr.CreateSelectData, Mark, IComponent2.Select4 | Mark is context, left bare. |
-| Geometry interrogation | `Transform` → `ArrayData` | Transform, ArrayData | ArrayData is context, left bare. |
-| Geometry interrogation | `ModelToSketchTransform` → `Inverse` → `ArrayData` | ModelToSketchTransform, Inverse, ArrayData | Inverse is context, left bare; ArrayData is context, left bare. |
-| Geometry interrogation | `Transform2` → `ArrayData` | Transform2, ArrayData | ArrayData is context, left bare. |
+| ISelectionMgr | `CreateSelectData` with `Mark = 1`, for `IComponent2.Select4` | ISelectionMgr.CreateSelectData, ISelectData.Mark, IComponent2.Select4 | CreateSelectData takes the section's ISelectionMgr, though the cell writes another interface for a later name; Mark is context, qualified by hand as ISelectData.Mark. |
+| Geometry interrogation | `Transform` → `ArrayData` | Transform, IMathTransform.ArrayData | ArrayData is context, qualified by hand as IMathTransform.ArrayData. |
+| Geometry interrogation | `ModelToSketchTransform` → `Inverse` → `ArrayData` | ModelToSketchTransform, IMathTransform.Inverse, IMathTransform.ArrayData | Inverse is context, qualified by hand as IMathTransform.Inverse; ArrayData is context, qualified by hand as IMathTransform.ArrayData. |
+| Geometry interrogation | `Transform2` → `ArrayData` | Transform2, IMathTransform.ArrayData | ArrayData is context, qualified by hand as IMathTransform.ArrayData. |
 | IAssemblyDoc (an assembly's document, late-bound) | `GetComponentByName(name)` after `AddConfiguration2` or `ShowConfiguration2` | IAssemblyDoc.GetComponentByName, IConfigurationManager.AddConfiguration2, IModelDoc2.ShowConfiguration2 | AddConfiguration2 is context, qualified by hand as IConfigurationManager.AddConfiguration2; ShowConfiguration2 is context, qualified by hand as IModelDoc2.ShowConfiguration2. |
 | IComponent2 | `Transform2` / `IsFixed` on a handle held across `AddConfiguration2` or `ShowConfiguration2` | IComponent2.Transform2, IComponent2.IsFixed, IConfigurationManager.AddConfiguration2, IModelDoc2.ShowConfiguration2 | AddConfiguration2 is context, qualified by hand as IConfigurationManager.AddConfiguration2; ShowConfiguration2 is context, qualified by hand as IModelDoc2.ShowConfiguration2. |
-| IComponent2 | `Select4(append, data, False)` with `CreateSelectData`, `Mark = 1` | IComponent2.Select4, ISelectionMgr.CreateSelectData, Mark | CreateSelectData is context, qualified by hand as ISelectionMgr.CreateSelectData; Mark is context, left bare. |
+| IComponent2 | `Select4(append, data, False)` with `CreateSelectData`, `Mark = 1` | IComponent2.Select4, ISelectionMgr.CreateSelectData, ISelectData.Mark | CreateSelectData is context, qualified by hand as ISelectionMgr.CreateSelectData; Mark is context, qualified by hand as ISelectData.Mark. |
 | IMate2 (from `IFeature.GetSpecificFeature2` on a mate) | `MateEntity(i)` order for mates made by `AddMate5` | IMate2.MateEntity, IAssemblyDoc.AddMate5 | AddMate5 is context, qualified by hand as IAssemblyDoc.AddMate5. |
+| IGearMateFeatureData (from `IFeature.GetDefinition` on a `MateGearDim`) | `Reverse` with the two `IMateEntity2.EntityParams` directions (items 3–5) | IGearMateFeatureData.Reverse, IMateEntity2.EntityParams | Reverse takes the section's IGearMateFeatureData, though the cell writes another interface for a later name. |
+| IDrawingDoc (a drawing, late-bound) | `GetFirstView` / `IView.GetNextView` | IDrawingDoc.GetFirstView, IView.GetNextView | GetFirstView takes the section's IDrawingDoc, though the cell writes another interface for a later name. |
 | IView (a drawing view) | `GetFirstNote` / `INote.GetNext`, `GetNotes` | IView.GetFirstNote, INote.GetNext, IView.GetNotes | set by hand: GetNotes is the view's (IView.GetNotes), not INote's, though it follows INote.GetNext in the list. |
+| IView (a drawing view) | `GetFirstDisplayDimension5` / `IDisplayDimension.GetNext5` | IView.GetFirstDisplayDimension5, IDisplayDimension.GetNext5 | GetFirstDisplayDimension5 takes the section's IView, though the cell writes another interface for a later name. |
+| IView (a drawing view) | `GetFirstCenterMark` / `ICenterMark.GetNext` | IView.GetFirstCenterMark, ICenterMark.GetNext | GetFirstCenterMark takes the section's IView, though the cell writes another interface for a later name. |
 | IView (a drawing view) | `UseSheetScale = False` then `ScaleDecimal = 5` | IView.UseSheetScale, ScaleDecimal | ScaleDecimal is context, left bare. |
 | IView (a drawing view) | `IDrSection.SetExcludedComponents(components)` through `Invoke` (`DISPATCH_METHOD`) | IDrSection.SetExcludedComponents | dropped Invoke (pywin32, not an API member); dropped DISPATCH_METHOD (pywin32, not an API member). |
 | INote, IAnnotation and ICenterMark (drawing annotations) | `INote.GetText` / `SetText(text)` | INote.GetText, INote.SetText | SetText takes INote from the name before it in the list. |

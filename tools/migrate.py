@@ -654,6 +654,12 @@ CONTEXT_INTERFACES = {
     "ShowConfiguration2": "IModelDoc2",
     "AddMate5": "IAssemblyDoc",
     "CreateSelectData": "ISelectionMgr",
+    # Read off a transform (API-LEDGER.md's IMathTransform row); the ledger has no section for them.
+    "ArrayData": "IMathTransform",
+    "Inverse": "IMathTransform",
+    # The selection mark is a property of the SelectData object; ISelectData is not in the ledger
+    # at all, but it is the API's owner of Mark (coordinator's ruling).
+    "Mark": "ISelectData",
 }
 LIST_SEPARATOR = re.compile(r"^\s*(?:/|,|and|or|, and|, or)?\s*$")
 # Rows whose members the rules above get wrong, set by hand: (section, Member cell) -> (members, why).
@@ -683,6 +689,7 @@ def rule_members(form: str, interface):
     """
     out, notes = [], []
     leading, list_interface, prev_end = True, None, None
+    cell_writes_one = bool(re.search(r"\x60I[A-Z][A-Za-z0-9_]*\.[A-Za-z_]", form))
     for m in re.finditer(r"(?<!\x60)(\x60+)(?!\x60)(.+?)(?<!\x60)\1(?!\x60)", form):
         if prev_end is not None and not LIST_SEPARATOR.match(form[prev_end:m.start()]):
             leading, list_interface = False, None
@@ -705,6 +712,9 @@ def rule_members(form: str, interface):
             name = f"{owner}.{member}" if owner else member
             if list_interface:
                 notes.append(f"{member} takes {list_interface} from the name before it in the list")
+            elif owner and cell_writes_one:
+                notes.append(f"{member} takes the section's {owner}, though the cell writes another "
+                             f"interface for a later name")
         elif member in CONTEXT_INTERFACES:
             name = f"{CONTEXT_INTERFACES[member]}.{member}"
             notes.append(f"{member} is context, qualified by hand as {name}")
@@ -837,7 +847,10 @@ def migrate_ledger() -> int:
         "else the section's. Names after prose (\"after\", \"with\", \"then\") are context, from another",
         "object: `AddConfiguration2`, `ShowConfiguration2`, `AddMate5` and `CreateSelectData` are",
         "qualified by hand with the interface the ledger gives them (`IConfigurationManager`,",
-        "`IModelDoc2`, `IAssemblyDoc`, `ISelectionMgr`), others stay bare. pywin32's `Invoke`,",
+        "`IModelDoc2`, `IAssemblyDoc`, `ISelectionMgr`), `ArrayData` and `Inverse` with `IMathTransform`",
+        "(its ledger row), and `Mark` with `ISelectData` (the API's owner, though the ledger has no",
+        "row for it); others stay bare. A bare context name would carry the row's interface at",
+        "query time (§12.3), so it gets the right one here. pywin32's `Invoke`,",
         "`DISPATCH_*` and `VARIANT` are never members. A dotted path that does not start with an",
         "interface (`Dimension.Name`, `IDimension.Tolerance.Type`) is kept as its last name only. Every",
         "row these rules or a hand edit touched is listed under \"Rows whose members need a look\".",

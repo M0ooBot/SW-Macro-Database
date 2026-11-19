@@ -25,17 +25,65 @@ class BodyTests(unittest.TestCase):
 
 
 class BlockTests(unittest.TestCase):
+    """The same files SW-Agent's SearchSql.Parse refuses, refused the same way."""
+
     def test_blocks(self):
         self.assertEqual(lookup.read_blocks(SQL), {"entries.create": "A;", "gotchas.create": "B;",
                                                    "entries.search": "C;", "gotchas.search": "D;"})
 
+    def test_crlf_blank_lines_comments_in_a_block_and_several_lines(self):
+        text = SQL.replace("-- @block gotchas.search\n", "-- @block gotchas.search\n-- best first\n")
+        text = text.replace("-- @format 1\n", "-- @format 1\n\n").replace("D;", "SELECT 1\nFROM t;")
+        text = text.replace("\n", "\r\n")
+        self.assertEqual(lookup.read_blocks(text)["gotchas.search"], "-- best first\nSELECT 1\nFROM t;")
+
     def test_refused(self):
-        for bad in (SQL.replace("@format 1", "@format 2"),
-                    SQL.replace("-- @block gotchas.search\nD;\n", ""),
-                    SQL + "-- @block extra\nE;\n",
-                    SQL + "-- @block entries.create\nA;\n"):
-            with self.assertRaises(lookup.PackageError):
-                lookup.read_blocks(bad)
+        cases = [
+            (("-- @block gotchas.search", "-- @block gotchas.find"), "unknown block 'gotchas.find'"),
+            (("-- @block gotchas.create", "-- @block entries.create"), "'entries.create' appears twice"),
+            (("-- @format 1", "-- @format 2"), "format 2 is not supported"),
+            (("-- @format 1", "-- format 1"), "the first line must be"),
+            (("-- @format 1\n", "-- @format 1\nPRAGMA x;\n"), "line 2 is outside every block"),
+            (("-- @format 1\n", "-- @format 1\n\n-- The index.\n"), "line 3 is outside every block"),
+            (("C;", "C; DROP TABLE x;"), "'entries.search' holds more than one statement"),
+            (("D;", "D;;"), "'gotchas.search' holds more than one statement"),
+            (("-- @block gotchas.search\nD;\n", ""), "'gotchas.search' is missing"),
+            (("D;", "-- only a comment"), "'gotchas.search' is empty"),
+            (("D;", ""), "'gotchas.search' is empty"),
+        ]
+        for (old, new), message in cases:
+            with self.subTest(new=new):
+                text = SQL.replace(old, new)
+                self.assertNotEqual(text, SQL)
+                with self.assertRaises(lookup.PackageError) as caught:
+                    lookup.read_blocks(text)
+                self.assertIn(message, str(caught.exception))
+
+    def test_has_code(self):
+        cases = {
+            "SELECT 1": (True, True),
+            "SELECT 1;": (True, True),
+            "-- why\nSELECT 1; -- done\n/* and */  ": (True, True),
+            "SELECT ';' AS a, \"b;\", [c;], \x60d;\x60 FROM t WHERE x = 'it''s;';": (True, True),
+            "SELECT 1; SELECT 2": (True, False),
+            "SELECT 1;;": (True, False),
+            "SELECT 1 /* ; */ ; -- ;\n": (True, True),
+            "-- only a comment\n": (False, True),
+            "": (False, True),
+        }
+        for sql, expected in cases.items():
+            with self.subTest(sql=sql):
+                self.assertEqual(lookup.has_code(sql), expected)
+
+    def test_whitespace_is_dotnets(self):
+        # U+001C-U+001F are whitespace to Python's str.strip, not to .NET's Trim:
+        # a line holding one is outside every block, as SearchSql.Parse says.
+        with self.assertRaises(lookup.PackageError) as caught:
+            lookup.read_blocks(SQL.replace("-- @format 1\n", "-- @format 1\n" + chr(0x1C) + "\n"))
+        self.assertIn("line 2 is outside every block", str(caught.exception))
+        self.assertEqual(lookup.has_code(chr(0x1F)), (True, True))
+        wrapped = SQL.replace("C;", chr(0x3000) + "C;" + chr(0x2028))
+        self.assertEqual(lookup.read_blocks(wrapped), lookup.read_blocks(SQL))
 
 
 class PackageTests(unittest.TestCase):

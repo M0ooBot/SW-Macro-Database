@@ -14,11 +14,14 @@ alike), and prints ranked ids, statuses and titles. It never writes a file.
 --self-test runs search-tests.json: the match-text vectors and the test
 questions, each of which must find its entry in the top 5.
 
-It reads the package beside itself (the release's skill folder), else two
-folders up (the repository); --root names another folder holding manifest.json.
-search.sql and search-tests.json are read from that folder when it has them
-(a release), else from beside this script (the repository layout). Every file
-is read as strict UTF-8 without a byte-order mark.
+--root names the skill folder to read: by default the folder this script is
+in, or, in a clone of the repository where nothing is beside it, the
+repository root (two folders up). search.sql and search-tests.json are read
+from the root when it has them, else from beside this script. Every file is
+read as strict UTF-8 without a byte-order mark.
+
+--json prints {"format": 1, "query": ..., "results": [{"id", "status", "title",
+"rank"}]}; gotcha results carry "number" for "id" and no "status".
 
 Needs Python 3.9 or later whose SQLite has FTS5 (python.org builds and
 Ubuntu's do). Standard library only.
@@ -43,6 +46,10 @@ NO_FTS5 = "this Python's SQLite has no FTS5; use python.org Python 3.9 or later"
 TOKEN = {"Lu", "Ll", "Lt", "Lm", "Lo", "Nd", "Nl", "No", "Co"}
 MARK = {"Mn", "Mc", "Me"}
 ASCII_LOWER = {c: c + 32 for c in range(ord("A"), ord("Z") + 1)}
+# .NET's char.IsWhiteSpace (what SW-Agent's SearchSql trims), not str.isspace: Python
+# also counts U+001C-U+001F, so search.sql is read with this set for exact parity.
+WHITESPACE = "".join(chr(c) for c in [*range(0x09, 0x0E), 0x20, 0x85, 0xA0, 0x1680, *range(0x2000, 0x200B),
+                                       0x2028, 0x2029, 0x202F, 0x205F, 0x3000])
 
 
 class PackageError(Exception):
@@ -92,7 +99,7 @@ def read_blocks(text: str) -> dict:
     lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
     if not lines[0].startswith("-- @format "):
         raise PackageError(f"search.sql: the first line must be '-- @format {SQL_FORMAT}'")
-    fmt = lines[0][len("-- @format "):].strip()
+    fmt = lines[0][len("-- @format "):].strip(WHITESPACE)
     if fmt != SQL_FORMAT:
         raise PackageError(f"search.sql: format {fmt} is not supported; this lookup.py reads format {SQL_FORMAT}")
     blocks: dict = {}
@@ -101,7 +108,7 @@ def read_blocks(text: str) -> dict:
     def close():
         if name is None:
             return
-        statement = "\n".join(body).strip()
+        statement = "\n".join(body).strip(WHITESPACE)
         code, one = has_code(statement)
         if not code:
             raise PackageError(f"search.sql: block {name!r} is empty")
@@ -112,14 +119,14 @@ def read_blocks(text: str) -> dict:
     for i, line in enumerate(lines[1:], 2):
         if line.startswith("-- @block "):
             close()
-            name, body = line[len("-- @block "):].strip(), []
+            name, body = line[len("-- @block "):].strip(WHITESPACE), []
             if name not in BLOCKS:
                 raise PackageError(f"search.sql: unknown block {name!r}; the blocks are {', '.join(BLOCKS)}")
             if name in blocks:
                 raise PackageError(f"search.sql: block {name!r} appears twice")
         elif name is not None:
             body.append(line)
-        elif line.strip():
+        elif line.strip(WHITESPACE):
             raise PackageError(f"search.sql: line {i} is outside every block")
     close()
     missing = [b for b in BLOCKS if b not in blocks]
@@ -144,7 +151,7 @@ def has_code(sql: str):
             end = sql.find("*/", i + 2)
             i = n if end < 0 else end + 2
             continue
-        if c.isspace():
+        if c in WHITESPACE:
             i += 1
             continue
         if ended:
@@ -347,7 +354,8 @@ def main(argv=None) -> int:
     ap.add_argument("--always", action="store_true", help="list the always-list of gotchas")
     ap.add_argument("--json", action="store_true", help="print JSON")
     ap.add_argument("--self-test", action="store_true", help="run search-tests.json")
-    ap.add_argument("--root", help="the folder holding manifest.json (default: found automatically)")
+    ap.add_argument("--root", help="the skill folder to read (default: this script's folder, or the "
+                                   "repository root in a clone where nothing is beside it)")
     args = ap.parse_args(argv)
     modes = [args.question is not None, args.gotchas is not None, args.always, args.self_test]
     if sum(modes) != 1:

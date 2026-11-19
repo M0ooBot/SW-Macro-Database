@@ -378,17 +378,22 @@ def run_unit_tests(root: pathlib.Path) -> list[str]:
 # --------------------------------------------------------------------------
 
 
+def check_generated(root: pathlib.Path) -> list[str]:
+    """The sources' problems, and every generated file that is not what build_manifest.py writes."""
+    problems, generated = build_manifest.outputs(root)
+    for rel, text in generated.items():
+        committed = root / rel
+        if not committed.is_file() or committed.read_bytes() != text.encode("utf-8"):
+            problems.append(f"{rel} is stale: run python3 tools/build_manifest.py")
+    return problems
+
+
 def validate(root: pathlib.Path, unit_tests: bool = True) -> tuple[list[str], list[str]]:
     """(problems, warnings) for the repo at root."""
     problems: list[str] = []
     warnings: list[str] = []
 
-    source_problems, generated = build_manifest.outputs(root)
-    problems.extend(source_problems)
-    for rel, text in generated.items():
-        committed = root / rel
-        if not committed.is_file() or committed.read_bytes() != text.encode("utf-8"):
-            problems.append(f"{rel} is stale: run python3 tools/build_manifest.py")
+    problems.extend(check_generated(root))
 
     problems.extend(check_scripts(root))
     problems.extend(check_skills(root))
@@ -406,7 +411,8 @@ def validate(root: pathlib.Path, unit_tests: bool = True) -> tuple[list[str], li
         problems.append(f"release notes cannot be written: {exc}")
     if unit_tests:
         problems.extend(run_unit_tests(root))
-    return problems, warnings
+    # One bad file can be met by several checks; report each problem once.
+    return list(dict.fromkeys(problems)), list(dict.fromkeys(warnings))
 
 
 def main(argv: list[str] | None = None) -> int:

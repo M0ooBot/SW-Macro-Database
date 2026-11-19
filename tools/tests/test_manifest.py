@@ -107,6 +107,7 @@ class ManifestTests(unittest.TestCase):
             ("language: [python]", "language: [cobol]"): "is not one of",
             ("majors: [34]", "majors: [32]"): "not named in verified_on",
             ("majors: [34]", "majors: [100]"): "not a revision major",
+            ("majors: [34]", "majors: [19]"): "not a revision major",
             ("superseded_by: null", "superseded_by: nowhere"): "not another entry's id",
             ("status: verified", "status: superseded"): "superseded_by",
             ("schema: 2", "schema: 1"): "'schema' must be 2",
