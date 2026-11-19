@@ -613,15 +613,25 @@ def ledger_majors(cell: str, status: str):
     return sorted(majors), None
 
 
+RUN = re.compile(r"\d{4}-\d\d-\d\d|\d{8}-\d{6}")
+
+
 def ledger_provenance(cell: str):
-    main = cell.split(";", 1)[0]
-    if len(top_level_split(main)) < 2:
-        main = cell
-    segs = top_level_split(main)
-    last = max((i for i, s in enumerate(segs) if VERSION_SEGMENT.search(s)), default=0)
-    rest = ", ".join(segs[last + 1:]).strip()
-    rest = re.sub(r"\s*\([^()\d]*\)$", "", rest)
-    return rest or None
+    """The run a Status cell cites: what follows its last version, when that names a date or a run."""
+
+    def after_version(text: str, skip_first: bool):
+        segs = top_level_split(text)
+        last = max((i for i, s in enumerate(segs) if VERSION_SEGMENT.search(s)), default=0 if skip_first else -1)
+        rest = re.sub(r"\s*\([^()\d]*\)$", "", ", ".join(segs[last + 1:]).strip())
+        return rest if RUN.search(rest) else None
+
+    parts = cell.split(";")
+    main = parts[0] if len(top_level_split(parts[0])) > 1 or len(parts) == 1 else cell
+    found = after_version(main, True)
+    if found is None and len(parts) > 1:
+        # "Verified, SW 2026 (34.0.0); from a line, dev runs 2026-09-15": the run is after the semicolon.
+        found = after_version(parts[-1].strip(), True)
+    return found
 
 
 def section_interface(title: str):
@@ -630,30 +640,76 @@ def section_interface(title: str):
     return names[0] if len(names) == 1 else None
 
 
-def row_members(form: str, interface):
-    """Every backticked name in a Member cell, qualified where the cell or the heading says.
+# pywin32's dispatch vocabulary, never an API member.
+NOT_MEMBERS = re.compile(r"^(Invoke|VARIANT|DISPATCH_\w+|VT_\w+)$")
+# A name a cell gives as context ("straight after AddConfiguration2", "with
+# CreateSelectData") belongs to another object than the row's: qualified by
+# hand with the interface the ledger itself gives it, else left bare.
+CONTEXT_INTERFACES = {
+    "AddConfiguration2": "IConfigurationManager",
+    "ShowConfiguration2": "IModelDoc2",
+    "AddMate5": "IAssemblyDoc",
+    "CreateSelectData": "ISelectionMgr",
+}
+LIST_SEPARATOR = re.compile(r"^\s*(?:/|,|and|or|, and|, or)?\s*$")
+# Rows whose members the rules above get wrong, set by hand: (section, Member cell) -> (members, why).
+LEDGER_MEMBERS = {
+    ("IView (a drawing view)", "`GetFirstNote` / `INote.GetNext`, `GetNotes`"): (
+        ["IView.GetFirstNote", "INote.GetNext", "IView.GetNotes"],
+        "GetNotes is the view's (IView.GetNotes), not INote's, though it follows INote.GetNext in the list"),
+}
 
-    A cell that writes an Interface.Member gives no interface to its other
-    names (they may be another object's, or pywin32's); only a cell that
-    names no interface takes the heading's.
+
+def row_members(form: str, interface, section: str = ""):
+    if (section, form) in LEDGER_MEMBERS:
+        members, why = LEDGER_MEMBERS[(section, form)]
+        return list(members), [f"set by hand: {why}"]
+    return rule_members(form, interface)
+
+
+def rule_members(form: str, interface):
+    """(members, notes): every API name in a Member cell, qualified where the cell or heading says.
+
+    The cell's leading names (the first, and those after it in a '/' or ','
+    list) are the row's subject: written Interface.Member as is; a bare one
+    takes the interface last written in its list, else the section's. Names
+    after prose ("after", "with", "then") are context: qualified as written,
+    else by CONTEXT_INTERFACES, else left bare. pywin32 names are dropped.
+    notes say what was done by hand, for the review list.
     """
-    paths = [m.group(0) for span in code_spans(form) for m in [LEADING_PATH.match(span)] if m]
-    def qualified(p):
-        parts = p.split(".")
-        return len(parts) == 2 and re.match(r"^I[A-Z]", parts[0])
-    cell_names_one = any(qualified(p) for p in paths)
-    out = []
-    for path in paths:
-        parts = path.split(".")
-        if qualified(path):
-            name = path
-        elif len(parts) == 1 and interface and not cell_names_one:
-            name = f"{interface}.{parts[0]}"
+    out, notes = [], []
+    leading, list_interface, prev_end = True, None, None
+    for m in re.finditer(r"(?<!\x60)(\x60+)(?!\x60)(.+?)(?<!\x60)\1(?!\x60)", form):
+        if prev_end is not None and not LIST_SEPARATOR.match(form[prev_end:m.start()]):
+            leading, list_interface = False, None
+        prev_end = m.end()
+        path_match = LEADING_PATH.match(m.group(2).strip())
+        if not path_match:
+            continue
+        parts = path_match.group(0).split(".")
+        member = parts[-1]
+        if NOT_MEMBERS.match(member):
+            notes.append(f"dropped {member} (pywin32, not an API member)")
+            continue
+        if len(parts) == 2 and re.match(r"^I[A-Z]", parts[0]):
+            name = path_match.group(0)
+            list_interface = parts[0]
+        elif len(parts) > 1:
+            name = member
+        elif leading:
+            owner = list_interface or interface
+            name = f"{owner}.{member}" if owner else member
+            if list_interface:
+                notes.append(f"{member} takes {list_interface} from the name before it in the list")
+        elif member in CONTEXT_INTERFACES:
+            name = f"{CONTEXT_INTERFACES[member]}.{member}"
+            notes.append(f"{member} is context, qualified by hand as {name}")
         else:
-            name = parts[-1]
+            name = member
+            notes.append(f"{member} is context, left bare")
         if name not in out:
             out.append(name)
-    return out
+    return out, notes
 
 
 def parse_ledger(text: str):
@@ -683,7 +739,7 @@ def parse_ledger(text: str):
             rows.append({
                 "section": title,
                 "interface": interface,
-                "members": row_members(cells["Member"], interface),
+                "members": row_members(cells["Member"], interface, title)[0],
                 "form": cells["Member"],
                 "purpose": cells["Purpose"],
                 "on": cells.get("On"),
@@ -771,12 +827,16 @@ def migrate_ledger() -> int:
         "## Interface by section",
         "",
         "A section's `interface` is the one interface its heading names before any parenthesis;",
-        "`null` when it names none or several. A row's bare members take that interface only when",
-        "the Member cell names none itself: in a cell such as `ITableAnnotation.RowCount` / `ColumnCount`",
-        "the other names stay bare. A dotted path that does not start with an interface",
-        "(`Dimension.Name`, `IDimension.Tolerance.Type`) is kept as its last name only. One heading to",
-        "look at: 'IBomFeature and the table' gives IBomFeature to its rows that name no interface",
-        "(`GetConfigurationCount`, `SetConfigurations`, `FollowAssemblyOrder2`, `TableType`).",
+        "`null` when it names none or several. In a row's Member cell, the leading names (the first,",
+        "and those after it in a list joined by `/`, `,`, `and` or `or`) are the row's subject: a name",
+        "written `Interface.Member` stays so; a bare one takes the interface last written in its list,",
+        "else the section's. Names after prose (\"after\", \"with\", \"then\") are context, from another",
+        "object: `AddConfiguration2`, `ShowConfiguration2`, `AddMate5` and `CreateSelectData` are",
+        "qualified by hand with the interface the ledger gives them (`IConfigurationManager`,",
+        "`IModelDoc2`, `IAssemblyDoc`, `ISelectionMgr`), others stay bare. pywin32's `Invoke`,",
+        "`DISPATCH_*` and `VARIANT` are never members. A dotted path that does not start with an",
+        "interface (`Dimension.Name`, `IDimension.Tolerance.Type`) is kept as its last name only. Every",
+        "row these rules or a hand edit touched is listed under \"Rows whose members need a look\".",
         "",
         "| Section (source) | Rows | Interface |",
         "|---|---|---|",
@@ -784,6 +844,8 @@ def migrate_ledger() -> int:
     for s in data["sections"]:
         n = sum(1 for r in rows if r["section"] == s["title"])
         out.append(f"| {quote(s['title'])} | {n} | {section_interface(s['title']) or '*(null)*'} |")
+    noted = [(r, row_members(r["form"], r["interface"], r["section"])[1]) for r in rows]
+    noted = [(r, n) for r, n in noted if n]
     no_members = [r for r in rows if not r["members"]]
     odd = [r for r in rows if any("." in c and c.count(".") > 1 or (c.split(".")[0] and not c.split(".")[0].startswith("I") and "." in c)
                                   for c in re.findall(r"\x60([A-Za-z_][\w.]*)", r["form"]))]
@@ -796,6 +858,8 @@ def migrate_ledger() -> int:
     ]
     out += [f"| {md_cell(r['section'])} | {md_cell(r['form'])} | *(none)* | No backticked name in the cell, so `api_status` cannot reach the row by member; it stays in API-LEDGER.md. |" for r in no_members]
     out += [f"| {md_cell(r['section'])} | {md_cell(r['form'])} | {md_cell(', '.join(r['members']))} | A dotted path not of the form Interface.Member: its last name only. |" for r in odd]
+    out += [f"| {md_cell(r['section'])} | {md_cell(r['form'])} | {md_cell(', '.join(r['members']))} | {md_cell('; '.join(n))}. |"
+            for r, n in noted]
     REVIEW.mkdir(exist_ok=True)
     (REVIEW / "review-ledger.md").write_text("\n".join(out) + "\n", encoding="utf-8")
     counts: dict[str, int] = {}

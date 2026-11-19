@@ -93,7 +93,7 @@ cell says "from Python", else `[]` (the row does not say).
 | “Verified, SW 2026 SP0.0, Airfoil Converter 2026-09-23” | 3 | verified | [34] | “Airfoil Converter 2026-09-23” | [] |
 | “Verified not to work, SW 2024 SP5 (32.5.0), 2026-10-30” | 2 | fails | [32] | “2026-10-30” | [] |
 | “Verified, SW 2026 (34.0.0), run 20260915-015506” | 2 | verified | [34] | “run 20260915-015506” | [] |
-| “Verified, SW 2026 (34.0.0), through `GetDimension2`” | 2 | verified | [34] | “through `GetDimension2`” | [] |
+| “Verified, SW 2026 (34.0.0), through `GetDimension2`” | 2 | verified | [34] | *(none)* | [] |
 | “Verified, SW 2026 SP0.0, Airfoil Converter 2026-09-27” | 2 | verified | [34] | “Airfoil Converter 2026-09-27” | [] |
 | “Observed once (the dialog), SW 2024 SP5 (32.5.0), 2026-11-02; the `0x80010105` verified, tier 7/8 2026-11-13/14” | 1 | fails | [32] | “2026-11-02” | [] |
 | “Partly verified” | 1 | partly-verified | [] | *(none)* | [] |
@@ -135,14 +135,14 @@ cell says "from Python", else `[]` (the row does not say).
 | “Verified, SW 2026 (34.0.0), dev runs and helical runs 2026-09-15” | 1 | verified | [34] | “dev runs and helical runs 2026-09-15” | [] |
 | “Verified, SW 2026 (34.0.0), rerun 20260914-183429” | 1 | verified | [34] | “rerun 20260914-183429” | [] |
 | “Verified, SW 2026 (34.0.0), run 20260915-015506 and helical runs 2026-09-15” | 1 | verified | [34] | “run 20260915-015506 and helical runs 2026-09-15” | [] |
-| “Verified, SW 2026 (34.0.0); axes and flip, dev runs 2026-09-15” | 1 | verified | [34] | *(none)* | [] |
-| “Verified, SW 2026 (34.0.0); from a line, dev runs 2026-09-15” | 1 | verified | [34] | *(none)* | [] |
-| “Verified, SW 2026 (34.0.0); in a 3D sketch SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), 2026-11-14” | 1 | verified | [34] | *(none)* | [] |
+| “Verified, SW 2026 (34.0.0); axes and flip, dev runs 2026-09-15” | 1 | verified | [34] | “dev runs 2026-09-15” | [] |
+| “Verified, SW 2026 (34.0.0); from a line, dev runs 2026-09-15” | 1 | verified | [34] | “dev runs 2026-09-15” | [] |
+| “Verified, SW 2026 (34.0.0); in a 3D sketch SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), 2026-11-14” | 1 | verified | [34] | “2026-11-14” | [] |
 | “Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), gear-train runner 2026-11-14” | 1 | verified | [32, 34] | “gear-train runner 2026-11-14” | [] |
 | “Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), runs 20261114-133014 and 20261114-135104; follow-up runs 20261114-151013 (2024), 20261114-162034 and 20261114-162546 (2026); whole-application run 2026-11-14 on both, fresh sessions” | 1 | verified | [32, 34] | “runs 20261114-133014 and 20261114-135104” | [] |
 | “Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 (runs 20261114-105135, 20261114-111150)” | 1 | verified | [32, 34] | “tier 7/8 2026-11-13/14 (runs 20261114-105135, 20261114-111150)” | [] |
 | “Verified, SW 2026 (34.1.1) only, planetary probe 2026-11-14” | 1 | verified | [34] | “planetary probe 2026-11-14” | [] |
-| “Verified, SW 2026 (34.1.1) step by step; SW 2024 SP5 (32.5.0) inside an application build, 2026-11-14” | 1 | verified | [34] | *(none)* | [] |
+| “Verified, SW 2026 (34.1.1) step by step; SW 2024 SP5 (32.5.0) inside an application build, 2026-11-14” | 1 | verified | [34] | “2026-11-14” | [] |
 | “Verified, SW 2026 (34.1.1), probe tier 9 run 20261114-195608; real teeth SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), 2026-11-14” | 1 | verified | [34] | “probe tier 9 run 20261114-195608” | [] |
 | “Verified, SW 2026 SP0.0, 14 folder features of a real part, 2026-09-24” | 1 | verified | [34] | “14 folder features of a real part, 2026-09-24” | [] |
 | “Verified, SW 2026, Airfoil Converter 2026-09-16 and 2026-09-23” | 1 | verified | [34] | “Airfoil Converter 2026-09-16 and 2026-09-23” | [] |
@@ -153,12 +153,16 @@ cell says "from Python", else `[]` (the row does not say).
 ## Interface by section
 
 A section's `interface` is the one interface its heading names before any parenthesis;
-`null` when it names none or several. A row's bare members take that interface only when
-the Member cell names none itself: in a cell such as `ITableAnnotation.RowCount` / `ColumnCount`
-the other names stay bare. A dotted path that does not start with an interface
-(`Dimension.Name`, `IDimension.Tolerance.Type`) is kept as its last name only. One heading to
-look at: 'IBomFeature and the table' gives IBomFeature to its rows that name no interface
-(`GetConfigurationCount`, `SetConfigurations`, `FollowAssemblyOrder2`, `TableType`).
+`null` when it names none or several. In a row's Member cell, the leading names (the first,
+and those after it in a list joined by `/`, `,`, `and` or `or`) are the row's subject: a name
+written `Interface.Member` stays so; a bare one takes the interface last written in its list,
+else the section's. Names after prose ("after", "with", "then") are context, from another
+object: `AddConfiguration2`, `ShowConfiguration2`, `AddMate5` and `CreateSelectData` are
+qualified by hand with the interface the ledger gives them (`IConfigurationManager`,
+`IModelDoc2`, `IAssemblyDoc`, `ISelectionMgr`), others stay bare. pywin32's `Invoke`,
+`DISPATCH_*` and `VARIANT` are never members. A dotted path that does not start with an
+interface (`Dimension.Name`, `IDimension.Tolerance.Type`) is kept as its last name only. Every
+row these rules or a hand edit touched is listed under "Rows whose members need a look".
 
 | Section (source) | Rows | Interface |
 |---|---|---|
@@ -217,3 +221,31 @@ look at: 'IBomFeature and the table' gives IBomFeature to its rows that name no 
 | IDimension / IDisplayDimension | `Dimension.Name` | Name | A dotted path not of the form Interface.Member: its last name only. |
 | IDimension / IDisplayDimension | `Dimension.SystemValue` | SystemValue | A dotted path not of the form Interface.Member: its last name only. |
 | IDisplayDimension and IDimensionTolerance (on a drawing) | `IDimension.Tolerance.Type` | Type | A dotted path not of the form Interface.Member: its last name only. |
+| IDisplayDimension and IDimension (from a feature) | `IFeature.GetFirstDisplayDimension` / `GetNextDisplayDimension(dd)` | IFeature.GetFirstDisplayDimension, IFeature.GetNextDisplayDimension | GetNextDisplayDimension takes IFeature from the name before it in the list. |
+| IFeature | `SetSuppression2(0 / 1, 3, VARIANT(VT_ARRAY \| VT_BSTR, names))` on a mate, straight after `AddConfiguration2` | IFeature.SetSuppression2, IConfigurationManager.AddConfiguration2 | AddConfiguration2 is context, qualified by hand as IConfigurationManager.AddConfiguration2. |
+| IFeature | `Name` (put) straight after `AddMate5` | IFeature.Name, IAssemblyDoc.AddMate5 | AddMate5 is context, qualified by hand as IAssemblyDoc.AddMate5. |
+| ISelectionMgr | `CreateSelectData` with `Mark = 1`, for `IComponent2.Select4` | ISelectionMgr.CreateSelectData, Mark, IComponent2.Select4 | Mark is context, left bare. |
+| Geometry interrogation | `Transform` → `ArrayData` | Transform, ArrayData | ArrayData is context, left bare. |
+| Geometry interrogation | `ModelToSketchTransform` → `Inverse` → `ArrayData` | ModelToSketchTransform, Inverse, ArrayData | Inverse is context, left bare; ArrayData is context, left bare. |
+| Geometry interrogation | `Transform2` → `ArrayData` | Transform2, ArrayData | ArrayData is context, left bare. |
+| IAssemblyDoc (an assembly's document, late-bound) | `GetComponentByName(name)` after `AddConfiguration2` or `ShowConfiguration2` | IAssemblyDoc.GetComponentByName, IConfigurationManager.AddConfiguration2, IModelDoc2.ShowConfiguration2 | AddConfiguration2 is context, qualified by hand as IConfigurationManager.AddConfiguration2; ShowConfiguration2 is context, qualified by hand as IModelDoc2.ShowConfiguration2. |
+| IComponent2 | `Transform2` / `IsFixed` on a handle held across `AddConfiguration2` or `ShowConfiguration2` | IComponent2.Transform2, IComponent2.IsFixed, IConfigurationManager.AddConfiguration2, IModelDoc2.ShowConfiguration2 | AddConfiguration2 is context, qualified by hand as IConfigurationManager.AddConfiguration2; ShowConfiguration2 is context, qualified by hand as IModelDoc2.ShowConfiguration2. |
+| IComponent2 | `Select4(append, data, False)` with `CreateSelectData`, `Mark = 1` | IComponent2.Select4, ISelectionMgr.CreateSelectData, Mark | CreateSelectData is context, qualified by hand as ISelectionMgr.CreateSelectData; Mark is context, left bare. |
+| IMate2 (from `IFeature.GetSpecificFeature2` on a mate) | `MateEntity(i)` order for mates made by `AddMate5` | IMate2.MateEntity, IAssemblyDoc.AddMate5 | AddMate5 is context, qualified by hand as IAssemblyDoc.AddMate5. |
+| IView (a drawing view) | `GetFirstNote` / `INote.GetNext`, `GetNotes` | IView.GetFirstNote, INote.GetNext, IView.GetNotes | set by hand: GetNotes is the view's (IView.GetNotes), not INote's, though it follows INote.GetNext in the list. |
+| IView (a drawing view) | `UseSheetScale = False` then `ScaleDecimal = 5` | IView.UseSheetScale, ScaleDecimal | ScaleDecimal is context, left bare. |
+| IView (a drawing view) | `IDrSection.SetExcludedComponents(components)` through `Invoke` (`DISPATCH_METHOD`) | IDrSection.SetExcludedComponents | dropped Invoke (pywin32, not an API member); dropped DISPATCH_METHOD (pywin32, not an API member). |
+| INote, IAnnotation and ICenterMark (drawing annotations) | `INote.GetText` / `SetText(text)` | INote.GetText, INote.SetText | SetText takes INote from the name before it in the list. |
+| INote, IAnnotation and ICenterMark (drawing annotations) | `INote.GetExtent` / `GetTextPoint2` | INote.GetExtent, INote.GetTextPoint2 | GetTextPoint2 takes INote from the name before it in the list. |
+| INote, IAnnotation and ICenterMark (drawing annotations) | `IAnnotation.SetPosition2(x, y, 0)` / `GetPosition` | IAnnotation.SetPosition2, IAnnotation.GetPosition | GetPosition takes IAnnotation from the name before it in the list. |
+| IDisplayDimension and IDimensionTolerance (on a drawing) | `IDimensionTolerance.GetHoleFitValue` / `GetShaftFitValue` | IDimensionTolerance.GetHoleFitValue, IDimensionTolerance.GetShaftFitValue | GetShaftFitValue takes IDimensionTolerance from the name before it in the list. |
+| IDisplayDimension and IDimensionTolerance (on a drawing) | `IDimensionTolerance.GetMaxValue` / `GetMinValue` | IDimensionTolerance.GetMaxValue, IDimensionTolerance.GetMinValue | GetMinValue takes IDimensionTolerance from the name before it in the list. |
+| IDisplayDimension and IDimensionTolerance (on a drawing) | `IDimensionTolerance.Type = 4` then `SetValues(min, max)` | IDimensionTolerance.Type, SetValues | SetValues is context, left bare. |
+| IDisplayDimension and IDimensionTolerance (on a drawing) | `IDimensionTolerance.Type = 8` then `SetFitValues(hole, shaft)` | IDimensionTolerance.Type, SetFitValues | SetFitValues is context, left bare. |
+| IBomFeature and the table (from `IBomTableAnnotation.BomFeature`) | `ITableAnnotation.RowCount` / `ColumnCount` / `Text(r, c)` | ITableAnnotation.RowCount, ITableAnnotation.ColumnCount, ITableAnnotation.Text | ColumnCount takes ITableAnnotation from the name before it in the list; Text takes ITableAnnotation from the name before it in the list. |
+| IBomFeature and the table (from `IBomTableAnnotation.BomFeature`) | `ITableAnnotation.Text(r, c)` put through `Invoke` (`DISPATCH_PROPERTYPUT`, r, c, value) | ITableAnnotation.Text | dropped Invoke (pywin32, not an API member); dropped DISPATCH_PROPERTYPUT (pywin32, not an API member). |
+| IBomFeature and the table (from `IBomTableAnnotation.BomFeature`) | `ITableAnnotation.GetTextFormat` / `SetTextFormat(False, tf)` | ITableAnnotation.GetTextFormat, ITableAnnotation.SetTextFormat | SetTextFormat takes ITableAnnotation from the name before it in the list. |
+| IBomFeature and the table (from `IBomTableAnnotation.BomFeature`) | `ITableAnnotation.SetColumnWidth(i, w, 0)` / `SetRowHeight(i, h, 0)` / `GetRowHeight(i)` | ITableAnnotation.SetColumnWidth, ITableAnnotation.SetRowHeight, ITableAnnotation.GetRowHeight | SetRowHeight takes ITableAnnotation from the name before it in the list; GetRowHeight takes ITableAnnotation from the name before it in the list. |
+| IBomFeature and the table (from `IBomTableAnnotation.BomFeature`) | `IConfiguration.AlternateName`, `UseAlternateNameInBOM`, `BOMPartNoSource = 8` | IConfiguration.AlternateName, IConfiguration.UseAlternateNameInBOM, IConfiguration.BOMPartNoSource | UseAlternateNameInBOM takes IConfiguration from the name before it in the list; BOMPartNoSource takes IConfiguration from the name before it in the list. |
+| General tables and dimensions added from code | `IModelDocExtension.CreateBalloonOptions` (property-style) + `InsertBOMBalloon2(options)` | IModelDocExtension.CreateBalloonOptions, InsertBOMBalloon2 | InsertBOMBalloon2 is context, left bare. |
+| Toolbox status and replacing a component | `IModelDocExtension.ToolboxPartType` (get; put through `Invoke` `DISPATCH_PROPERTYPUT`) | IModelDocExtension.ToolboxPartType | dropped Invoke (pywin32, not an API member); dropped DISPATCH_PROPERTYPUT (pywin32, not an API member). |

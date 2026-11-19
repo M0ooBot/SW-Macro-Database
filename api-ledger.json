@@ -1552,7 +1552,7 @@
       "on": null,
       "status": "verified",
       "note": "Verified, SW 2026 (34.0.0); from a line, dev runs 2026-09-15",
-      "provenance": null,
+      "provenance": "dev runs 2026-09-15",
       "languages": [],
       "majors": [
         34
@@ -2797,7 +2797,7 @@
       "interface": null,
       "members": [
         "IFeature.GetFirstDisplayDimension",
-        "GetNextDisplayDimension"
+        "IFeature.GetNextDisplayDimension"
       ],
       "form": "`IFeature.GetFirstDisplayDimension` / `GetNextDisplayDimension(dd)`",
       "purpose": "Walk a feature's dimensions. There is no all-dimensions collection",
@@ -3758,7 +3758,7 @@
       "interface": "IFeature",
       "members": [
         "IFeature.SetSuppression2",
-        "IFeature.AddConfiguration2"
+        "IConfigurationManager.AddConfiguration2"
       ],
       "form": "`SetSuppression2(0 / 1, 3, VARIANT(VT_ARRAY | VT_BSTR, names))` on a mate, straight after `AddConfiguration2`",
       "purpose": "**Misreported both ways** with no rebuild between: the first call raised `0x80010105` yet took effect, the second returned False and did nothing. After a top-only rebuild every call returned True and read back as set (GOTCHAS §109, [assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md))",
@@ -3930,7 +3930,7 @@
       "interface": "IFeature",
       "members": [
         "IFeature.Name",
-        "IFeature.AddMate5"
+        "IAssemblyDoc.AddMate5"
       ],
       "form": "`Name` (put) straight after `AddMate5`",
       "purpose": "In a new unsaved assembly, each mate read its new name back at once and was found by it after a save and reopen",
@@ -4174,7 +4174,7 @@
       "on": null,
       "status": "verified",
       "note": "Verified, SW 2026 (34.1.1) step by step; SW 2024 SP5 (32.5.0) inside an application build, 2026-11-14",
-      "provenance": null,
+      "provenance": "2026-11-14",
       "languages": [],
       "majors": [
         34
@@ -4265,7 +4265,7 @@
       "on": null,
       "status": "verified",
       "note": "Verified, SW 2026 (34.0.0); in a 3D sketch SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), 2026-11-14",
-      "provenance": null,
+      "provenance": "2026-11-14",
       "languages": [],
       "majors": [
         34
@@ -4749,7 +4749,7 @@
       "section": "ISelectionMgr",
       "interface": "ISelectionMgr",
       "members": [
-        "CreateSelectData",
+        "ISelectionMgr.CreateSelectData",
         "Mark",
         "IComponent2.Select4"
       ],
@@ -5562,7 +5562,7 @@
       "on": null,
       "status": "verified",
       "note": "Verified, SW 2026 (34.0.0), through `GetDimension2`",
-      "provenance": "through `GetDimension2`",
+      "provenance": null,
       "languages": [],
       "majors": [
         34
@@ -5580,7 +5580,7 @@
       "on": null,
       "status": "verified",
       "note": "Verified, SW 2026 (34.0.0), through `GetDimension2`",
-      "provenance": "through `GetDimension2`",
+      "provenance": null,
       "languages": [],
       "majors": [
         34
@@ -5634,7 +5634,7 @@
       "on": null,
       "status": "verified",
       "note": "Verified, SW 2026 (34.0.0); axes and flip, dev runs 2026-09-15",
-      "provenance": null,
+      "provenance": "dev runs 2026-09-15",
       "languages": [],
       "majors": [
         34
@@ -5813,8 +5813,8 @@
       "interface": "IAssemblyDoc",
       "members": [
         "IAssemblyDoc.GetComponentByName",
-        "IAssemblyDoc.AddConfiguration2",
-        "IAssemblyDoc.ShowConfiguration2"
+        "IConfigurationManager.AddConfiguration2",
+        "IModelDoc2.ShowConfiguration2"
       ],
       "form": "`GetComponentByName(name)` after `AddConfiguration2` or `ShowConfiguration2`",
       "purpose": "The way to a working handle again: `Transform2`, `IsFixed`, `GetModelDoc2` and `Name2` answered correctly, where held handles did not (GOTCHAS §108). On 2026, in two of four runs, a fresh handle once answered `GetModelDoc2` None and once `Name2` `\"\"`; select by names already held ([assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md))",
@@ -5945,8 +5945,8 @@
       "members": [
         "IComponent2.Transform2",
         "IComponent2.IsFixed",
-        "IComponent2.AddConfiguration2",
-        "IComponent2.ShowConfiguration2"
+        "IConfigurationManager.AddConfiguration2",
+        "IModelDoc2.ShowConfiguration2"
       ],
       "form": "`Transform2` / `IsFixed` on a handle held across `AddConfiguration2` or `ShowConfiguration2`",
       "purpose": "**None** and **False**, a fixed part's included, with no error (GOTCHAS §108)",
@@ -6058,8 +6058,8 @@
       "interface": "IComponent2",
       "members": [
         "IComponent2.Select4",
-        "IComponent2.CreateSelectData",
-        "IComponent2.Mark"
+        "ISelectionMgr.CreateSelectData",
+        "Mark"
       ],
       "form": "`Select4(append, data, False)` with `CreateSelectData`, `Mark = 1`",
       "purpose": "Select a whole component at mark 1, for a lock mate",
@@ -6439,7 +6439,7 @@
       "interface": "IMate2",
       "members": [
         "IMate2.MateEntity",
-        "IMate2.AddMate5"
+        "IAssemblyDoc.AddMate5"
       ],
       "form": "`MateEntity(i)` order for mates made by `AddMate5`",
       "purpose": "Gear and point-to-plane distance mates: `MateEntity(0)` was the first selection. Axis-to-axis coincident, face-to-axis concentric and point-to-plane coincident: `MateEntity(0)` was the **second** ([assemblies/06](entries/assemblies/06-read-every-mate.md))",
@@ -6553,7 +6553,7 @@
       "section": "IGearMateFeatureData (from `IFeature.GetDefinition` on a `MateGearDim`)",
       "interface": "IGearMateFeatureData",
       "members": [
-        "Reverse",
+        "IGearMateFeatureData.Reverse",
         "IMateEntity2.EntityParams"
       ],
       "form": "`Reverse` with the two `IMateEntity2.EntityParams` directions (items 3–5)",
@@ -6920,7 +6920,7 @@
       "section": "IDrawingDoc (a drawing, late-bound)",
       "interface": "IDrawingDoc",
       "members": [
-        "GetFirstView",
+        "IDrawingDoc.GetFirstView",
         "IView.GetNextView"
       ],
       "form": "`GetFirstView` / `IView.GetNextView`",
@@ -7359,9 +7359,9 @@
       "section": "IView (a drawing view)",
       "interface": "IView",
       "members": [
-        "GetFirstNote",
+        "IView.GetFirstNote",
         "INote.GetNext",
-        "GetNotes"
+        "IView.GetNotes"
       ],
       "form": "`GetFirstNote` / `INote.GetNext`, `GetNotes`",
       "purpose": "The view's notes (balloons included)",
@@ -7379,7 +7379,7 @@
       "section": "IView (a drawing view)",
       "interface": "IView",
       "members": [
-        "GetFirstDisplayDimension5",
+        "IView.GetFirstDisplayDimension5",
         "IDisplayDimension.GetNext5"
       ],
       "form": "`GetFirstDisplayDimension5` / `IDisplayDimension.GetNext5`",
@@ -7398,7 +7398,7 @@
       "section": "IView (a drawing view)",
       "interface": "IView",
       "members": [
-        "GetFirstCenterMark",
+        "IView.GetFirstCenterMark",
         "ICenterMark.GetNext"
       ],
       "form": "`GetFirstCenterMark` / `ICenterMark.GetNext`",
@@ -7454,7 +7454,7 @@
       "interface": "IView",
       "members": [
         "IView.UseSheetScale",
-        "IView.ScaleDecimal"
+        "ScaleDecimal"
       ],
       "form": "`UseSheetScale = False` then `ScaleDecimal = 5`",
       "purpose": "One view at its own scale; its sections inherit it",
@@ -7562,9 +7562,7 @@
       "section": "IView (a drawing view)",
       "interface": "IView",
       "members": [
-        "IDrSection.SetExcludedComponents",
-        "Invoke",
-        "DISPATCH_METHOD"
+        "IDrSection.SetExcludedComponents"
       ],
       "form": "`IDrSection.SetExcludedComponents(components)` through `Invoke` (`DISPATCH_METHOD`)",
       "purpose": "Draw those components whole and unhatched; returned `True`. Late binding presents it as a property (GOTCHAS §111)",
@@ -7601,7 +7599,7 @@
       "interface": null,
       "members": [
         "INote.GetText",
-        "SetText"
+        "INote.SetText"
       ],
       "form": "`INote.GetText` / `SetText(text)`",
       "purpose": "Read (line breaks as `\"\\r\\n\"`) and replace a note's text, title-block notes included",
@@ -7638,7 +7636,7 @@
       "interface": null,
       "members": [
         "INote.GetExtent",
-        "GetTextPoint2"
+        "INote.GetTextPoint2"
       ],
       "form": "`INote.GetExtent` / `GetTextPoint2`",
       "purpose": "Its box `[xmin, ymin, z, xmax, ymax, z]` / text point, sheet metres",
@@ -7675,7 +7673,7 @@
       "interface": null,
       "members": [
         "IAnnotation.SetPosition2",
-        "GetPosition"
+        "IAnnotation.GetPosition"
       ],
       "form": "`IAnnotation.SetPosition2(x, y, 0)` / `GetPosition`",
       "purpose": "Move a note or balloon, sheet metres (top-left for a note)",
@@ -7803,7 +7801,7 @@
       "interface": null,
       "members": [
         "IDimensionTolerance.GetHoleFitValue",
-        "GetShaftFitValue"
+        "IDimensionTolerance.GetShaftFitValue"
       ],
       "form": "`IDimensionTolerance.GetHoleFitValue` / `GetShaftFitValue`",
       "purpose": "`'H9'`, `'h6'`, `''` for the side not set",
@@ -7822,7 +7820,7 @@
       "interface": null,
       "members": [
         "IDimensionTolerance.GetMaxValue",
-        "GetMinValue"
+        "IDimensionTolerance.GetMinValue"
       ],
       "form": "`IDimensionTolerance.GetMaxValue` / `GetMinValue`",
       "purpose": "± and +/− tolerance limits, metres",
@@ -8076,8 +8074,8 @@
       "interface": "IBomFeature",
       "members": [
         "ITableAnnotation.RowCount",
-        "ColumnCount",
-        "Text"
+        "ITableAnnotation.ColumnCount",
+        "ITableAnnotation.Text"
       ],
       "form": "`ITableAnnotation.RowCount` / `ColumnCount` / `Text(r, c)`",
       "purpose": "Read the table",
@@ -8095,9 +8093,7 @@
       "section": "IBomFeature and the table (from `IBomTableAnnotation.BomFeature`)",
       "interface": "IBomFeature",
       "members": [
-        "ITableAnnotation.Text",
-        "Invoke",
-        "DISPATCH_PROPERTYPUT"
+        "ITableAnnotation.Text"
       ],
       "form": "`ITableAnnotation.Text(r, c)` put through `Invoke` (`DISPATCH_PROPERTYPUT`, r, c, value)",
       "purpose": "Write a cell. **On a BOM's linked column it writes to the part's property** (GOTCHAS §91)",
@@ -8134,7 +8130,7 @@
       "interface": "IBomFeature",
       "members": [
         "ITableAnnotation.GetTextFormat",
-        "SetTextFormat"
+        "ITableAnnotation.SetTextFormat"
       ],
       "form": "`ITableAnnotation.GetTextFormat` / `SetTextFormat(False, tf)`",
       "purpose": "Table text height via `tf.CharHeight` (metres)",
@@ -8153,8 +8149,8 @@
       "interface": "IBomFeature",
       "members": [
         "ITableAnnotation.SetColumnWidth",
-        "SetRowHeight",
-        "GetRowHeight"
+        "ITableAnnotation.SetRowHeight",
+        "ITableAnnotation.GetRowHeight"
       ],
       "form": "`ITableAnnotation.SetColumnWidth(i, w, 0)` / `SetRowHeight(i, h, 0)` / `GetRowHeight(i)`",
       "purpose": "Metres; a row does not shrink below its text",
@@ -8173,8 +8169,8 @@
       "interface": "IBomFeature",
       "members": [
         "IConfiguration.AlternateName",
-        "UseAlternateNameInBOM",
-        "BOMPartNoSource"
+        "IConfiguration.UseAlternateNameInBOM",
+        "IConfiguration.BOMPartNoSource"
       ],
       "form": "`IConfiguration.AlternateName`, `UseAlternateNameInBOM`, `BOMPartNoSource = 8`",
       "purpose": "The BOM's PART NUMBER for that configuration",
@@ -8320,9 +8316,7 @@
       "section": "Toolbox status and replacing a component",
       "interface": null,
       "members": [
-        "IModelDocExtension.ToolboxPartType",
-        "Invoke",
-        "DISPATCH_PROPERTYPUT"
+        "IModelDocExtension.ToolboxPartType"
       ],
       "form": "`IModelDocExtension.ToolboxPartType` (get; put through `Invoke` `DISPATCH_PROPERTYPUT`)",
       "purpose": "0 not Toolbox, 1 standard, 2 copied; put 0 and `Save3` cleared the flag ([assemblies/09](entries/assemblies/09-keep-an-edited-toolbox-copy.md))",
