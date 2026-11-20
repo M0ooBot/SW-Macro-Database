@@ -24,7 +24,7 @@ code. You never need to open the projects the entries came from.
 | About to write any automation at all | [GOTCHAS.md](GOTCHAS.md) (generated from [`gotchas/`](gotchas/)) |
 | After working code to copy | [`code/`](code/) |
 | After a ready-to-run script for a common task | [`scripts/`](scripts/) |
-| Using the collection from SW-Agent, Claude Code or Codex | the latest [release](https://github.com/MoZ200701/SW-Macro-Database/releases/latest) |
+| Using the collection from SW-Agent, Claude Code or Codex | the latest [release](https://github.com/M0ooBot/SW-Macro-Database/releases/latest) |
 
 ## What's in here
 

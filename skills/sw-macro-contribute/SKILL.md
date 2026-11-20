@@ -1,6 +1,6 @@
 ---
 name: sw-macro-contribute
-description: Write a SolidWorks automation result back to the SW-Macro-Database repo (github.com/MoZ200701/SW-Macro-Database) as a pull request or a verification-report issue. Use after an unverified entry, recipe or script was proven against a real SolidWorks, after solving something the database does not cover, after hitting a trap worth a gotcha, or when a working one-off snippet is general enough to become a recipe or a script.
+description: Write a SolidWorks automation result back to the SW-Macro-Database repo (github.com/M0ooBot/SW-Macro-Database) as a pull request or a verification-report issue. Use after an unverified entry, recipe or script was proven against a real SolidWorks, after solving something the database does not cover, after hitting a trap worth a gotcha, or when a working one-off snippet is general enough to become a recipe or a script.
 ---
 
 # Contributing to the SolidWorks macro database
@@ -43,8 +43,8 @@ or the user's file names in `observed`: the repo is public.
 
 ## 3. Find the clone
 
-Ask the user where their clone of `MoZ200701/SW-Macro-Database` is. If there is
-none, offer to clone it (`gh repo clone MoZ200701/SW-Macro-Database`) into a
+Ask the user where their clone of `M0ooBot/SW-Macro-Database` is. If there is
+none, offer to clone it (`gh repo clone M0ooBot/SW-Macro-Database`) into a
 folder the user picks. Never edit the copy of this skill that a tool loaded: it
 is a read-only, hashed release.
 
@@ -79,14 +79,14 @@ In the clone: `git switch main && git pull --ff-only`, then
 
 ## 5. Send it
 
-Check `gh auth status` and `gh repo view MoZ200701/SW-Macro-Database --json viewerPermission`:
+Check `gh auth status` and `gh repo view M0ooBot/SW-Macro-Database --json viewerPermission`:
 
 | Situation | What to do |
 |---|---|
 | `ADMIN` (the owner) | Ask whether to push straight to `main` (the owner bypasses branch protection) or open a pull request. |
 | `WRITE` / `MAINTAIN` | Push the branch to `origin` and `gh pr create`. |
-| Signed in, no write access | `gh repo fork --remote`, push the branch to the fork, then `gh pr create --repo MoZ200701/SW-Macro-Database`. |
-| No `gh`, or not signed in | Do not write files at all. Open the "Verification report" issue form in the browser with the evidence filled in: `https://github.com/MoZ200701/SW-Macro-Database/issues/new?template=verification-report.yml` — and give the user the text for each field to paste. |
+| Signed in, no write access | `gh repo fork --remote`, push the branch to the fork, then `gh pr create --repo M0ooBot/SW-Macro-Database`. |
+| No `gh`, or not signed in | Do not write files at all. Open the "Verification report" issue form in the browser with the evidence filled in: `https://github.com/M0ooBot/SW-Macro-Database/issues/new?template=verification-report.yml` — and give the user the text for each field to paste. |
 
 The pull request body says what was run, on which SolidWorks version, what was
 observed, and links the session's tool output if the user agrees to share it.
