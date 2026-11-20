@@ -34,6 +34,20 @@ class ScriptJsonTests(unittest.TestCase):
         self.assertEqual(len(check(params=BASE["params"] + [output])), 1)
         self.assertEqual(len(check(params=[])), 1)
 
+    def test_read_only_targets(self):
+        target = BASE["params"][0]
+        for params in ([], [target], [dict(target, type="file")]):
+            with self.subTest(params=params):
+                self.assertEqual(check(effects="read-only", params=params), [])
+
+    def test_read_only_invalid_roles(self):
+        target = BASE["params"][0]
+        output = {"name": "out", "type": "folder", "role": "output", "required": True, "description": "Out."}
+        for params in ([target, dict(target, name="other")], [dict(target, required=False)],
+                       [dict(target, type="folder")], [output]):
+            with self.subTest(params=params):
+                self.assertEqual(len(check(effects="read-only", params=params)), 1)
+
     def test_verified_needs_a_passing_full_record(self):
         self.assertEqual(len(check(status="verified")), 1)
         records = {RECORD["id"]: RECORD}

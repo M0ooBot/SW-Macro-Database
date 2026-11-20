@@ -10,8 +10,8 @@ status: verified
 verified_on: SolidWorks 2026
 majors: [34]
 evidence: []
-recipe_status: null
-recipe_evidence: []
+recipe_status: verified
+recipe_evidence: [2026-11-20-connect-07-find-open-document-cs-34]
 superseded_by: null
 ---
 
@@ -134,6 +134,13 @@ two new parts open and the second active, `ActivateDoc3` with the first part's
 title returned a document object (not a tuple, despite the out parameter), and
 `ActiveDoc` then returned the first part. Only `False` and `0` were passed for
 the middle two arguments, and the out value was not read.
+
+## SW-Agent recipe
+
+Supply open documents as job targets and pass `titleSubstring`.
+`Kit.Docs.FindOpenDocument` matches titles case-insensitively within those
+targets, checking the active document first. The result gives `found` and
+the matching `title`. The worker releases the borrowed handle.
 
 ## See also
 

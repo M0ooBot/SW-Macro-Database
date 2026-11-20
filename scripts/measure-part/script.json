@@ -1,0 +1,21 @@
+{
+  "id": "measure-part",
+  "title": "Measure a part's bounding box and mass properties",
+  "entry": "entries/reading/09-bounding-box.md",
+  "status": "verified",
+  "evidence": ["2026-11-20-measure-part-cs-34"],
+  "effects": "read-only",
+  "irreversible": false,
+  "supportsDryRun": true,
+  "timeoutMinutes": 2,
+  "openTargets": true,
+  "params": [
+    {
+      "name": "part",
+      "type": "file",
+      "role": "targets",
+      "required": true,
+      "description": "A SolidWorks part to measure in its current configuration."
+    }
+  ]
+}

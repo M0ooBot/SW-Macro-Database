@@ -153,6 +153,8 @@ def check_params(where: str, effects, params) -> list[str]:
                 roles[role].append(name if isinstance(name, str) else f"params[{i}]")
                 if role == "targets" and ptype not in ("file", "files"):
                     problems.append(f"{tag}: role 'targets' needs type file or files")
+                if effects == "read-only" and role == "targets" and p.get("required") is not True:
+                    problems.append(f"{tag}: role 'targets' must be required for a read-only script")
                 if role == "output" and ptype != "folder":
                     problems.append(f"{tag}: role 'output' needs type folder")
         if "default" in p and ptype in PARAM_TYPES and not _default_ok(ptype, p["default"]):
@@ -167,8 +169,9 @@ def check_params(where: str, effects, params) -> list[str]:
     if effects == "writes-new-files" and len(roles["output"]) != 1:
         problems.append(f"{where}: a writes-new-files script needs exactly one param with role "
                         f"'output' (found {len(roles['output'])})")
-    if effects == "read-only" and (roles["targets"] or roles["output"]):
-        problems.append(f"{where}: a read-only script must not have params with a role")
+    if effects == "read-only" and (len(roles["targets"]) > 1 or roles["output"]):
+        problems.append(f"{where}: a read-only script allows at most one param with role "
+                        f"'targets' and none with role 'output'")
     return problems
 
 

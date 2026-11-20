@@ -10,8 +10,8 @@ status: verified
 verified_on: SolidWorks 2026 SP1.1
 majors: [34]
 evidence: []
-recipe_status: null
-recipe_evidence: []
+recipe_status: verified
+recipe_evidence: [2026-11-20-reading-09-bounding-box-cs-34]
 superseded_by: null
 ---
 
@@ -116,6 +116,16 @@ in the generation path could have detected it. The measurement did.
 
 The check as it ran is `CheckBox` in
 [`code/csharp/SwExplodeConfigs.cs`](../../code/csharp/SwExplodeConfigs.cs).
+
+## SW-Agent recipe
+
+The read-only recipe returns the approximate model-axis-aligned box of all
+solid bodies, including hidden bodies, in each target part's current
+configuration. The minimum and maximum coordinates are in metres. This
+recipe reads the current geometry without rebuilding or switching configurations.
+
+The packaged `measure-part` script
+returns both the box and mass properties for a single part.
 
 ## See also
 

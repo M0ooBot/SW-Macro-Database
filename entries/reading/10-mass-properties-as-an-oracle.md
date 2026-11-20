@@ -10,8 +10,8 @@ status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
 majors: [34]
 evidence: []
-recipe_status: null
-recipe_evidence: []
+recipe_status: verified
+recipe_evidence: [2026-11-20-reading-10-mass-properties-as-an-oracle-cs-34]
 superseded_by: null
 ---
 
@@ -166,6 +166,16 @@ the helper is in
   `spur_ring_volumes_mm3 = {'ring': 32287.475563673983, 'blank': 41728.20442130643, 'one_space': 157.49383390868024, 'expected': 32278.574386785614}`;
   `spur_volumes_after_mm3 = {'updated': 34284.14386641376, 'fresh': 34284.143866418235}`;
   `bevel_volumes_after_mm3 = {'updated': 43638.719829502406, 'fresh': 43638.719829502304}`.
+
+## SW-Agent recipe
+
+The read-only recipe reports the mass (kg), volume (m³), and centre of mass
+(model-space metres) of all solid bodies in each target part's current
+configuration, independent of the current selection. It reads the geometry
+without rebuilding or switching configurations.
+
+The packaged `measure-part` script
+returns both the mass properties and approximate bounding box for a single part.
 
 ## See also
 
