@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-export-closed-step-cs-34",
+  "subject": "export-closed-step",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "The packaged script ran by ID against a closed standalone part in the Default configuration. Open CASCADE read the resulting STEP as one valid solid, in millimetres, with volume 114835.17687777565 cubic millimetres. The worker verified continuous source observation. A separately approved backup undo removed the originally absent output and retained an identical copy of the exported bytes. SolidWorks finished with the same zero-document inventory."
+}
