@@ -36,14 +36,13 @@ function Assert-Checksum([string]$Path, [string]$Name) {
     }
 }
 
-function Get-Interop([string]$Name, [string]$Token) {
-    $path = Join-Path $interop "$Name.dll"
+function Get-Interop([string]$Path, [string]$Name, [string]$Token) {
     $assembly = [Reflection.AssemblyName]::GetAssemblyName($path)
     $publicKeyToken = [Convert]::ToHexString($assembly.GetPublicKeyToken())
     if ($assembly.Name -cne $Name -or $assembly.Version.Major -ne 32 -or $publicKeyToken -ne $Token) {
         throw "$Name must be a SolidWorks 2024 interop assembly. Found $($assembly.FullName)."
     }
-    return @{ Path = $path; Version = $assembly.Version }
+    return $assembly.Version
 }
 
 function Assert-KitReference([string]$Path) {
@@ -85,12 +84,25 @@ if ($markerAt -lt 0 -or $markerAt -ne $template.LastIndexOf($marker, [StringComp
     throw "$wrapperName must have one script body marker."
 }
 
-$sldworks = Get-Interop 'SolidWorks.Interop.sldworks' '7c4797c3e4eeac03'
-$swconst = Get-Interop 'SolidWorks.Interop.swconst' '19f43e188e4269d8'
-if ($sldworks.Version -ne $swconst.Version) {
-    throw 'Use both interop assemblies from the same SolidWorks 2024 installation.'
+# Use the .NET installation's own Roslyn and net10.0 reference pack. No project
+# build or resolver may replace the reference paths via ambient MSBuild options.
+$dotnet = (Get-Command dotnet -CommandType Application | Select-Object -First 1).Source
+$sdks = & $dotnet --list-sdks | ForEach-Object {
+    if ($_ -match '^(10\.0\.[0-9]+) \[([^\]]+)\]$') {
+        [pscustomobject]@{ Version = [version]$Matches[1]; Path = Join-Path $Matches[2] $Matches[1] }
+    }
 }
-$interopRefs = @($sldworks.Path, $swconst.Path)
+$sdk = $sdks | Sort-Object Version -Descending | Select-Object -First 1
+if (!$sdk) { throw 'Install a stable .NET 10 SDK before compiling recipes.' }
+$csc = Join-Path $sdk.Path 'Roslyn/bincore/csc.dll'
+$dotnetRoot = Split-Path -Parent (Split-Path -Parent $sdk.Path)
+$packRoot = Join-Path $dotnetRoot 'packs/Microsoft.NETCore.App.Ref'
+$framework = Get-ChildItem -LiteralPath $packRoot -Directory -Filter '10.0.*' |
+    Where-Object { $_.Name -match '^10\.0\.[0-9]+$' } |
+    Sort-Object { [version]$_.Name } -Descending | Select-Object -First 1
+if (!$framework) { throw 'The .NET 10 SDK installation needs its net10.0 reference pack.' }
+$frameworkRefs = Get-ChildItem -LiteralPath (Join-Path $framework.FullName 'ref/net10.0') -File -Filter '*.dll' |
+    Sort-Object Name | Select-Object -ExpandProperty FullName
 
 $sources = @(Get-ChildItem -LiteralPath (Join-Path $repo 'entries') -Filter '*.csx' -File -Recurse)
 $sources += @(Get-ChildItem -LiteralPath (Join-Path $repo 'scripts') -Directory | ForEach-Object {
@@ -118,36 +130,31 @@ try {
     Assert-Checksum $kit $kitName
     Assert-KitReference $kit
 
-    $references = foreach ($path in @($kit) + $interopRefs) {
-        $name = [IO.Path]::GetFileNameWithoutExtension($path)
-        $escapedPath = [Security.SecurityElement]::Escape($path)
-        "<Reference Include='$name'><HintPath>$escapedPath</HintPath><Private>false</Private></Reference>"
+    $sldworks = Join-Path $temp 'SolidWorks.Interop.sldworks.dll'
+    $swconst = Join-Path $temp 'SolidWorks.Interop.swconst.dll'
+    Copy-Item -LiteralPath (Join-Path $interop 'SolidWorks.Interop.sldworks.dll') -Destination $sldworks
+    Copy-Item -LiteralPath (Join-Path $interop 'SolidWorks.Interop.swconst.dll') -Destination $swconst
+    $interopVersion = Get-Interop $sldworks 'SolidWorks.Interop.sldworks' '7c4797c3e4eeac03'
+    if ($interopVersion -ne (Get-Interop $swconst 'SolidWorks.Interop.swconst' '19f43e188e4269d8')) {
+        throw 'Use both interop assemblies from the same SolidWorks 2024 installation.'
     }
-    $project = Join-Path $temp 'Compile.csproj'
+
     $wrappedSource = Join-Path $temp 'Wrapped.cs'
-    @"
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <LangVersion>14.0</LangVersion>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
-    <EnableDefaultItems>false</EnableDefaultItems>
-    <EnableNETAnalyzers>false</EnableNETAnalyzers>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Wrapped.cs" />
-    $references
-  </ItemGroup>
-</Project>
-"@ | Set-Content -LiteralPath $project -Encoding utf8NoBOM
-    $nuget = Join-Path $temp 'NuGet.Config'
-    '<configuration><packageSources><clear /></packageSources></configuration>' |
-        Set-Content -LiteralPath $nuget -Encoding utf8NoBOM
+    $compiled = Join-Path $temp 'Recipe.dll'
+    $response = Join-Path $temp 'compile.rsp'
+    $references = foreach ($path in @($frameworkRefs) + @($kit, $sldworks, $swconst)) {
+        "/reference:`"$path`""
+    }
+    @(
+        '/nologo', '/nostdlib+', '/target:library', '/langversion:14.0',
+        '/nullable:disable', '/optimize-', '/deterministic+',
+        "/out:`"$compiled`"", "`"$wrappedSource`""
+    ) + $references | Set-Content -LiteralPath $response -Encoding utf8NoBOM
+
     # Check the contract itself even in a database with no script bodies.
-    [IO.File]::WriteAllText($wrappedSource, $template.Remove($markerAt, $marker.Length), $utf8)
-    $output = dotnet build $project --configfile $nuget --nologo --verbosity quiet
+    $emptyWrapper = $template.Remove($markerAt, $marker.Length)
+    [IO.File]::WriteAllText($wrappedSource, $emptyWrapper, $utf8)
+    $output = & $dotnet $csc /noconfig "@$response"
     if ($LASTEXITCODE -ne 0) {
         $output | Write-Host
         throw 'The exported script contract did not compile.'
@@ -157,10 +164,10 @@ try {
     foreach ($source in ($sources | Sort-Object FullName)) {
         $relative = [IO.Path]::GetRelativePath($repo, $source.FullName)
         $body = [IO.File]::ReadAllText($source.FullName, $utf8)
-        $wrapped = $template.Remove($markerAt, $marker.Length).Insert($markerAt, $body)
+        $wrapped = $emptyWrapper.Insert($markerAt, $body)
         [IO.File]::WriteAllText($wrappedSource, $wrapped, $utf8)
         # Rebuild each body independently. The wrapper declares the same entry point every time.
-        $output = dotnet build $project --no-restore --target Rebuild --nologo --verbosity quiet
+        $output = & $dotnet $csc /noconfig "@$response"
         if ($LASTEXITCODE -ne 0) {
             Write-Host "Could not compile $relative"
             $output | Write-Host
@@ -170,7 +177,7 @@ try {
         }
     }
     if ($failed.Count) { throw "Compilation failed: $($failed -join ', ')" }
-    Write-Host "Compiled $($sources.Count) bodies with Kit $version and SolidWorks interop $($sldworks.Version)."
+    Write-Host "Compiled $($sources.Count) bodies with Kit $version and SolidWorks interop $interopVersion."
 }
 finally {
     $resolved = (Resolve-Path -LiteralPath $temp).ProviderPath
