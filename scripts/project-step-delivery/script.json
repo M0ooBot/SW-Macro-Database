@@ -1,0 +1,40 @@
+{
+  "id": "project-step-delivery",
+  "title": "Export one closed part to an AP214 project deliverables folder",
+  "entry": "entries/files/04-export-a-body-to-step.md",
+  "status": "verified",
+  "evidence": ["2026-11-20-project-step-delivery-cs-34"],
+  "effects": "writes-new-files",
+  "irreversible": false,
+  "supportsDryRun": false,
+  "timeoutMinutes": 10,
+  "openTargets": false,
+  "params": [
+    {
+      "name": "model",
+      "type": "file",
+      "role": "targets",
+      "required": true,
+      "description": "One closed independent SolidWorks part in its Default configuration."
+    },
+    {
+      "name": "deliverables",
+      "type": "folder",
+      "role": "output",
+      "required": true,
+      "description": "An existing output folder on the backup volume and disjoint from the source."
+    },
+    {
+      "name": "fileName",
+      "type": "string",
+      "required": true,
+      "description": "One STEP filename. An existing output with this name is backed up before replacement."
+    },
+    {
+      "name": "stepProtocol",
+      "type": "int",
+      "required": true,
+      "description": "Use 214. The worker restores the prior application preference after exporting."
+    }
+  ]
+}

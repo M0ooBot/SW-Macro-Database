@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-project-step-delivery-cs-34",
+  "subject": "project-step-delivery",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "probe",
+  "result": "pass",
+  "scope": "full",
+  "observed": "The exact C# body ran through the real closed-file export actor from a disposable standalone Default part using a scalar model role, a deliverables folder role and an explicit AP214 parameter. The worker verified that the original part hash and session state were preserved. The STEP declares AUTOMOTIVE_DESIGN. Its SHA-256 is f7ea2969dc519a095f3f0536285cbfd1781b31cfcaa38b6bdff65b61526ceb42. Open CASCADE 8.0.1.1.0 independently reopened one valid solid of 114835.17687777565 cubic millimetres."
+}
