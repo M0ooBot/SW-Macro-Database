@@ -10,8 +10,8 @@ status: verified
 verified_on: SolidWorks 2026 SP1.1
 majors: [34]
 evidence: []
-recipe_status: unverified
-recipe_evidence: []
+recipe_status: verified
+recipe_evidence: [2026-11-20-reading-09-bounding-box-cs-34]
 superseded_by: null
 ---
 

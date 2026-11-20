@@ -1159,9 +1159,13 @@
       "evidence": [],
       "recipe": {
         "path": "entries/connect/07-find-the-open-document.csx",
-        "status": "unverified",
-        "majors": [],
-        "evidence": []
+        "status": "verified",
+        "majors": [
+          34
+        ],
+        "evidence": [
+          "2026-11-20-connect-07-find-open-document-cs-34"
+        ]
       },
       "superseded_by": null
     },
@@ -1206,9 +1210,13 @@
       "evidence": [],
       "recipe": {
         "path": "entries/connect/08-find-a-feature-by-name.csx",
-        "status": "unverified",
-        "majors": [],
-        "evidence": []
+        "status": "verified",
+        "majors": [
+          34
+        ],
+        "evidence": [
+          "2026-11-20-connect-08-find-feature-by-name-cs-34"
+        ]
       },
       "superseded_by": null
     },
@@ -3690,9 +3698,13 @@
       "evidence": [],
       "recipe": {
         "path": "entries/reading/09-bounding-box.csx",
-        "status": "unverified",
-        "majors": [],
-        "evidence": []
+        "status": "verified",
+        "majors": [
+          34
+        ],
+        "evidence": [
+          "2026-11-20-reading-09-bounding-box-cs-34"
+        ]
       },
       "superseded_by": null
     },
@@ -3739,9 +3751,13 @@
       "evidence": [],
       "recipe": {
         "path": "entries/reading/10-mass-properties-as-an-oracle.csx",
-        "status": "unverified",
-        "majors": [],
-        "evidence": []
+        "status": "verified",
+        "majors": [
+          34
+        ],
+        "evidence": [
+          "2026-11-20-reading-10-mass-properties-as-an-oracle-cs-34"
+        ]
       },
       "superseded_by": null
     },

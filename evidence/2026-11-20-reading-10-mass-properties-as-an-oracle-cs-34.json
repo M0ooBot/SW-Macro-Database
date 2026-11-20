@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-reading-10-mass-properties-as-an-oracle-cs-34",
+  "subject": "reading-10-mass-properties-as-an-oracle",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "The Default configuration\u0027s two solids at 7800 kg/m\u00B3 measured 0.0702 kg, 9E-06 m\u00B3 and center (0.0238888889, 0.00944444444, 0.005) m (0.1% mass and volume, 0.000001 m per center axis). The smaller body remained selected."
+}

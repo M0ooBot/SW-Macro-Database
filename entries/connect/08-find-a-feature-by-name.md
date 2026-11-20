@@ -10,8 +10,8 @@ status: verified
 verified_on: SolidWorks 2026
 majors: [34]
 evidence: []
-recipe_status: unverified
-recipe_evidence: []
+recipe_status: verified
+recipe_evidence: [2026-11-20-connect-08-find-feature-by-name-cs-34]
 superseded_by: null
 ---
 

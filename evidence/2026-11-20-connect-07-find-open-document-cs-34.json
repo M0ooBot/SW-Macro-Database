@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-connect-07-find-open-document-cs-34",
+  "subject": "connect-07-find-open-document",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "An uppercase title substring matched the open part\u0027s lowercase title. An absent title substring returned found=false."
+}
