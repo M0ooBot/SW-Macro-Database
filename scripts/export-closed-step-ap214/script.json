@@ -1,0 +1,34 @@
+{
+  "id": "export-closed-step-ap214",
+  "title": "Export a closed SolidWorks part to STEP AP214",
+  "entry": "entries/files/04-export-a-body-to-step.md",
+  "status": "unverified",
+  "evidence": [],
+  "effects": "writes-new-files",
+  "irreversible": false,
+  "supportsDryRun": false,
+  "timeoutMinutes": 10,
+  "openTargets": false,
+  "params": [
+    {
+      "name": "targets",
+      "type": "files",
+      "role": "targets",
+      "required": true,
+      "description": "One closed standalone SolidWorks part in the Default configuration."
+    },
+    {
+      "name": "output",
+      "type": "folder",
+      "role": "output",
+      "required": true,
+      "description": "Existing local folder for the exported STEP."
+    },
+    {
+      "name": "fileName",
+      "type": "string",
+      "required": true,
+      "description": "A single .step or .stp file name inside the output folder."
+    }
+  ]
+}

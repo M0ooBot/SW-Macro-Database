@@ -34,6 +34,10 @@ passes one closed standalone part and one STEP filename to the SW-Agent Kit.
 The guarded host stages the entire part's export and verifies the source and
 output before reporting the change. It requires the Default configuration and
 checks that the part has no external references, design table or equations.
+Use `export-closed-step-ap214` to request AP214 explicitly. Its `Kit.Prefs.With`
+scope journals the existing STEP protocol and verifies restoration before the
+host publishes the output. The AP214 variant is unverified until run on the
+installed Kit.
 
 ## The call
 
