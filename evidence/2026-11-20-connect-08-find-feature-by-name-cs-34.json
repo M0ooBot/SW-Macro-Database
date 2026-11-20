@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-connect-08-find-feature-by-name-cs-34",
+  "subject": "connect-08-find-feature-by-name",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "Right Plane matched by exact name and returned RefPlane. The incomplete feature name Right returned found=false."
+}

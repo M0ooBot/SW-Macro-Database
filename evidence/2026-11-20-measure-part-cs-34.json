@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-measure-part-cs-34",
+  "subject": "measure-part",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "The Default configuration\u0027s two solids at 7800 kg/m\u00B3 measured 0.0702 kg, 9E-06 m\u00B3 and center (0.0238888889, 0.00944444444, 0.005) m (0.1% mass and volume, 0.000001 m per center axis). The Default configuration\u0027s approximate whole-part box ran from (0, 0, 0) to (0.06, 0.02, 0.01) m (0.00075 m tolerance per axis). Installed execution returned both measurements via Windows and WSL paths and preserved the smaller-body selection. The closed part returned preflight_failed for continuous observation coverage and released no value."
+}
