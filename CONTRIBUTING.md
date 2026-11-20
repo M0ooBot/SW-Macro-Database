@@ -270,9 +270,7 @@ and only if `recipe_status` is set. It starts with its header, before any code:
 // recipe-param: name string optional Feature name; default "Boss".
 ```
 
-`recipe-effects` is exactly one of `read-only` (at most one required `file` or `files` param with
-  `role: targets`, and none with `role: output`; parameter lists without a
-  role are also valid), `edits-open-document`,
+`recipe-effects` is exactly one of `read-only`, `edits-open-document`,
 `modifies-models` or `writes-new-files`. Each `recipe-param` gives a camelCase
 name, a type (`string`, `bool`, `int`, `number`, `file`, `files`, `folder`),
 `required` or `optional`, and a description. The code reads its inputs only
