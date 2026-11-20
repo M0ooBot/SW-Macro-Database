@@ -1,0 +1,33 @@
+{
+  "id": "group-closed-part-feature",
+  "title": "Group one feature in a new folder in a closed SolidWorks part",
+  "entry": "entries/curves/11-feature-tree-folders.md",
+  "status": "unverified",
+  "evidence": [],
+  "effects": "modifies-models",
+  "irreversible": false,
+  "supportsDryRun": false,
+  "timeoutMinutes": 10,
+  "openTargets": false,
+  "params": [
+    {
+      "name": "targets",
+      "type": "files",
+      "role": "targets",
+      "required": true,
+      "description": "One closed independent SolidWorks part in its Default configuration."
+    },
+    {
+      "name": "feature",
+      "type": "string",
+      "required": true,
+      "description": "Exact name of the feature to change."
+    },
+    {
+      "name": "folder",
+      "type": "string",
+      "required": true,
+      "description": "Unoccupied name for a new feature-tree folder."
+    }
+  ]
+}

@@ -276,6 +276,11 @@ contains `___EndTag___` back to its group's name, if that name is free.
 
 ## What it does not do
 
+The `group-closed-part-feature` candidate uses `Kit.Features.GroupInFolder`
+on a private independent part with no existing feature-tree folders. It
+selects one top-level feature, creates a new containing folder, and verifies
+both its name and membership before the worker saves the staged part.
+
 - **No adding to an existing folder.** See above. Rebuild instead.
 - **No empty folder to fill later.** Value 1 made an empty folder only when
   something was selected, and nothing can be moved into it afterwards, so it is

@@ -1,0 +1,1 @@
+Kit.Docs.EditClosedPart(ctx.Params.GetFiles("targets")[0], part => { using (Kit.Batch(part)) { Kit.Features.Rename(part, ctx.Params.GetString("feature"), ctx.Params.GetString("newName")); } Kit.Docs.Save(part); });

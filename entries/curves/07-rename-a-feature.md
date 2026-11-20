@@ -53,6 +53,10 @@ def rename_feature(self, current, new):
 Return the name it kept, and store *that*. Every caller in this collection uses
 the returned value, never the requested one.
 
+The `rename-closed-part-feature` candidate uses `Kit.Features.Rename`
+within one guarded batch. It edits a private copy, rejects a name collision
+and checks the exact requested name before the worker saves the staged part.
+
 ## In VBScript
 
 ```vb

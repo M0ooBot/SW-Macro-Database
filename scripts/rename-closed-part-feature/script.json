@@ -1,0 +1,33 @@
+{
+  "id": "rename-closed-part-feature",
+  "title": "Rename one feature in a closed SolidWorks part",
+  "entry": "entries/curves/07-rename-a-feature.md",
+  "status": "unverified",
+  "evidence": [],
+  "effects": "modifies-models",
+  "irreversible": false,
+  "supportsDryRun": false,
+  "timeoutMinutes": 10,
+  "openTargets": false,
+  "params": [
+    {
+      "name": "targets",
+      "type": "files",
+      "role": "targets",
+      "required": true,
+      "description": "One closed independent SolidWorks part in its Default configuration."
+    },
+    {
+      "name": "feature",
+      "type": "string",
+      "required": true,
+      "description": "Exact name of the feature to change."
+    },
+    {
+      "name": "newName",
+      "type": "string",
+      "required": true,
+      "description": "Unoccupied feature name to apply and verify."
+    }
+  ]
+}
