@@ -1,0 +1,1 @@
+Kit.Docs.EditClosedPart(ctx.Params.GetFiles("targets")[0], part => { using (Kit.Batch(part)) { Kit.Features.SetDrivingDimension(part, ctx.Params.GetString("dimension"), ctx.Params.GetNumber("metres")); } Kit.Docs.Save(part); });

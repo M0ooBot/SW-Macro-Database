@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-set-linked-part-dimension-cs-34",
+  "subject": "set-linked-part-dimension",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "probe",
+  "result": "pass",
+  "scope": "full",
+  "observed": "The exact Kit 0.4.0 C# body ran through the native write gate in a private worker probe on a disposable closed Default part with one resolved derived-body link to another closed part. Independent SolidWorks reopens measured D1@Boss-Extrude1 changing from 0.020 to 0.025 metres and a volume change from 24 to 28 cubic centimetres. The dependency retained its original file identity and SHA-256 8f29c95844a01225d44a1548cab914922c055eba621a624e5a912a462a353eb8. Restore returned the original root hash 653145344e3c29ad6f9eba41bc7306b42a48466bade7d81dd311086f14963953. Undoing the restore republished the exact edited hash, and a final restore returned the original again. The saved reference resolved to the same original dependency after each publication and SolidWorks finished with zero open documents."
+}

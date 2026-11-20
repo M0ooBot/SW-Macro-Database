@@ -1,0 +1,33 @@
+{
+  "id": "set-linked-part-dimension",
+  "title": "Set one local driving dimension in a closed linked SolidWorks part",
+  "entry": "entries/features/04-read-a-features-dimensions.md",
+  "status": "verified",
+  "evidence": ["2026-11-20-set-linked-part-dimension-cs-34"],
+  "effects": "modifies-models",
+  "irreversible": false,
+  "supportsDryRun": false,
+  "timeoutMinutes": 10,
+  "openTargets": false,
+  "params": [
+    {
+      "name": "targets",
+      "type": "files",
+      "role": "targets",
+      "required": true,
+      "description": "One closed linked native part in its Default configuration on the backup volume. Its entire acyclic closure must resolve to closed, unchanged native parts. The reference files are backed up and preserved."
+    },
+    {
+      "name": "dimension",
+      "type": "string",
+      "required": true,
+      "description": "The fully qualified local driving length, such as D1@Boss-Extrude1."
+    },
+    {
+      "name": "metres",
+      "type": "number",
+      "required": true,
+      "description": "A positive finite dimension value in metres."
+    }
+  ]
+}
