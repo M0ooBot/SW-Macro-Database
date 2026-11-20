@@ -29,6 +29,12 @@ measure each loft it built against the shape it meant
 Importing STEP is a different problem with a different trap:
 [files/01](01-batch-convert-step.md).
 
+The `export-closed-step` script
+passes one closed standalone part and one STEP filename to the SW-Agent Kit.
+The guarded host stages the entire part's export and verifies the source and
+output before reporting the change. It requires the Default configuration and
+checks that the part has no external references, design table or equations.
+
 ## The call
 
 From [`code/python/swcom.py`](../../code/python/swcom.py), as it ran:
