@@ -10,8 +10,8 @@ status: partly-verified
 verified_on: SolidWorks 2026 for the STEP export and for the suppression and its cascade; that each file of an earlier batch held only its own loft was never checked file by file
 majors: [34]
 evidence: []
-recipe_status: null
-recipe_evidence: []
+recipe_status: verified
+recipe_evidence: [2026-11-20-files-04-export-a-body-to-step-recipe-cs-34]
 superseded_by: null
 ---
 
@@ -231,6 +231,10 @@ part at 6 solid bodies where it had 16; with the snapshot in
 same export came back with **0** suppressed, at the cost of taking 537.6 s
 where it had taken 296.3 s. The STEP file it wrote was 1.5 MB and held
 `MANIFOLD_SOLID_BREP 1`, `CLOSED_SHELL 1`, `OPEN_SHELL 0`, `ADVANCED_FACE 5`.
+
+## Exporting a whole closed part with Kit
+
+The recipe writes the approved standalone part to the specified STEP leaf as AP214. Kit restores the original STEP protocol preference and preserves the source file. Use the selective-body workflow above when the part contains solids that should be excluded. [C# recipe](04-export-a-body-to-step.csx)
 
 ## See also
 

@@ -1624,7 +1624,16 @@
         34
       ],
       "evidence": [],
-      "recipe": null,
+      "recipe": {
+        "path": "entries/curves/07-rename-a-feature.csx",
+        "status": "verified",
+        "majors": [
+          34
+        ],
+        "evidence": [
+          "2026-11-20-curves-07-rename-a-feature-recipe-cs-34"
+        ]
+      },
       "superseded_by": null
     },
     {
@@ -1662,7 +1671,16 @@
         34
       ],
       "evidence": [],
-      "recipe": null,
+      "recipe": {
+        "path": "entries/curves/08-rebuild-once-at-the-end.csx",
+        "status": "verified",
+        "majors": [
+          34
+        ],
+        "evidence": [
+          "2026-11-20-curves-08-rebuild-once-recipe-cs-34"
+        ]
+      },
       "superseded_by": null
     },
     {
@@ -1763,7 +1781,16 @@
         34
       ],
       "evidence": [],
-      "recipe": null,
+      "recipe": {
+        "path": "entries/curves/11-feature-tree-folders.csx",
+        "status": "verified",
+        "majors": [
+          34
+        ],
+        "evidence": [
+          "2026-11-20-curves-11-feature-tree-folders-recipe-cs-34"
+        ]
+      },
       "superseded_by": null
     },
     {
@@ -2801,7 +2828,16 @@
         34
       ],
       "evidence": [],
-      "recipe": null,
+      "recipe": {
+        "path": "entries/features/04-read-a-features-dimensions.csx",
+        "status": "verified",
+        "majors": [
+          34
+        ],
+        "evidence": [
+          "2026-11-20-features-04-read-a-features-dimensions-recipe-cs-34"
+        ]
+      },
       "superseded_by": null
     },
     {
@@ -3337,7 +3373,16 @@
         34
       ],
       "evidence": [],
-      "recipe": null,
+      "recipe": {
+        "path": "entries/files/04-export-a-body-to-step.csx",
+        "status": "verified",
+        "majors": [
+          34
+        ],
+        "evidence": [
+          "2026-11-20-files-04-export-a-body-to-step-recipe-cs-34"
+        ]
+      },
       "superseded_by": null
     },
     {
@@ -3522,7 +3567,16 @@
         34
       ],
       "evidence": [],
-      "recipe": null,
+      "recipe": {
+        "path": "entries/reading/04-read-the-selection.csx",
+        "status": "verified",
+        "majors": [
+          34
+        ],
+        "evidence": [
+          "2026-11-20-reading-04-read-the-selection-recipe-cs-34"
+        ]
+      },
       "superseded_by": null
     },
     {

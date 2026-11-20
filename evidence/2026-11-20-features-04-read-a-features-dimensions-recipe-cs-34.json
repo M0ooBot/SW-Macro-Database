@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-features-04-read-a-features-dimensions-recipe-cs-34",
+  "subject": "features-04-read-a-features-dimensions",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "SwAgent.Smoke compiled and ran the exact installed sidecar with Kit 0.4.0. Recipe SHA-256 c40b89561d3719259d10e3e6477111a208226f3dc1224b1d1fee8cea23b60ca1. The recipe set the approved D1@Boss-Extrude1 depth from 0.020 m to 0.025 m. An independent reopen read 0.025 m and approximately 139895.797 mm³ volume. Restore recovered the original bytes and 0.020 m depth."
+}

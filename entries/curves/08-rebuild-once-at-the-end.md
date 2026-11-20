@@ -10,8 +10,8 @@ status: verified
 verified_on: SolidWorks 2026
 majors: [34]
 evidence: []
-recipe_status: null
-recipe_evidence: []
+recipe_status: verified
+recipe_evidence: [2026-11-20-curves-08-rebuild-once-recipe-cs-34]
 superseded_by: null
 ---
 
@@ -179,6 +179,10 @@ through cut were both made; the flag was restored in a `finally` and read back
 features under the flag the same way, and a later change of its globals was
 also made under it and rebuilt once. See
 [features/01](../features/01-boss-extrude.md).
+
+## Rebuilding a closed-part change with Kit
+
+Use the borrowed closed-part editor inside the batch scope. Disposing the batch performs the checked rebuild. Save after the scope has disposed. [C# recipe](08-rebuild-once-at-the-end.csx)
 
 ## See also
 

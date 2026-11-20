@@ -10,8 +10,8 @@ status: verified
 verified_on: SolidWorks 2026
 majors: [34]
 evidence: []
-recipe_status: null
-recipe_evidence: []
+recipe_status: verified
+recipe_evidence: [2026-11-20-reading-04-read-the-selection-recipe-cs-34]
 superseded_by: null
 ---
 
@@ -289,6 +289,10 @@ application meaning.
 The module also ships a diagnostic: `python -m airfoil_converter.swcom
 --selection` prints what is selected and every way of reading it. Writing one of
 those is how the conventions above got established.
+
+## Reading a temporary reference-plane selection with Kit
+
+Use the recipe on an idle visible part in the verified scope. It temporarily selects a named reference plane with the requested mark, reads its count and type, and lets Kit restore the prior selection. Keep the polling code above for reading a selection the user already made. [C# recipe](04-read-the-selection.csx)
 
 ## See also
 

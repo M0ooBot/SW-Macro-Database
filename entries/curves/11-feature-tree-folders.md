@@ -10,8 +10,8 @@ status: verified
 verified_on: SolidWorks 2026
 majors: [34]
 evidence: []
-recipe_status: null
-recipe_evidence: []
+recipe_status: verified
+recipe_evidence: [2026-11-20-curves-11-feature-tree-folders-recipe-cs-34]
 superseded_by: null
 ---
 
@@ -359,6 +359,10 @@ folder in place, and two more groups added after another close-and-reopen went
 into folders under the parent (their sentinels `Folder1___EndTag___0` and
 `Folder3___EndTag___0`). A kept folder named `Folder5___EndTag___0` was renamed
 to its group's free name through `IFeature.Name` and read back as asked.
+
+## Grouping a feature of a closed part with Kit
+
+Give the recipe one closed standalone part, the exact top-level feature name and an unoccupied folder name. Kit checks the new folder and the feature it contains. [C# recipe](11-feature-tree-folders.csx)
 
 ## See also
 

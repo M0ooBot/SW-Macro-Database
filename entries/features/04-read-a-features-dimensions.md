@@ -10,8 +10,8 @@ status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
 majors: [34]
 evidence: []
-recipe_status: null
-recipe_evidence: []
+recipe_status: verified
+recipe_evidence: [2026-11-20-features-04-read-a-features-dimensions-recipe-cs-34]
 superseded_by: null
 ---
 
@@ -119,6 +119,10 @@ SolidWorks 2026 (revision 34.0.0), Python over pywin32, probe run
   `_name_dimension_by_value`; after a change of teeth and module,
   `teeth_dimensions` read `{'D3': 6.283185307179586, 'Count': 13.0}` and the
   blank `{'Width': 0.01, 'OD': 0.03375}`.
+
+## Setting an identified driving dimension with Kit
+
+Supply the fully qualified name of an existing driving dimension in a closed standalone part and its new value in metres. The recipe batches the change, verifies the rebuild and stages the save. [C# recipe](04-read-a-features-dimensions.csx)
 
 ## See also
 

@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-curves-08-rebuild-once-recipe-cs-34",
+  "subject": "curves-08-rebuild-once",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "SwAgent.Smoke compiled and ran the exact installed sidecar with Kit 0.4.0. Recipe SHA-256 c40b89561d3719259d10e3e6477111a208226f3dc1224b1d1fee8cea23b60ca1. The recipe changed the extrusion from 20 mm to 25 mm inside Kit.Batch, saved after the checked rebuild, and reopened the result with a 25 mm extrusion and approximately 139895.797 mm³ volume. Restore recovered the original bytes and 20 mm depth."
+}

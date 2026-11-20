@@ -10,8 +10,8 @@ status: verified
 verified_on: SolidWorks 2026
 majors: [34]
 evidence: []
-recipe_status: null
-recipe_evidence: []
+recipe_status: verified
+recipe_evidence: [2026-11-20-curves-07-rename-a-feature-recipe-cs-34]
 superseded_by: null
 ---
 
@@ -93,6 +93,10 @@ no error. The same run renamed extrusions, cuts, patterns, axes, mates and
 dimensions and read every one back (probes `sketch_open_close`, `extrude`,
 `pattern`, `axis`, `assembly_components_and_mates` and `end_to_end`, run
 20260914-180426).
+
+## Renaming a feature of a closed part with Kit
+
+The recipe changes the name of a unique top-level feature in a closed standalone part. Supply the exact old name and an unoccupied destination name. Kit verifies the name it saved. [C# recipe](07-rename-a-feature.csx)
 
 ## See also
 

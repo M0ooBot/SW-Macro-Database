@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-reading-04-read-the-selection-recipe-cs-34",
+  "subject": "reading-04-read-the-selection",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "SwAgent.Smoke compiled and ran the exact installed sidecar with Kit 0.4.0. Recipe SHA-256 f0da6181b3f4674c257778ddc39a3aa0436233db5d0f90b5ad9acb0158714d40. On the disposable visible part, the exact recipe selected Right Plane with mark 17. It reported one swSelDATUMPLANES item. The original empty selection was restored. The part stayed visible and clean with the same configuration, update stamp and file metadata."
+}

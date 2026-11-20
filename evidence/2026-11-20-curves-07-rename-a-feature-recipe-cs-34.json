@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-curves-07-rename-a-feature-recipe-cs-34",
+  "subject": "curves-07-rename-a-feature",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "SwAgent.Smoke compiled and ran the exact installed sidecar with Kit 0.4.0. Recipe SHA-256 e48d29c6f5c86e16a3216bcd738e4e2a14b56f385b0117c3a81dd528a91e2aab. The independently reopened closed part had the requested exact name E1 renamed extrusion and no feature under the old top-level name. Its 20 mm depth and 114835.17687777565 mm³ volume matched the baseline. Restore recovered the original file bytes."
+}

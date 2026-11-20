@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-files-04-export-a-body-to-step-recipe-cs-34",
+  "subject": "files-04-export-a-body-to-step",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "SwAgent.Smoke compiled and ran the exact installed sidecar with Kit 0.4.0. Recipe SHA-256 8f85bee38bb4658731012c6b4bc20667d3c86c8413d2c54ef2668a5d8dda27d3. The worker read STEP protocol 203 before and after the export. The STEP declared AUTOMOTIVE_DESIGN and Open CASCADE independently read one valid solid at 114835.17687777565 mm³. The worker continuously observed the unchanged source. The output SHA-256 was 63a40d7515a908d04cd052ab87d2f6a673723a85b32873a63888fa983beaf8c5."
+}

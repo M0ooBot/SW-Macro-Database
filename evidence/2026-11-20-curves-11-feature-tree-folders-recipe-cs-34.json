@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-curves-11-feature-tree-folders-recipe-cs-34",
+  "subject": "curves-11-feature-tree-folders",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "SwAgent.Smoke compiled and ran the exact installed sidecar with Kit 0.4.0. Recipe SHA-256 7c52aa64af89790a1ed85d43982ef5b2a6bf8c4aeb431d7a7d286c4d9796c343. The independently reopened closed part had the requested E1 extrusion folder containing the original feature. The 20 mm depth and 114835.17687777565 mm³ volume matched the baseline. Restore recovered the original file bytes."
+}
