@@ -1,0 +1,35 @@
+{
+  "id": "convert-step-part",
+  "title": "Import one standalone AP214 STEP solid as a new native part",
+  "entry": "entries/files/06-import-standalone-step-part.md",
+  "status": "verified",
+  "evidence": [
+    "2026-11-20-convert-step-part-cs-34"
+  ],
+  "effects": "writes-new-files",
+  "irreversible": false,
+  "supportsDryRun": false,
+  "timeoutMinutes": 10,
+  "openTargets": false,
+  "params": [
+    {
+      "name": "source",
+      "type": "file",
+      "required": true,
+      "description": "A plain AP214 STEP file no larger than 64 MiB, containing one advanced BREP solid with planar/cylindrical faces and line/circle geometry. No assembly or external references. SolidWorks must have no open documents."
+    },
+    {
+      "name": "output",
+      "type": "folder",
+      "role": "output",
+      "required": true,
+      "description": "An existing output folder on the SW-Agent backup volume, disjoint from the STEP input and private data."
+    },
+    {
+      "name": "fileName",
+      "type": "string",
+      "required": true,
+      "description": "One new filename with a native part extension. Existing destinations are refused."
+    }
+  ]
+}

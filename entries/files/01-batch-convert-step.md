@@ -30,6 +30,15 @@ folder and the target type. It runs SolidWorks in the background and needs no
 code. It does not mirror the subfolder structure in every version, so if the
 output comes out flat, come back here.
 
+## Guarded conversion through SW-Agent
+
+For a single supported AP214 STEP solid, see the
+[guarded `convert-step-part` script](06-import-standalone-step-part.md)
+and its Kit 0.5.0 contract. It stages and verifies a new native part,
+preserves the neutral input, and records a confirmed undo route. It requires
+an empty attached SolidWorks session. The packaged `convert-step` folder
+scanner continues to support its existing dry run.
+
 ## Use `LoadFile4`, not `OpenDoc6`
 
 This is the finding that cost the time.

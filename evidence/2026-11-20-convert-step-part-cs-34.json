@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-convert-step-part-cs-34",
+  "subject": "convert-step-part",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "probe",
+  "result": "pass",
+  "scope": "full",
+  "observed": "The exact Kit 0.5.0 C# body ran through the file gate in a private real-worker probe. A disposable plain AP214 STEP export (SHA-256 63a40d7515a908d04cd052ab87d2f6a673723a85b32873a63888fa983beaf8c5) loaded from an independent private copy. The staged native part independently reopened with one solid, no external references, and volume 0.00011483517687777564 cubic metres. The source identity and bytes were preserved. Restore removed the created part, undo of restore republished the exact native bytes (SHA-256 217196ef14152026f0f1aadcc8605e806270f2449161c78ec1ca49c0f23face6), and a final restore left the output empty."
+}

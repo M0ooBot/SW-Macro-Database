@@ -1,11 +1,11 @@
 {
   "schema": 2,
   "description": "SolidWorks automation entries. Each answers one question. Check 'status' before trusting an entry: verified means it ran against the named version ('verified_on' says what was run; 'majors' are the SolidWorks revision majors it ran on, 32 = 2024, 34 = 2026); unverified means it is well-formed against the documented API but was never executed. 'recipe' is the entry's C# recipe, the code SW-Agent runs, with a status of its own.",
-  "count": 98,
+  "count": 99,
   "by_status": {
     "partly-verified": 11,
     "unverified": 4,
-    "verified": 83
+    "verified": 84
   },
   "entries": [
     {
@@ -3423,6 +3423,38 @@
       "verified_on": "SolidWorks 2024 SP5 (32.5.0)",
       "majors": [
         32
+      ],
+      "evidence": [],
+      "recipe": null,
+      "superseded_by": null
+    },
+    {
+      "id": "files-06-import-standalone-step-part",
+      "title": "Import a standalone AP214 STEP solid as a new native part",
+      "path": "entries/files/06-import-standalone-step-part.md",
+      "category": "files",
+      "answers": "How do I safely convert one supported STEP file to a closed SolidWorks part?",
+      "keywords": [
+        "STEP",
+        "AP214",
+        "AUTOMOTIVE_DESIGN",
+        "LoadFile4",
+        "neutral import",
+        "manifold solid",
+        "native part",
+        "undo"
+      ],
+      "api": [
+        "ISldWorks.LoadFile4",
+        "ISldWorks.GetImportFileData",
+        "IModelDocExtension.SaveAs3",
+        "ISldWorks.QuitDoc"
+      ],
+      "language": [],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 SP0 with Kit 0.5.0 on one disposable AP214 export containing planar and cylindrical faces",
+      "majors": [
+        34
       ],
       "evidence": [],
       "recipe": null,

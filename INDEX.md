@@ -84,6 +84,7 @@ this file in a release), or read [manifest.json](manifest.json) for the whole se
 | Write one file per configuration out of a configurable part | [files/02 — Explode configurations](entries/files/02-explode-configurations.md) |
 | Re-save a whole library in the current file format | [files/03 — Upgrade a file version](entries/files/03-upgrade-file-version.md) |
 | Write a part, or one loft of it, to a STEP file without renaming the document | [files/04 — Export a body to STEP](entries/files/04-export-a-body-to-step.md) |
+| Import one supported AP214 STEP solid as a new native part | [files/06 — Import standalone STEP](entries/files/06-import-standalone-step-part.md) |
 
 ## Build solid features
 
