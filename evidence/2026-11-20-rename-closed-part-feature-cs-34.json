@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-rename-closed-part-feature-cs-34",
+  "subject": "rename-closed-part-feature",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "probe",
+  "result": "pass",
+  "scope": "full",
+  "observed": "The exact C# body from package 2.2.0-e1.5 renamed Boss-Extrude1 to E1 renamed extrusion on a closed disposable standalone part. The worker reopened its staged file and verified the new feature name. Solid volume remained 114835.1769 cubic millimetres. The production restore actor recovered the original native file byte for byte. The run used Kit 0.4.0 and the worker's private fixture on SolidWorks 34.0.0."
+}
