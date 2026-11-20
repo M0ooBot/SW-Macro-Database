@@ -1157,7 +1157,12 @@
         34
       ],
       "evidence": [],
-      "recipe": null,
+      "recipe": {
+        "path": "entries/connect/07-find-the-open-document.csx",
+        "status": "unverified",
+        "majors": [],
+        "evidence": []
+      },
       "superseded_by": null
     },
     {
@@ -1199,7 +1204,12 @@
         34
       ],
       "evidence": [],
-      "recipe": null,
+      "recipe": {
+        "path": "entries/connect/08-find-a-feature-by-name.csx",
+        "status": "unverified",
+        "majors": [],
+        "evidence": []
+      },
       "superseded_by": null
     },
     {
@@ -3678,7 +3688,12 @@
         34
       ],
       "evidence": [],
-      "recipe": null,
+      "recipe": {
+        "path": "entries/reading/09-bounding-box.csx",
+        "status": "unverified",
+        "majors": [],
+        "evidence": []
+      },
       "superseded_by": null
     },
     {
@@ -3722,7 +3737,12 @@
         34
       ],
       "evidence": [],
-      "recipe": null,
+      "recipe": {
+        "path": "entries/reading/10-mass-properties-as-an-oracle.csx",
+        "status": "unverified",
+        "majors": [],
+        "evidence": []
+      },
       "superseded_by": null
     },
     {

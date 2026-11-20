@@ -1,0 +1,61 @@
+name: Compile SolidWorks recipes
+
+on:
+  workflow_dispatch:
+    inputs:
+      kit_release_tag:
+        description: SW-Agent release tag containing the pinned Kit assets
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    environment: solidworks-interop
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Get the pinned SW-Agent contract
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KIT_RELEASE_TAG: ${{ inputs.kit_release_tag }}
+        run: |
+          $kitVersion = (Get-Content kit.version -Raw).Trim()
+          $kit = Join-Path $env:RUNNER_TEMP 'kit'
+          if ($env:KIT_RELEASE_TAG -notmatch '^[a-zA-Z0-9][a-zA-Z0-9._-]*$') {
+            throw 'Supply a SW-Agent release tag.'
+          }
+          gh release download "$env:KIT_RELEASE_TAG" --repo M0ooBot/SW-Agent --dir $kit `
+            --pattern "SwAgent.Kit.Reference-$kitVersion.zip" `
+            --pattern "script-wrapper-$kitVersion.cs" `
+            --pattern 'SHA256SUMS'
+          if ($LASTEXITCODE -ne 0) { throw "Could not download Kit $kitVersion assets." }
+      - name: Compile using authorized SolidWorks 2024 interop
+        env:
+          SW2024_INTEROP_URL: ${{ secrets.SW2024_INTEROP_URL }}
+          SW2024_INTEROP_SHA256: ${{ vars.SW2024_INTEROP_SHA256 }}
+        run: |
+          if ($env:SW2024_INTEROP_URL -notmatch '^https://' -or $env:SW2024_INTEROP_SHA256 -notmatch '^[a-fA-F0-9]{64}$') {
+            throw 'This workflow needs a license-authorized private interop archive and its SHA-256. Use tools/compile_recipes.ps1 on a licensed developer machine until access is available.'
+          }
+          $archive = Join-Path $env:RUNNER_TEMP 'interop.zip'
+          try {
+            Invoke-WebRequest -Uri $env:SW2024_INTEROP_URL -OutFile $archive -ErrorAction Stop
+          } catch {
+            throw 'Could not retrieve the authorized interop archive.'
+          }
+          if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne $env:SW2024_INTEROP_SHA256) {
+            throw 'The authorized interop archive checksum did not match.'
+          }
+          $interop = Join-Path $env:RUNNER_TEMP 'interop'
+          Expand-Archive -LiteralPath $archive -DestinationPath $interop
+          ./tools/compile_recipes.ps1 -KitAssets (Join-Path $env:RUNNER_TEMP 'kit') -InteropDir $interop

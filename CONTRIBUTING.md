@@ -156,7 +156,9 @@ what it does) and `script.csx` (the code). Every rule above applies, plus:
   `unverified` until the script itself has run and been observed. `verified`
   needs a passing `full` evidence record of the script, listed in `evidence`
   (an id list); the script's majors are those of its passing `full` records.
-- **Declare effects truthfully.** `read-only`, `edits-open-document` (edits
+- **Declare effects truthfully.** `read-only` (at most one required `file` or `files` param with
+  `role: targets`, and none with `role: output`; parameter lists without a
+  role are also valid), `edits-open-document` (edits
   documents that are open, in memory, and saves nothing: exactly one param with
   `role: targets`, none with `role: output`), `writes-new-files` (only inside
   the param with `role: output`) or `modifies-models` (only the files in the
@@ -265,7 +267,9 @@ and only if `recipe_status` is set. It starts with its header, before any code:
 // recipe-param: name string optional Feature name; default "Boss".
 ```
 
-`recipe-effects` is exactly one of `read-only`, `edits-open-document`,
+`recipe-effects` is exactly one of `read-only` (at most one required `file` or `files` param with
+  `role: targets`, and none with `role: output`; parameter lists without a
+  role are also valid), `edits-open-document`,
 `modifies-models` or `writes-new-files`. Each `recipe-param` gives a camelCase
 name, a type (`string`, `bool`, `int`, `number`, `file`, `files`, `folder`),
 `required` or `optional`, and a description. The code reads its inputs only
@@ -343,6 +347,32 @@ re-runs the source checks, confirms every generated file is current, validates
 every script and its evidence, builds the release package once and runs the
 packaged `lookup.py --self-test` on it, writes the release notes, and runs the
 unit tests in `tools/tests/`.
+
+### Compile the C# contract
+
+Run from a licensed developer machine with PowerShell 7 and the .NET 10 SDK.
+Point the tool at the pinned SW-Agent Kit assets (the reference zip, wrapper
+and SHA256SUMS from one release or local candidate) and the `api/redist`
+directory from an installed SolidWorks 2024. For example:
+
+```powershell
+pwsh -File tools/compile_recipes.ps1 -KitAssets C:/path/to/kit-assets -InteropDir C:/path/to/api/redist
+```
+
+The tool verifies the asset hashes and assembly versions, then compiles each
+sidecar and packaged script independently using the exported worker wrapper.
+This checks compatibility with the pinned contract without executing any code.
+
+The GitHub workflow is manual, runs on the default branch on a hosted Windows
+runner, and downloads Kit assets for the supplied SW-Agent release tag. It
+requires a protected `solidworks-interop` environment. If the license permits
+use on that runner, configure a private HTTPS URL for a ZIP of the two 2024
+interop DLLs at its root in the `SW2024_INTEROP_URL` environment secret and
+set `SW2024_INTEROP_SHA256` to the archive's SHA-256 in an environment
+variable. The workflow keeps the archive on the runner and publishes no
+interop artifacts. Until that access is available, compile locally.
+
+
 
 ### How changes get in
 
