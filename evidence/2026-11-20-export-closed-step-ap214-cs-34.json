@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-export-closed-step-ap214-cs-34",
+  "subject": "export-closed-step-ap214",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "probe",
+  "result": "pass",
+  "scope": "full",
+  "observed": "The worker ran the exact C# body from package 2.2.0-e1.3 on a closed disposable standalone part in its Default configuration. The local fixture used the production export actor and Kit 0.4.0. The STEP declared AUTOMOTIVE_DESIGN and Open CASCADE read one valid solid at 114835.17687777565 cubic millimetres. SolidWorks reported STEP protocol 203 before and after the AP214 export. The file SHA-256 was a54e4f5b63fdee1fdceaa450778724081f1e5a9c3e5226efbbcd9b9078c56a8b."
+}

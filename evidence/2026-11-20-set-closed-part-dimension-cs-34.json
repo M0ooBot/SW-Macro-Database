@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-20-set-closed-part-dimension-cs-34",
+  "subject": "set-closed-part-dimension",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-20",
+  "method": "probe",
+  "result": "pass",
+  "scope": "full",
+  "observed": "The worker ran the exact C# body from package 2.2.0-e1.4 against a closed disposable standalone part in its Default configuration using Kit 0.4.0. D1@Boss-Extrude1 changed from 0.020 to 0.025 metres. The reopened solid volume increased from 114835.1769 to 139895.7966 cubic millimetres. A separate backup restore recovered the original volume and native file SHA-256 affb8b89b699bc4c17ed082badce6abd66e312a241c1d93c2dd2e5441882d2b8. SolidWorks finished with zero open documents."
+}
