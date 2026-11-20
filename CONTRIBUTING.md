@@ -156,16 +156,21 @@ what it does) and `script.csx` (the code). Every rule above applies, plus:
   `unverified` until the script itself has run and been observed. `verified`
   needs a passing `full` evidence record of the script, listed in `evidence`
   (an id list); the script's majors are those of its passing `full` records.
-- **Declare effects truthfully.** `read-only`, `edits-open-document` (edits
+- **Declare effects truthfully.** `read-only` (at most one required `file` or `files` param with
+  `role: targets`, and none with `role: output`; parameter lists without a
+  role are also valid), `edits-open-document` (edits
   documents that are open, in memory, and saves nothing: exactly one param with
   `role: targets`, none with `role: output`), `writes-new-files` (only inside
   the param with `role: output`) or `modifies-models` (only the files in the
   param with `role: targets`, which the host backs up first). Set
   `irreversible: true` when undoing is impossible, such as a file-version upgrade.
+  A packaged script reads its declared parameter name, such as
+  `ctx.Params.GetFile("part")` for a `file` param named `part` with
+  `role: targets`. The role tells the host which files to verify.
 - **`openTargets`** (`true` or `false`): `true` says the script may be given
   documents the user has open, because it opens and closes only through
-  `Kit.Docs`, which never closes what it did not open; such a script may not
-  call `OpenDoc6`, `OpenDoc7`, `LoadFile4`, `CloseDoc` or `QuitDoc` itself.
+  Kit helpers that close only documents they opened. Direct calls to
+  `OpenDoc6`, `OpenDoc7`, `LoadFile4`, `CloseDoc` and `QuitDoc` are forbidden.
   With `false` the host refuses open targets ("close X first").
 - **Use only `ctx.Sw`.** Never attach to or start SolidWorks yourself.
 - **Never close a document the script did not open.** Close only what you
@@ -269,9 +274,11 @@ and only if `recipe_status` is set. It starts with its header, before any code:
 `modifies-models` or `writes-new-files`. Each `recipe-param` gives a camelCase
 name, a type (`string`, `bool`, `int`, `number`, `file`, `files`, `folder`),
 `required` or `optional`, and a description. The code reads its inputs only
-through `ctx.Params`: the declared names, plus `targets` and `output`, which the
-host supplies and which are never declared. `recipe_status: verified` needs a
-passing `full` record with `method: smoke` in `recipe_evidence`.
+through `ctx.Params`. A recipe declares its own inputs in the header. The
+host supplies any `targets` and `output` role inputs, so the recipe header never
+declares either name. Read recipe targets with `ctx.Params.GetFiles("targets")`.
+`recipe_status: verified` needs a passing `full` record with `method: smoke`
+in `recipe_evidence`.
 
 ### After any change, regenerate the manifest
 
@@ -343,6 +350,34 @@ re-runs the source checks, confirms every generated file is current, validates
 every script and its evidence, builds the release package once and runs the
 packaged `lookup.py --self-test` on it, writes the release notes, and runs the
 unit tests in `tools/tests/`.
+
+### Compile the C# contract
+
+Run from a licensed developer machine with PowerShell 7 and the .NET 10 SDK.
+Point the tool at the pinned SW-Agent Kit assets (the reference zip, wrapper
+and SHA256SUMS from one release or local candidate) and the `api/redist`
+directory from an installed SolidWorks 2024. For example:
+
+```powershell
+pwsh -File tools/compile_recipes.ps1 -KitAssets C:/path/to/kit-assets -InteropDir C:/path/to/api/redist
+```
+
+The tool verifies the asset hashes and assembly versions. It compiles each
+sidecar and packaged script independently with the exported worker wrapper and
+explicit reference paths passed to Roslyn. This checks compatibility with the
+pinned contract without executing any SolidWorks code.
+
+The GitHub workflow is manual, runs on the default branch on a hosted Windows
+runner, and downloads the pinned `kit-v<version>` assets from SW-Agent Releases.
+It requires a protected `solidworks-interop` environment. If the license permits
+use on that runner, configure a private HTTPS URL for a ZIP of the two 2024
+interop DLLs at its root in the `SW2024_INTEROP_URL` environment secret and
+set `SW2024_INTEROP_SHA256` to the archive's SHA-256 in an environment
+variable. Only the download step receives the URL. The workflow keeps the
+archive on the runner and publishes no
+interop artifacts. Until that access is available, compile locally.
+
+
 
 ### How changes get in
 

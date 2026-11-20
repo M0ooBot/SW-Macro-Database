@@ -10,7 +10,7 @@ status: verified
 verified_on: SolidWorks 2026
 majors: [34]
 evidence: []
-recipe_status: null
+recipe_status: unverified
 recipe_evidence: []
 superseded_by: null
 ---
@@ -207,6 +207,13 @@ side of the call. See [curves/02](../curves/02-insert-curve-from-file.md).
 **Names are not stable.** A user can rename anything. If you need a handle that
 survives renaming, use a persistent reference:
 [curves/10](../curves/10-persistent-references.md).
+
+## SW-Agent recipe
+
+Supply the open document as a job target and pass `titleSubstring` and
+`featureName`. `Kit.Features.FindByName` searches for the exact feature name,
+including sub-features. The result gives `found`, `name`, and `type`. The
+worker releases the borrowed document and feature handles.
 
 ## See also
 
