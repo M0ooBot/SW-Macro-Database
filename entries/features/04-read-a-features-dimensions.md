@@ -91,6 +91,12 @@ renamed. An equation refers to it as `"Width@Blank"`.
 
 ## What it does not do
 
+For the guarded closed-part write case, the `set-closed-part-dimension` script
+passes one named driving dimension and a value in metres to Kit. The worker
+edits a private copy, compares rebuild diagnostics, saves a staged native
+copy and checks the resulting dimension before publishing it. The exact
+package script is unverified until its public file-profile run is observed.
+
 - Features whose dimensions are not display dimensions were not examined.
 - Two dimensions with the same value never occurred here; the code above stops
   rather than guesses in that case, and that path was never exercised.

@@ -1,0 +1,33 @@
+{
+  "id": "set-closed-part-dimension",
+  "title": "Set one driving dimension in a closed SolidWorks part",
+  "entry": "entries/features/04-read-a-features-dimensions.md",
+  "status": "unverified",
+  "evidence": [],
+  "effects": "modifies-models",
+  "irreversible": false,
+  "supportsDryRun": false,
+  "timeoutMinutes": 10,
+  "openTargets": false,
+  "params": [
+    {
+      "name": "targets",
+      "type": "files",
+      "role": "targets",
+      "required": true,
+      "description": "One closed independent SolidWorks part in its Default configuration."
+    },
+    {
+      "name": "dimension",
+      "type": "string",
+      "required": true,
+      "description": "The fully qualified driving dimension name, such as D1@Boss-Extrude1."
+    },
+    {
+      "name": "metres",
+      "type": "number",
+      "required": true,
+      "description": "A positive finite dimension value in metres."
+    }
+  ]
+}
