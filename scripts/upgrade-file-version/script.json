@@ -1,6 +1,6 @@
 {
   "id": "upgrade-file-version",
-  "title": "Re-save files in the running SolidWorks version's file format",
+  "title": "Upgrade one closed standalone part to the current SolidWorks file version",
   "entry": "entries/files/03-upgrade-file-version.md",
   "status": "unverified",
   "evidence": [],
@@ -15,7 +15,7 @@
       "type": "files",
       "role": "targets",
       "required": true,
-      "description": "Parts, assemblies and drawings to re-save. Include every part an assembly uses: saving an assembly can re-save its components too. Older SolidWorks versions cannot open the results."
+      "description": "Exactly one closed standalone part per candidate invocation. The previous standalone utility can batch parts, assemblies and drawings. Older SolidWorks versions may be unable to open the result."
     }
   ]
 }

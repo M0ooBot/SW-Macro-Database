@@ -140,6 +140,21 @@ Observed:
 - `IModelDocExtension.SaveAs` over the source path rewrote files whose model
   was otherwise unchanged.
 
+## SW-Agent package candidate
+
+The Kit port accepts exactly one saved, closed standalone part on an
+opt-in SW-Agent build. The worker compares the last saved version with
+the active writer before confirmation. A dry run reports those versions
+and a current file is skipped. For an older file the worker makes an
+independent native copy in the current format, reopens and compares it
+privately, then publishes through the guarded backup transaction.
+
+The package continues to declare irreversible effects and closed
+targets. Its new candidate body remains unverified until the installed
+package is measured on an older disposable part. The standalone utility
+below retains its separate batch support for parts, assemblies and
+drawings.
+
 ## Full source
 
 [`code/csharp/SwUpgradeVersion.cs`](../../code/csharp/SwUpgradeVersion.cs).
