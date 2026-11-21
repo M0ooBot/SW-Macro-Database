@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-21-upgrade-file-version-cs-34",
+  "subject": "upgrade-file-version",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-21",
+  "method": "probe",
+  "result": "pass",
+  "scope": "partial",
+  "observed": "The exact Kit body (script SHA-256 3ee02cb54323ab04e9e950a4575743c0c55ce8553565fe6ec6fee090b96adc91) ran through installed isolated Debug package 2.2.0-e2.1 on SolidWorks 2026 SP0. The Host copied an installed 2025 library knob to an independent disposable closed Default part. The public dry run identified 18000 to 19000 with unchanged bytes and file identity. Two requested targets refused. Confirmed upgrade c_01M7YNEAKJEMKBD1TP01EH8PW4 independently reopened and verified the staged solid before publication. The current-version rerun skipped without changing the file. Confirmed backup restore c_01M7YNEF1K4MRF83DTAYKJ4B2A returned version 18000 and original SHA-256 460DADD74CCE4517D3ECA2F5ED223C4F50ECD379D7A997E9CE2955DC4471B418. No models remained open. This measures only the single closed standalone candidate and does not establish open, referenced, multi-configuration, assembly, drawing or batch writes."
+}

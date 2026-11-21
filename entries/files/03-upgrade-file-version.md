@@ -150,8 +150,14 @@ independent native copy in the current format, reopens and compares it
 privately, then publishes through the guarded backup transaction.
 
 The package continues to declare irreversible effects and closed
-targets. Its new candidate body remains unverified until the installed
-package is measured on an older disposable part. The standalone utility
+targets. An isolated Debug package ran this exact body on SOLIDWORKS
+2026 SP0. A copied 2025 library part moved from version 18000 to 19000.
+Dry run and the already-current skip preserved their input bytes. The
+confirmed backup restore recovered the exact original version and
+content SHA-256. [Candidate evidence](../../evidence/2026-11-21-upgrade-file-version-cs-34.json)
+
+The catalog status stays unverified while the candidate is confined to
+the isolated package and guarded Debug worker. The standalone utility
 below retains its separate batch support for parts, assemblies and
 drawings.
 
