@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-21-split-configurations-publish-cs-34",
+  "subject": "split-configurations",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-21",
+  "method": "probe",
+  "result": "pass",
+  "scope": "partial",
+  "observed": "The installed candidate package 2.2.0-e2.1 with exact script SHA-256 a10d33674901e3a26f40bbc5c0de01fc1d9ddb9d0856cc58af27791c39bb69f1 passed public confirmed publication c_01M7YR0XE5ETNMTQWYWC50G0W8 on SOLIDWORKS 2026 SP0. Independently reopened Default and Long carried one configuration each with 20 mm and 32 mm measured depths. Confirmed withdrawal c_01M7YR15F0B4GBQW79HKYKF49G removed both approved leaves and preserved a later unrelated sibling. Confirmed inverse c_01M7YR182E0T93CR6KM433N888 restored both exact SHA-256 values and original depths. A separate confirmed run c_01M7YR1SZ65TVNZW9Q9TD1GP7J injected a synchronous exception after the first real native-file move. Recovery independently verified both endpoints absent and the first file retained in escrow. Source and master identities and content remained unchanged. The measured profile covers one closed standalone master and a new per-master folder. Open masters, ordinary Release execution, and hard worker-stop recovery were outside this trial."
+}
