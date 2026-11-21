@@ -1,6 +1,6 @@
 {
   "id": "split-configurations",
-  "title": "Split one closed standalone part into separate configuration files",
+  "title": "Split one standalone part into separate configuration files",
   "entry": "entries/files/02-explode-configurations.md",
   "status": "unverified",
   "evidence": [],
@@ -8,13 +8,13 @@
   "irreversible": false,
   "supportsDryRun": true,
   "timeoutMinutes": 60,
-  "openTargets": false,
+  "openTargets": true,
   "params": [
     {
       "name": "masters",
       "type": "files",
       "required": true,
-      "description": "Exactly one closed standalone master per candidate invocation. The previous standalone utility supports several masters. The recipe preserves the master.",
+      "description": "Exactly one saved independent standalone master. An open master requires the supported Default and Long profile; the recipe preserves its live and saved state.",
       "role": "targets"
     },
     {
