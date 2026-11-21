@@ -1,1 +1,1 @@
-Kit.Docs.UpgradeClosedPart(ctx.Params.GetFiles("targets").Single());
+Kit.Docs.UpgradePartVersion(ctx.Params.GetFiles("targets").Single());

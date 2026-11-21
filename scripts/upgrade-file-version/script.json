@@ -1,6 +1,6 @@
 {
   "id": "upgrade-file-version",
-  "title": "Upgrade one closed standalone part to the current SolidWorks file version",
+  "title": "Upgrade one standalone part to the current SolidWorks file version",
   "entry": "entries/files/03-upgrade-file-version.md",
   "status": "unverified",
   "evidence": [],
@@ -8,14 +8,14 @@
   "irreversible": true,
   "supportsDryRun": true,
   "timeoutMinutes": 120,
-  "openTargets": false,
+  "openTargets": true,
   "params": [
     {
       "name": "targets",
       "type": "files",
       "role": "targets",
       "required": true,
-      "description": "Exactly one closed standalone part per candidate invocation. The previous standalone utility can batch parts, assemblies and drawings. Older SolidWorks versions may be unable to open the result."
+      "description": "Exactly one closed or visibly open standalone part. An older open part must be clean and fully rebuilt. Already-current files are skipped. Older SolidWorks versions may be unable to open the result."
     }
   ]
 }
