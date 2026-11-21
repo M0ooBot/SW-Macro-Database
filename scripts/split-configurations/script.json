@@ -1,6 +1,6 @@
 {
   "id": "split-configurations",
-  "title": "Write one part file per configuration of a configurable part",
+  "title": "Split one closed standalone part into separate configuration files",
   "entry": "entries/files/02-explode-configurations.md",
   "status": "unverified",
   "evidence": [],
@@ -14,7 +14,8 @@
       "name": "masters",
       "type": "files",
       "required": true,
-      "description": "The configurable parts (.SLDPRT). They are copied, never modified."
+      "description": "Exactly one closed standalone master per candidate invocation. The previous standalone utility supports several masters. The recipe preserves the master.",
+      "role": "targets"
     },
     {
       "name": "outputFolder",

@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-21-split-configurations-cs-34",
+  "subject": "split-configurations",
+  "language": "csharp",
+  "swRevision": "34.0.0",
+  "major": 34,
+  "date": "2026-11-21",
+  "method": "probe",
+  "result": "pass",
+  "scope": "partial",
+  "observed": "The installed Debug candidate with exact script SHA-256 a10d33674901e3a26f40bbc5c0de01fc1d9ddb9d0856cc58af27791c39bb69f1 planned two native leaves for a disposable closed standalone master on SOLIDWORKS 2026 SP0. Its source and master fingerprints matched before and after dry run and staging. The Host STA privately pruned, saved and independently reopened each of two copies with one configuration and measured depth: Default at 20 mm and Long at 32 mm. The intended public output folder stayed empty and the session finished without open documents. The selected candidate refused the non-dry-run public call. This measures closed-master planning and private staging. Public publication, undo, and open or referenced masters remain unverified."
+}
