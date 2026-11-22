@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-22-files-06-export-loaded-solid-part-to-stl-csharp-32-preflight",
+  "subject": "files-06-export-loaded-solid-part-to-stl",
+  "language": "csharp",
+  "swRevision": "32.5.0",
+  "major": 32,
+  "date": "2026-11-22",
+  "method": "probe",
+  "result": "fail",
+  "scope": "partial",
+  "observed": "Two attempts to read loaded parts with in-context dependencies back to the open assembly returned preflight_failed. The worker refused both attempts before the recipe executed."
+}

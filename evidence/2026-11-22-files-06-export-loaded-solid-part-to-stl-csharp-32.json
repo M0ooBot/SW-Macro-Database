@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-22-files-06-export-loaded-solid-part-to-stl-csharp-32",
+  "subject": "files-06-export-loaded-solid-part-to-stl",
+  "language": "csharp",
+  "swRevision": "32.5.0",
+  "major": 32,
+  "date": "2026-11-22",
+  "method": "probe",
+  "result": "pass",
+  "scope": "full",
+  "observed": "The SW-Agent raw read returned binary STL payloads for seven loaded parts, one solid body per part and 2,812 to 47,088 triangles per STL. Independent decoding confirmed exact length, finite vertices, nonzero bounds in all three axes, unit normals, zero degenerate triangles, and zero boundary or nonmanifold edges using the exact stored vertices. A reference-only part returned zero solid bodies and no payload."
+}

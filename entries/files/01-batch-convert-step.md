@@ -224,6 +224,7 @@ the interop enum:
 
 ## See also
 
+- [files/06 — Export a loaded solid part as binary STL](06-export-loaded-solid-part-to-stl.md)
 - [connect/01 — Attach from VBScript](../connect/01-attach-from-vbscript.md) —
   and why it cannot be used for this
 - [connect/06 — One apartment thread](../connect/06-one-apartment-thread.md)

@@ -762,6 +762,14 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `ISurface.PlaneParams` | Normal (0–2), a point (3–5), metres; an axis-aligned face's offset is item `3 + axis` ([reading/15](entries/reading/15-measure-a-part-that-has-no-dimensions.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
 | `ISurface.Identity` | 4004 and 4005 on fillet corner blends | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
 
+## Solid body tessellation for binary STL
+
+| Member | Purpose | Status |
+|---|---|---|
+| `GetTessellation(null)` | Creates a tessellation object for a solid body on a loaded part, including an invisible assembly reference. | Verified, SolidWorks 2024 SP5 (32.5.0), seven loaded solid parts |
+| `MatchType` and tolerance properties, `NeedVertexNormal = true`, then `Tessellate()` | Requests topology-matched facets and vertex normals. The run set chord and plane tolerance to 0.00002 m and both angle tolerances to π/36 rad. | Verified, SolidWorks 2024 SP5 (32.5.0), seven loaded solid parts |
+| `GetFacetFins(i)` / `GetFinVertices(j)` / `GetVertexPoint(k)` / `GetVertexNormal(k)` with facet and vertex counts | Reads facet connectivity, metre coordinates and vertex normals for winding and binary STL encoding. | Verified, SolidWorks 2024 SP5 (32.5.0), seven loaded solid parts |
+
 ## Constants used
 
 Relations, passed to `AddConstraint` as strings:

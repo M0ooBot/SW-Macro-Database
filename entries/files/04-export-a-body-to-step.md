@@ -224,6 +224,7 @@ where it had taken 296.3 s. The STEP file it wrote was 1.5 MB and held
 
 ## See also
 
+- [files/06 — Export a loaded solid part as binary STL](06-export-loaded-solid-part-to-stl.md)
 - [files/01 — Batch-convert STEP](01-batch-convert-step.md) — STEP in, and the same `SaveAs` with error codes
 - [reading/14 — The journal records API calls](../reading/14-the-journal-records-api-calls.md) — this export shows up there as `Part.Save3`
 - [documents/02 — Save as, and close](../documents/02-save-as-and-close.md) — a save-as without copy renames the document

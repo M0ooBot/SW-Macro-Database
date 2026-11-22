@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-22-files-06-export-loaded-solid-part-to-stl-csharp-32-smoke",
+  "subject": "files-06-export-loaded-solid-part-to-stl",
+  "language": "csharp",
+  "swRevision": "32.5.0",
+  "major": 32,
+  "date": "2026-11-22",
+  "method": "smoke",
+  "result": "pass",
+  "scope": "full",
+  "observed": "The exact C# sidecar ran through the SW-Agent worker on seven already loaded solid parts specified by path and referenced configuration. All seven reads passed verification and returned binary STL payloads. The loaded reference-only part returned zero solid bodies and no payload."
+}

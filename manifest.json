@@ -1,11 +1,11 @@
 {
   "schema": 2,
   "description": "SolidWorks automation entries. Each answers one question. Check 'status' before trusting an entry: verified means it ran against the named version ('verified_on' says what was run; 'majors' are the SolidWorks revision majors it ran on, 32 = 2024, 34 = 2026); unverified means it is well-formed against the documented API but was never executed. 'recipe' is the entry's C# recipe, the code SW-Agent runs, with a status of its own.",
-  "count": 98,
+  "count": 99,
   "by_status": {
     "partly-verified": 11,
     "unverified": 4,
-    "verified": 83
+    "verified": 84
   },
   "entries": [
     {
@@ -3381,6 +3381,60 @@
       ],
       "evidence": [],
       "recipe": null,
+      "superseded_by": null
+    },
+    {
+      "id": "files-06-export-loaded-solid-part-to-stl",
+      "title": "Export a loaded solid part as binary STL",
+      "path": "entries/files/06-export-loaded-solid-part-to-stl.md",
+      "category": "files",
+      "answers": "How do I export a part already loaded by a SolidWorks assembly as a binary STL without activating it?",
+      "keywords": [
+        "STL",
+        "binary STL",
+        "mesh",
+        "tessellation",
+        "loaded assembly reference",
+        "invisible part",
+        "GetTessellation",
+        "GetFacetFins",
+        "GetFinVertices",
+        "millimetres",
+        "3D printing"
+      ],
+      "api": [
+        "ISldWorks.GetOpenDocumentByName",
+        "IModelDoc2.ConfigurationManager",
+        "IConfigurationManager.ActiveConfiguration",
+        "IPartDoc.GetBodies2",
+        "IBody2.GetTessellation",
+        "ITessellation.Tessellate",
+        "ITessellation.GetFacetCount",
+        "ITessellation.GetFacetFins",
+        "ITessellation.GetFinVertices",
+        "ITessellation.GetVertexCount",
+        "ITessellation.GetVertexPoint",
+        "ITessellation.GetVertexNormal"
+      ],
+      "language": [],
+      "status": "verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0), C# in the SW-Agent worker",
+      "majors": [
+        32
+      ],
+      "evidence": [],
+      "recipe": {
+        "path": "entries/files/06-export-loaded-solid-part-to-stl.csx",
+        "status": "verified",
+        "majors": [
+          32
+        ],
+        "evidence": [
+          "2026-11-22-files-06-export-loaded-solid-part-to-stl-csharp-32",
+          "2026-11-22-files-06-export-loaded-solid-part-to-stl-csharp-32-smoke",
+          "2026-11-22-files-06-export-loaded-solid-part-to-stl-csharp-32-preflight"
+        ]
+      },
       "superseded_by": null
     },
     {
