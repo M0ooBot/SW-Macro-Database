@@ -144,6 +144,7 @@ the matching `title`. The worker releases the borrowed handle.
 
 ## See also
 
+- [files/06 — Export a loaded solid part as binary STL](../files/06-export-loaded-solid-part-to-stl.md)
 - [connect/08 — Find a feature by name](08-find-a-feature-by-name.md)
 - [documents/02 — Save as, and close](../documents/02-save-as-and-close.md) — `CloseDoc` by title
 - [documents/01 — New part from a template](../documents/01-new-part-from-template.md) — a new document is the active one

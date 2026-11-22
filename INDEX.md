@@ -154,6 +154,7 @@ this file in a release), or read [manifest.json](manifest.json) for the whole se
 | Build a full reference tree | [reading/02 — Walk a reference tree](entries/reading/02-walk-a-reference-tree.md) |
 | Rename or move a file and fix references | [reading/03 — Repair references after a move](entries/reading/03-repair-references-after-a-move.md) |
 | Rename an assembly's part files without breaking it | [files/05 — Rename a component's file](entries/files/05-rename-a-component-file.md) |
+| Export an already loaded part as binary STL | [files/06 — Export a loaded solid part as binary STL](entries/files/06-export-loaded-solid-part-to-stl.md) |
 | Find out what the user just clicked | [reading/04 — Read the selection](entries/reading/04-read-the-selection.md) |
 | Convert sketch coordinates to model coordinates | [reading/05 — Sketch to model transform](entries/reading/05-sketch-to-model-transform.md) |
 | Watch the active sketch while the user works | [reading/06 — Live sketch monitor](entries/reading/06-live-sketch-monitor.md) |
