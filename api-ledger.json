@@ -1674,6 +1674,42 @@
       "evidence": []
     },
     {
+      "section": "IModelDoc2 (a part, assembly or drawing)",
+      "interface": "IModelDoc2",
+      "members": [
+        "IModelDoc2.EditSuppress2"
+      ],
+      "form": "`EditSuppress2` with a mate selected, in an assembly",
+      "purpose": "Returned `True` and suppressed the mate **in the active configuration only**; another configuration kept it on, and it errored there (`GetErrorCode2` 51) once its face was gone. Use `IFeature.SetSuppression2(0, 2, None)` for every configuration (GOTCHAS §118)",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2024 SP5 (32.5.0), 2026-11-24",
+      "provenance": null,
+      "languages": [],
+      "majors": [
+        32
+      ],
+      "evidence": []
+    },
+    {
+      "section": "IModelDoc2 (a part, assembly or drawing)",
+      "interface": "IModelDoc2",
+      "members": [
+        "IModelDoc2.EditRebuild3"
+      ],
+      "form": "`EditRebuild3` on a part after an `IEquationMgr.Equation(i)` put",
+      "purpose": "Applied a bore-diameter global but **left a backlash global's effect off the teeth**: volume unchanged to 0.001 mm³, no errors. `ForceRebuild3(False)` afterwards changed it by about 39 mm³ (GOTCHAS §117)",
+      "on": null,
+      "status": "fails",
+      "note": "Fails, SW 2024 SP5 (32.5.0), 2026-11-24: geometry not updated",
+      "provenance": null,
+      "languages": [],
+      "majors": [
+        32
+      ],
+      "evidence": []
+    },
+    {
       "section": "IModelDocExtension",
       "interface": "IModelDocExtension",
       "members": [
@@ -3984,6 +4020,24 @@
       "evidence": []
     },
     {
+      "section": "IFeature",
+      "interface": "IFeature",
+      "members": [
+        "IFeature.SetSuppression2"
+      ],
+      "form": "`SetSuppression2(0, 2, None)` on a **mate**",
+      "purpose": "`2` is `swAllConfiguration`: returned `True` and suppressed the mate in both configurations of a two-configuration assembly, `IsSuppressed` `True` in each after `ShowConfiguration2` (GOTCHAS §118)",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2024 SP5 (32.5.0), 2026-11-24",
+      "provenance": null,
+      "languages": [],
+      "majors": [
+        32
+      ],
+      "evidence": []
+    },
+    {
       "section": "Curve feature data (from `GetDefinition` on a CurveInFile)",
       "interface": null,
       "members": [
@@ -5278,6 +5332,26 @@
       "languages": [],
       "majors": [
         34
+      ],
+      "evidence": []
+    },
+    {
+      "section": "IMathUtility (from `ISldWorks.GetMathUtility`)",
+      "interface": "IMathUtility",
+      "members": [
+        "IMathUtility.CreatePoint"
+      ],
+      "form": "`CreatePoint(VARIANT(VT_ARRAY | VT_R8, [x, y, z]))`",
+      "purpose": "Make a math point to transform. Through pywin32 dynamic dispatch it **raised `com_error` -2147417851** (0x80010105, \"The server threw an exception\") from `__getattr__`; the `DISPATCH_METHOD` route of GOTCHAS §39 was not tried",
+      "on": null,
+      "status": "fails",
+      "note": "Fails through pywin32 dynamic dispatch, SW 2024 SP5 (32.5.0), 2026-11-24",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        32
       ],
       "evidence": []
     },

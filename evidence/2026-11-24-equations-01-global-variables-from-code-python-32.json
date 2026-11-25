@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-24-equations-01-global-variables-from-code-python-32",
+  "subject": "equations-01-global-variables-from-code",
+  "language": "python",
+  "swRevision": "32.5.0",
+  "major": 32,
+  "date": "2026-11-24",
+  "method": "contribution",
+  "result": "pass",
+  "scope": "partial",
+  "observed": "Indexed put Equation(i) = text on three parts: Equation(i) read every new text back, spaces aside. EditRebuild3 afterwards applied a bore-diameter global (bore measured 8.35 mm) but not a backlash global (part volume unchanged to 0.001 mm3 in two parts). ForceRebuild3(False) afterwards changed those volumes by 39.15 and 39.69 mm3."
+}

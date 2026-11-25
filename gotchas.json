@@ -514,7 +514,8 @@
       "title": "`IMathUtility.CreateTransform` is \"Member not found\" to late binding",
       "always": false,
       "members": [
-        "IMathUtility.CreateTransform"
+        "IMathUtility.CreateTransform",
+        "IMathUtility.CreatePoint"
       ],
       "languages": [
         "pywin32",
@@ -1568,6 +1569,33 @@
         "all"
       ],
       "path": "gotchas/116-equation-calls-refuse-a-virtual-in-context-part.md"
+    },
+    {
+      "number": 117,
+      "id": "G117",
+      "title": "After an `Equation(i)` put, `EditRebuild3` can leave the geometry as it was",
+      "always": false,
+      "members": [
+        "IEquationMgr.Equation",
+        "IModelDoc2.EditRebuild3"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/117-after-an-equation-put-editrebuild3-can-leave-the.md"
+    },
+    {
+      "number": 118,
+      "id": "G118",
+      "title": "`EditSuppress2` suppresses a mate in the active configuration only",
+      "always": false,
+      "members": [
+        "IModelDoc2.EditSuppress2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/118-editsuppress2-suppresses-a-mate-in-the-active.md"
     }
   ]
 }

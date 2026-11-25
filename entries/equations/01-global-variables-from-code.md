@@ -9,7 +9,7 @@ language: [python]
 status: verified
 verified_on: SolidWorks 2026 (revision 34.0.0)
 majors: [34]
-evidence: []
+evidence: [2026-11-24-equations-01-global-variables-from-code-python-32]
 recipe_status: null
 recipe_evidence: []
 superseded_by: null
@@ -213,6 +213,13 @@ because the re-add is refused. Closing the assembly **without saving** and
 reopening it brought the equation back. Do not delete an equation from code
 until an `Add` has been seen to work on that document.
 
+**Rebuild with `ForceRebuild3(False)`, not `EditRebuild3`.** On SolidWorks
+2024 SP5, an indexed put of a backlash global, followed by `EditRebuild3` on
+the part, read back correctly but left the teeth as they were: the volume was
+unchanged to 0.001 mm³. A later `ForceRebuild3(False)` then changed it by
+about 39 mm³. A bore-diameter global set in the same batch did follow
+`EditRebuild3`. See [GOTCHAS §117](../../GOTCHAS.md).
+
 ## What it does not do
 
 - **Multi-configuration parts** were tried only as a virtual in-context part
@@ -270,6 +277,14 @@ three configurations: the six calls listed above each returned −1 with
 `GetCount` unchanged; `Delete(0)` returned 0 and `GetCount` went 1 → 0; after
 closing without saving and reopening, `Equation(0)` read the original text.
 
+Later run, SolidWorks 2024 SP5 (32.5.0), 2026-11-24, Python over pywin32. The
+indexed put `Equation(i) = text` was used on three printed-gear parts, plus a
+bore-diameter global in one of them. `Equation(i)` read every new text back
+exactly, apart from spaces. `EditRebuild3` applied the bore change: the bore
+measured Ø8.35 mm. It did not apply the backlash change in two parts, whose
+volume was unchanged to 0.001 mm³. `ForceRebuild3(False)` afterwards changed
+their volumes by 39.15 and 39.69 mm³. Evidence record `2026-11-24-equations-01-global-variables-from-code-python-32`.
+
 ## See also
 
 - [assemblies/14 — An in-context part in several configurations](../assemblies/14-in-context-part-across-configurations.md) — the per-configuration size without touching the equation
@@ -279,5 +294,5 @@ closing without saving and reopening, `Equation(0)` read the original text.
 - [sketches/07 — Equation driven curve](../sketches/07-equation-driven-curve.md) — globals inside curve expressions, where trig is radians
 - [documents/01 — New part from a template](../documents/01-new-part-from-template.md) — document units
 - [curves/08 — Rebuild once, at the end](../curves/08-rebuild-once-at-the-end.md) — changing many globals in one batch
-- [GOTCHAS §26, §27, §28, §46](../../GOTCHAS.md)
+- [GOTCHAS §26, §27, §28, §46, §117](../../GOTCHAS.md)
 - [reading/08 — Dimensions and equations](../reading/08-dimensions-and-equations.md) — reading the equations out of an existing part

@@ -523,6 +523,21 @@ plain assignment, with the rotation **by columns** (§10), and read it back.
 SolidWorks 2026 (revision 34.0.0). See
 [assemblies/04](entries/assemblies/04-mates-between-non-parallel-axes.md).
 
+`IMathUtility.CreatePoint` fails as well under late binding, with a different
+error. On SolidWorks 2024 SP5 (32.5.0),
+`utility.CreatePoint(VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_R8, [x, y, z]))`
+from pywin32's dynamic dispatch raised `com_error` **-2147417851** (0x80010105,
+"The server threw an exception"). It was raised inside pywin32's `__getattr__`,
+which fetches the member as a property get before the arguments are applied.
+The `DISPATCH_METHOD` route above was **not tried** on `CreatePoint`. The
+run transformed the point by hand instead, from the component's
+`Transform2.ArrayData` with the rotation stored by columns
+([§10](#10-a-transforms-rotation-is-stored-by-columns)). With `a` the 16
+doubles, rotation `r = a[0:9]`, translation `t = a[9:12]` and scale
+`s = a[12]`:
+`x' = s·(x·r0 + y·r3 + z·r6) + t0`, `y' = s·(x·r1 + y·r4 + z·r7) + t1`,
+`z' = s·(x·r2 + y·r5 + z·r8) + t2`, all in metres.
+
 ## 40. Interference detection: three `Get` members are properties, `Done` is a method
 
 On `IInterferenceDetectionMgr` through late binding, `GetInterferenceCount` and
@@ -1485,3 +1500,55 @@ On a virtual in-context part with several configurations, `Add2`, `Add3` and
 removed the equation for good. Close without saving to get it back. Never delete
 before an add has worked on that document. SolidWorks 2024 SP5 (32.5.0). See
 [equations/01](entries/equations/01-global-variables-from-code.md#on-a-virtual-in-context-part).
+
+## 117. After an `Equation(i)` put, `EditRebuild3` can leave the geometry as it was
+
+On SolidWorks 2024 SP5 (32.5.0), three gear parts each had a backlash global
+changed with the indexed put `IEquationMgr.Equation(i) = text` (the
+`_put_indexed` route in
+[connect/02](entries/connect/02-attach-from-python.md#setting-an-indexed-property)),
+and `Equation(i)` read the new text back in every one. `IModelDoc2.EditRebuild3`
+then ran on each part, with no feature errors and one solid body afterwards, and
+the parts were saved. In one part a bore-diameter global changed in the same
+batch did reach the geometry: the bore measured Ø8.35 mm afterwards. **The
+backlash change did not**: the part's volume read the same to 0.001 mm³ before
+and after (8981.381 mm³ in one part), and nothing reported a problem.
+
+A later pass ran `ForceRebuild3(False)` on each part with nothing else changed.
+Two of the three parts changed volume, by 39.15 mm³ and 39.69 mm³. The third
+part's geometry does not depend on that global, and its volume did not change.
+Parts whose globals had been set by a routine that ends in `ForceRebuild3(False)`
+showed no change under the same check. This run did not check whether the
+difference is that the bore dimension is linked to its global directly while
+the backlash reaches the teeth only through other equations.
+
+After changing equations, rebuild the **part** with `ForceRebuild3(False)`, as
+[equations/01](entries/equations/01-global-variables-from-code.md) does. Do
+not do this on an assembly: see [§93](#93-forcerebuild3false-on-an-assembly-marks-every-component-modified).
+Reading the equation back proves only the text. To notice the problem, measure
+something the change should move, such as the volume from
+[reading/10](entries/reading/10-mass-properties-as-an-oracle.md), before
+and after.
+
+## 118. `EditSuppress2` suppresses a mate in the active configuration only
+
+On SolidWorks 2024 SP5 (32.5.0), a top assembly had two configurations. A
+concentric mate in it was selected with `IFeature.Select2(False, 0)` and
+suppressed with `IModelDoc2.EditSuppress2` (reached by attribute access, see
+[§55](#55-a-zero-argument-member-that-returns-nothing-or-an-array-comes-back-uncalled)). The call returned
+`True` and `IFeature.IsSuppressed` read `True`, and the active configuration
+rebuilt with no mate errors. **The other configuration still had the mate
+on**. When that configuration was checked later, the mate reported
+`GetErrorCode2` 51, because the face it used had since been suppressed in the
+part.
+
+`IFeature.SetSuppression2(0, 2, None)` (2 is `swAllConfiguration`) returned
+`True` and suppressed the mate in both configurations. After
+`ShowConfiguration2` and a rebuild, each configuration read `IsSuppressed`
+`True` and no mate errors.
+
+To change a mate's suppression in every configuration, use
+`SetSuppression2(action, 2, None)` rather than selecting it and calling
+`EditSuppress2`. For named configurations see
+[assemblies/13](entries/assemblies/13-assembly-configurations-from-code.md#a-mates-suppression-per-configuration).
+In either case, read the result back in each configuration.

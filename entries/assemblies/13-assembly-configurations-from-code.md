@@ -122,6 +122,12 @@ without showing any configuration.
   order ([assemblies/06](06-read-every-mate.md)); `IsSuppressed2(1, …)` gave the
   active configuration's flags; no mate had a nonzero error code;
   and a suppressed gear mate's `Reverse` and `EntityParams` read normally.
+- **Every configuration at once:** `SetSuppression2(0, 2, None)` (`2` is
+  `swAllConfiguration`) suppressed a mate in both configurations of a
+  two-configuration assembly, read back in each after `ShowConfiguration2`, on
+  SolidWorks 2024 SP5. Selecting the mate and calling `IModelDoc2.EditSuppress2`
+  had suppressed it **in the active configuration only**
+  ([GOTCHAS §118](../../GOTCHAS.md)).
 
 ## A distance mate's value per configuration
 
@@ -269,4 +275,4 @@ Component and configuration names are placeholders here.
 - [assemblies/12 — Rebuild scope and the save flag](12-rebuild-scope-and-the-save-flag.md) — what marks a document
 - [files/02 — Explode configurations](../files/02-explode-configurations.md) — configurations of a part
 - [equations/02 — Link a dimension to a global](../equations/02-link-a-dimension-to-a-global.md)
-- [GOTCHAS §23, §83, §108, §109, §110](../../GOTCHAS.md)
+- [GOTCHAS §23, §83, §108, §109, §110, §118](../../GOTCHAS.md)
