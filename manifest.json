@@ -2600,7 +2600,9 @@
       "majors": [
         34
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-24-equations-01-global-variables-from-code-python-32"
+      ],
       "recipe": null,
       "superseded_by": null
     },

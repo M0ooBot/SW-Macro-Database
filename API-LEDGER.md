@@ -171,6 +171,8 @@ result files stay in the Gear-Generator repository.
 | `GetSaveFlag` (what sets it) | `False` on every document straight after an open from file, a 2024-saved file opened in 2026 included. A `Transform2` put alone did not set it; an interference check set it on the assembly; reading component frames did not | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `EditDelete()` on a mate | After `IFeature.Select2(False, 0)` on the mate, deleted it. **Call it with parentheses** (GOTCHAS §31) | Verified, SW 2026 (34.0.0, 34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `FeatureByName(name)` on an assembly | Found a renamed mate by its new name after a reopen | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
+| `EditSuppress2` with a mate selected, in an assembly | Returned `True` and suppressed the mate **in the active configuration only**; another configuration kept it on, and it errored there (`GetErrorCode2` 51) once its face was gone. Use `IFeature.SetSuppression2(0, 2, None)` for every configuration (GOTCHAS §118) | Verified, SW 2024 SP5 (32.5.0), 2026-11-24 |
+| `EditRebuild3` on a part after an `IEquationMgr.Equation(i)` put | Applied a bore-diameter global but **left a backlash global's effect off the teeth**: volume unchanged to 0.001 mm³, no errors. `ForceRebuild3(False)` afterwards changed it by about 39 mm³ (GOTCHAS §117) | Fails, SW 2024 SP5 (32.5.0), 2026-11-24: geometry not updated |
 
 ## IModelDocExtension
 
@@ -344,6 +346,7 @@ result files stay in the Gear-Generator repository.
 | `Name` (put) straight after `AddMate5` | In a new unsaved assembly, each mate read its new name back at once and was found by it after a save and reopen | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
 | `SetSuppression2(1, 1, None)` on a mate already on | Returned `True`, left it on, no error, and **marked the assembly modified**: `GetSaveFlag` read straight before and after, nothing between, went `False` → `True` for the assembly alone (GOTCHAS §103) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 (runs 20261114-105135, 20261114-111150) |
 | `GetErrorCode2(ByRef bool)` on a **suppressed** mate | 0, warning `False`, even for a mate that over-defined the assembly when on (GOTCHAS §103) | Verified, SW 2026 (34.1.1) and SW 2024 SP5 (32.5.0), tier 7/8 2026-11-13/14 |
+| `SetSuppression2(0, 2, None)` on a **mate** | `2` is `swAllConfiguration`: returned `True` and suppressed the mate in both configurations of a two-configuration assembly, `IsSuppressed` `True` in each after `ShowConfiguration2` (GOTCHAS §118) | Verified, SW 2024 SP5 (32.5.0), 2026-11-24 |
 
 ## Curve feature data (from `GetDefinition` on a CurveInFile)
 
@@ -474,6 +477,7 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | Member | Purpose | Status |
 |---|---|---|
 | `CreateTransform(double[16])` | An `IMathTransform` from sixteen doubles, rotation by columns. **Raised `DISP_E_MEMBERNOTFOUND` through late binding** with a list or a `VT_ARRAY\|VT_R8`; worked through `Invoke(..., DISPATCH_METHOD, True, VARIANT(VT_ARRAY\|VT_R8, data))` | Verified, SW 2026 (34.0.0), dev runs 2026-09-15 |
+| `CreatePoint(VARIANT(VT_ARRAY \| VT_R8, [x, y, z]))` | Make a math point to transform. Through pywin32 dynamic dispatch it **raised `com_error` -2147417851** (0x80010105, "The server threw an exception") from `__getattr__`; the `DISPATCH_METHOD` route of GOTCHAS §39 was not tried | Fails through pywin32 dynamic dispatch, SW 2024 SP5 (32.5.0), 2026-11-24 |
 
 ## IBody2 (from `IPartDoc.GetBodies2`)
 
