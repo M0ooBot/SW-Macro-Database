@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-25-assemblies-15-edit-a-part-the-open-assembly-uses-python-32-a",
+  "subject": "assemblies-15-edit-a-part-the-open-assembly-uses",
+  "language": "python",
+  "swRevision": "32.5.0",
+  "major": 32,
+  "date": "2026-11-25",
+  "method": "contribution",
+  "result": "pass",
+  "scope": "partial",
+  "observed": "pywin32 script on a part of an open top assembly, opened with OpenDoc6: SelectByID2 axis + plane, InsertRefPlane, ChangeSketchPlane on a sketch, EditRebuild3, Save3, top EditRebuild3, CloseDoc, ActivateDoc3. Script ran 48 s; 19 s in, SolidWorks showed 'One of the components of this assembly is in rollback state. The assembly is inaccessible now.' The user could not select, move or orbit and restarted SolidWorks. No crash event; the hang on close carried the same WER bucket as the 2026-11-26 incident. Which call raised the dialog was not recorded."
+}

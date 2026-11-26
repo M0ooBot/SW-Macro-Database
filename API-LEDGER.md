@@ -156,6 +156,9 @@ result files stay in the Gear-Generator repository.
 | `GetEquationMgr` | The Equation Manager, below | Verified, SW 2026 (34.0.0) |
 | `SketchAddConstraints(constant)` | Add a relation to the selected sketch entities, e.g. `"sgTANGENT"` | Verified, SW 2026 (34.0.0) |
 | `AddDimension2(x, y, z)` | Dimension the selection, text at a point in metres; returns an `IDisplayDimension`. On the Top plane an angle placed at a **model-space** point read the angle (GOTCHAS §43) | Verified, SW 2026 (34.0.0) |
+| `AddDimension2(x, y, z)` on a **hidden** part in sketch edit | Crashed SolidWorks in `slduiu.dll` (0xc0000005); the caller got `com_error` -2147417851 after ~12 s. Never run it on an invisible document, nor on a part an open assembly uses (GOTCHAS §118) | Fails: crashed SolidWorks, SW 2024 SP5 (32.5.0), 2026-11-26 |
+| `EditSketch` with the sketch feature selected (`Select2(False, 0)`), on a hidden part | Entered the sketch: `GetActiveSketch2` returned it. On a part an open assembly uses this rolls the part back and can lock the assembly (GOTCHAS §118) | Verified, SW 2024 SP5 (32.5.0), 2026-11-26 |
+| `GetActiveSketch2` | The sketch being edited, or `None`. Check it is `None` on every part you touched before handing back (GOTCHAS §118) | Verified, SW 2024 SP5 (32.5.0), 2026-11-26 |
 | `GetFeatureCount` | How many features; half of a cheap change key. Its **change** across an insert says how many features the insert made (552 → 553 for one curve, rolled back or not); a different count from a full listing's, which includes sub-features (552 against 559) | Verified, SW 2026, Airfoil Converter 2026-09-16 and 2026-09-23 |
 | `GetUpdateStamp` | A number that moves when the model changes and stood still while it was only orbited; with `GetFeatureCount`, under a millisecond | Verified, SW 2026, Airfoil Converter 2026-09-16 |
 | `InsertLoftRefSurface2(False, keepTangency, False, 1.0, 0, 0)` | Surface loft through the curves at mark 1 along those at mark 2; returns nothing useful, so judge by the tree. A fallback where a solid was refused; that such a surface was made was observed, the arguments' meanings were not examined | Partly verified, SW 2026, Airfoil Converter 2026-09-16 |
@@ -376,6 +379,7 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | Member | Purpose | Status |
 |---|---|---|
 | `InsertSketch(rebuild)` | Open a 2D sketch on the current selection; call again to close | Verified, SW 2026 (34.0.0) |
+| `InsertSketch(True)` to leave a sketch on a **hidden** part | Did not leave it: `GetActiveSketch2` still returned the sketch. `IModelDoc2.EditRebuild3` did clear it (GOTCHAS §118) | Fails on a hidden part, SW 2024 SP5 (32.5.0), 2026-11-26 |
 | `Insert3DSketch(True)` | Open a 3D sketch; call again to close it (a toggle). `ActiveSketch` read a sketch after the first call and `None` after the second; the new feature's type is `3DProfileFeature` ([sketches/02](entries/sketches/02-3d-sketch-as-vba.md)) | Verified, SW 2026 (34.1.1) step by step; SW 2024 SP5 (32.5.0) inside an application build, 2026-11-14 |
 | `Insert3DSketch2(rebuild)` | **Not a member of `ISketchManager`**: a late-bound call raised `AttributeError: <unknown>.Insert3DSketch2`. This ledger first listed it here as the way to open a 3D sketch; use `Insert3DSketch` | Verified absent, SW 2026 (34.1.1), 2026-11-14 |
 | `ActiveSketch` | The sketch being edited, or `Nothing` after closing. The Airfoil Converter refuses to select anything while it is not `None` (GOTCHAS §51) | Verified, SW 2026 (34.0.0) |

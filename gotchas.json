@@ -1582,6 +1582,23 @@
         "all"
       ],
       "path": "gotchas/117-a-concentric-mate-with-lock-rotation-set.md"
+    },
+    {
+      "number": 118,
+      "id": "G118",
+      "title": "Editing a part the open assembly uses locks the assembly, and AddDimension2 on a hidden part crashed SolidWorks",
+      "always": false,
+      "members": [
+        "IModelDoc2.EditSketch",
+        "IModelDoc2.AddDimension2",
+        "IModelDocExtension.ChangeSketchPlane",
+        "IFeatureManager.InsertRefPlane",
+        "ISketchManager.InsertSketch"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/118-editing-a-part-the-open-assembly-uses.md"
     }
   ]
 }
