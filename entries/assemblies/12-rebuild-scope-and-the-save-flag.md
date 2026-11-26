@@ -346,4 +346,5 @@ The result files are kept in the Gear-Generator repository, not here.
 - [assemblies/11 — Change a mated gear train](11-change-a-mated-gear-train.md)
 - [reading/16 — Measure between two selections](../reading/16-measure-between-two-selections.md)
 - [connect/07 — Find the open document](../connect/07-find-the-open-document.md)
+- [assemblies/15 — Editing a part the open assembly uses](15-edit-a-part-the-open-assembly-uses.md) — edits from outside that locked the assembly or crashed SolidWorks
 - [GOTCHAS §58, §93, §100, §103](../../GOTCHAS.md)

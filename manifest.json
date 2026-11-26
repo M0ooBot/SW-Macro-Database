@@ -1,9 +1,9 @@
 {
   "schema": 2,
   "description": "SolidWorks automation entries. Each answers one question. Check 'status' before trusting an entry: verified means it ran against the named version ('verified_on' says what was run; 'majors' are the SolidWorks revision majors it ran on, 32 = 2024, 34 = 2026); unverified means it is well-formed against the documented API but was never executed. 'recipe' is the entry's C# recipe, the code SW-Agent runs, with a status of its own.",
-  "count": 98,
+  "count": 99,
   "by_status": {
-    "partly-verified": 11,
+    "partly-verified": 12,
     "unverified": 4,
     "verified": 83
   },
@@ -912,6 +912,60 @@
         32
       ],
       "evidence": [],
+      "recipe": null,
+      "superseded_by": null
+    },
+    {
+      "id": "assemblies-15-edit-a-part-the-open-assembly-uses",
+      "title": "Editing a part that an open assembly uses — the rollback lock, and the crash on a hidden part",
+      "path": "entries/assemblies/15-edit-a-part-the-open-assembly-uses.md",
+      "category": "assemblies",
+      "answers": "What happens when my code edits the sketch or features of a part that the user's open assembly uses, and what must it not do?",
+      "keywords": [
+        "rollback state",
+        "assembly is inaccessible",
+        "one of the components of this assembly is in rollback state",
+        "cannot select components",
+        "EditSketch hidden document",
+        "AddDimension2 invisible document",
+        "slduiu.dll",
+        "access violation",
+        "0xc0000005",
+        "-2147417851",
+        "0x80010105",
+        "RPC_E_SERVERFAULT",
+        "the server threw an exception",
+        "InsertSketch does not exit",
+        "ChangeSketchPlane",
+        "InsertRefPlane",
+        "OpenDoc6 component part",
+        "part open as a reference",
+        "edit part in open assembly",
+        "live session",
+        "restart SolidWorks"
+      ],
+      "api": [
+        "IModelDoc2.EditSketch",
+        "IModelDoc2.AddDimension2",
+        "IModelDoc2.GetActiveSketch2",
+        "ISketchManager.InsertSketch",
+        "IModelDoc2.EditRebuild3",
+        "IModelDocExtension.ChangeSketchPlane",
+        "IFeatureManager.InsertRefPlane",
+        "ISldWorks.OpenDoc6"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "partly-verified",
+      "verified_on": "SolidWorks 2024 SP5 (32.5.0), two incidents in a user's live session (2026-11-25 and 2026-11-26)",
+      "majors": [
+        32
+      ],
+      "evidence": [
+        "2026-11-25-assemblies-15-edit-a-part-the-open-assembly-uses-python-32-a",
+        "2026-11-26-assemblies-15-edit-a-part-the-open-assembly-uses-python-32-b"
+      ],
       "recipe": null,
       "superseded_by": null
     },

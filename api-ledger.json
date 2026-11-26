@@ -1405,6 +1405,72 @@
       "section": "IModelDoc2 (a part, assembly or drawing)",
       "interface": "IModelDoc2",
       "members": [
+        "IModelDoc2.AddDimension2"
+      ],
+      "form": "`AddDimension2(x, y, z)` on a **hidden** part in sketch edit",
+      "purpose": "Crashed SolidWorks in `slduiu.dll` (0xc0000005); the caller got `com_error` -2147417851 after ~12 s. Never run it on an invisible document, nor on a part an open assembly uses (GOTCHAS §118)",
+      "on": null,
+      "status": "fails",
+      "note": "Fails: crashed SolidWorks, SW 2024 SP5 (32.5.0), 2026-11-26",
+      "provenance": "2026-11-26",
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        32
+      ],
+      "evidence": [
+        "2026-11-26-assemblies-15-edit-a-part-the-open-assembly-uses-python-32-b"
+      ]
+    },
+    {
+      "section": "IModelDoc2 (a part, assembly or drawing)",
+      "interface": "IModelDoc2",
+      "members": [
+        "IModelDoc2.EditSketch"
+      ],
+      "form": "`EditSketch` with the sketch feature selected (`Select2(False, 0)`), on a hidden part",
+      "purpose": "Entered the sketch: `GetActiveSketch2` returned it. On a part an open assembly uses this rolls the part back and can lock the assembly (GOTCHAS §118)",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2024 SP5 (32.5.0), 2026-11-26",
+      "provenance": "2026-11-26",
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        32
+      ],
+      "evidence": [
+        "2026-11-26-assemblies-15-edit-a-part-the-open-assembly-uses-python-32-b"
+      ]
+    },
+    {
+      "section": "IModelDoc2 (a part, assembly or drawing)",
+      "interface": "IModelDoc2",
+      "members": [
+        "IModelDoc2.GetActiveSketch2"
+      ],
+      "form": "`GetActiveSketch2`",
+      "purpose": "The sketch being edited, or `None`. Check it is `None` on every part you touched before handing back (GOTCHAS §118)",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2024 SP5 (32.5.0), 2026-11-26",
+      "provenance": "2026-11-26",
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        32
+      ],
+      "evidence": [
+        "2026-11-26-assemblies-15-edit-a-part-the-open-assembly-uses-python-32-b"
+      ]
+    },
+    {
+      "section": "IModelDoc2 (a part, assembly or drawing)",
+      "interface": "IModelDoc2",
+      "members": [
         "IModelDoc2.GetFeatureCount"
       ],
       "form": "`GetFeatureCount`",
@@ -4166,6 +4232,28 @@
         34
       ],
       "evidence": []
+    },
+    {
+      "section": "ISketchManager",
+      "interface": "ISketchManager",
+      "members": [
+        "ISketchManager.InsertSketch"
+      ],
+      "form": "`InsertSketch(True)` to leave a sketch on a **hidden** part",
+      "purpose": "Did not leave it: `GetActiveSketch2` still returned the sketch. `IModelDoc2.EditRebuild3` did clear it (GOTCHAS §118)",
+      "on": null,
+      "status": "fails",
+      "note": "Fails on a hidden part, SW 2024 SP5 (32.5.0), 2026-11-26",
+      "provenance": "2026-11-26",
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        32
+      ],
+      "evidence": [
+        "2026-11-26-assemblies-15-edit-a-part-the-open-assembly-uses-python-32-b"
+      ]
     },
     {
       "section": "ISketchManager",

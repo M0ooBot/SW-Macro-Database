@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-26-assemblies-15-edit-a-part-the-open-assembly-uses-python-32-b",
+  "subject": "assemblies-15-edit-a-part-the-open-assembly-uses",
+  "language": "python",
+  "swRevision": "32.5.0",
+  "major": 32,
+  "date": "2026-11-26",
+  "method": "contribution",
+  "result": "pass",
+  "scope": "partial",
+  "observed": "pywin32 on a part open hidden as a reference of the open assembly: EditSketch worked (GetActiveSketch2 returned the sketch); AddDimension2 on the sketch circle raised com_error -2147417851 after about 12 s; Windows Application log event 1000 at the same second: SLDWORKS.exe, faulting module slduiu.dll, exception 0xc0000005; WER APPCRASH reports followed. ISketchManager.InsertSketch(True) left GetActiveSketch2 non-null; EditRebuild3 cleared it; the part then read unmodified with every feature error 0. About 20 min later SolidWorks showed the rollback-state dialog; the user could not select components and restarted (AppHangB1 on close)."
+}
