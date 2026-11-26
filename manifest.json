@@ -395,7 +395,12 @@
         "limit mate range",
         "MaximumVariation",
         "suppressed mates",
-        "mechanism from mates"
+        "mechanism from mates",
+        "LockRotation",
+        "lock rotation",
+        "concentric lock rotation",
+        "part will not rotate",
+        "over-defined mate at current position"
       ],
       "api": [
         "IFeatureManager.InsertFeatureTreeFolder2",
@@ -420,7 +425,8 @@
         "IGearMateFeatureData.GearRatioDenominator",
         "IGearMateFeatureData.Reverse",
         "IDistanceMateFeatureData.Distance",
-        "IDistanceMateFeatureData.MateAlignment"
+        "IDistanceMateFeatureData.MateAlignment",
+        "IConcentricMateFeatureData.LockRotation"
       ],
       "language": [
         "python"
@@ -430,7 +436,9 @@
       "majors": [
         32
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-26-assemblies-06-read-every-mate-python-32"
+      ],
       "recipe": null,
       "superseded_by": null
     },

@@ -328,7 +328,7 @@ result files stay in the Gear-Generator repository.
 | `GetFaces` | The faces a feature made. A property get. The route to a feature's **body**, which a feature does not offer: take a face and ask it | Verified, SW 2026 SP0.0, Airfoil Converter 2026-09-22 |
 | `GetErrorCode2(ByRef bool)` | A feature's error code, `0` for clean, with a by-ref warning flag passed as `VARIANT(VT_BYREF \| VT_BOOL, False)`. Read `1` on each of a part's 13 pre-existing failures | Verified, SW 2026 SP0.0, Airfoil Converter 2026-09-22 |
 | `SetSuppression2(action, 1, None)` on a **mate** | Suppress (`0`) or unsuppress (`1`) one mate under `MateGroup`; `IsSuppressed` read `True` then `False`. No cascade seen on mates ([assemblies/05](entries/assemblies/05-test-motion-with-the-drag-operator.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-10-06 |
-| `GetDefinition` on a **mate** | `IGearMateFeatureData` on `MateGearDim`, `IDistanceMateFeatureData` on distance mates; concentric and coincident data answered `MateAlignment`; `MateCoordinate` answered none of the members tried | Verified, SW 2024 SP5 (32.5.0), 2026-10-28 |
+| `GetDefinition` on a **mate** | `IGearMateFeatureData` on `MateGearDim`, `IDistanceMateFeatureData` on distance mates; concentric and coincident data answered `MateAlignment`; a concentric also answers `LockRotation` (GOTCHAS §117); `MateCoordinate` answered none of the members tried | Verified, SW 2024 SP5 (32.5.0), 2026-10-28 |
 | `GetErrorCode2(ByRef bool)` on a **mate** | `0` on a solved mate; **51** with the warning flag `True` on mates left unsolved after a `Transform2` put and rebuild (GOTCHAS §73) | Verified, SW 2024 SP5 (32.5.0), 2026-10-06 |
 | `SetSuppression2(0, 3, names)` on a **mate** | Suppress it in the **listed** configurations (`3`), leaving it live in the rest: one configuration's position mates ([assemblies/07](entries/assemblies/07-configurations-that-hold-different-positions.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
 | `IsSuppressed2(3, names)` | One suppression flag per listed configuration, without switching configuration | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
@@ -599,6 +599,12 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `Distance` | Metres, on both `MateDistanceDim` and `MateLimitDistanceDim` | Verified, SW 2024 SP5 (32.5.0), 2026-10-28 |
 | `MateAlignment` | Read **7602281** on a plain distance mate whose `IMate2.Alignment` read 2; do not trust it there | Verified, SW 2024 SP5 (32.5.0), 2026-10-28 (value suspect) |
 | `MaximumDistance` / `MinimumDistance` | Listed in the interop assembly; never read | Unverified |
+
+## IConcentricMateFeatureData (from `IFeature.GetDefinition` on a `MateConcentric`)
+
+| Member | Purpose | Status |
+|---|---|---|
+| `LockRotation` (property get) | Whether the concentric's Lock rotation box is set. `True` holds the part's spin about the axis, and nothing else about the mate shows it; a mate that asks for the current position is then refused as over-defined (GOTCHAS §117) | Verified, SW 2024 SP5 (32.5.0), 2026-11-26, pywin32 dynamic dispatch |
 
 ## IMateEntity2 (from `IMate2.MateEntity(i)`)
 

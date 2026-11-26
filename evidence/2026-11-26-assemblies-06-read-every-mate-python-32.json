@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-26-assemblies-06-read-every-mate-python-32",
+  "subject": "assemblies-06-read-every-mate",
+  "language": "python",
+  "swRevision": "32.5.0",
+  "major": 32,
+  "date": "2026-11-26",
+  "method": "probe",
+  "result": "pass",
+  "scope": "partial",
+  "observed": "Read IFeature.GetDefinition then LockRotation (pywin32 dynamic dispatch) on the four MateConcentric features of an open assembly: one read True, three read False. One of the False mates had read as locking a shaft until Lock rotation was unticked in the UI moments before; with it set, a parallel mate between the shaft's D flat and the bore's flat gave GetErrorCode2 51 on the new mate and the concentric after ForceRebuild3(True), and an angle mate at the flats' current angle returned AddMate5 status 5. Only the LockRotation read is new; the rest of the walk was not re-run."
+}
