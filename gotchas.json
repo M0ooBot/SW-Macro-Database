@@ -1568,6 +1568,20 @@
         "all"
       ],
       "path": "gotchas/116-equation-calls-refuse-a-virtual-in-context-part.md"
+    },
+    {
+      "number": 117,
+      "id": "G117",
+      "title": "A concentric mate with Lock rotation set stops the part turning, and a mate dump that skips it looks clean",
+      "always": false,
+      "members": [
+        "IConcentricMateFeatureData.LockRotation",
+        "IAssemblyDoc.AddMate5"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/117-a-concentric-mate-with-lock-rotation-set.md"
     }
   ]
 }

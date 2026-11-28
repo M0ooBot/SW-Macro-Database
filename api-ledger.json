@@ -131,6 +131,10 @@
       "note": null
     },
     {
+      "title": "IConcentricMateFeatureData (from `IFeature.GetDefinition` on a `MateConcentric`)",
+      "note": null
+    },
+    {
       "title": "IMateEntity2 (from `IMate2.MateEntity(i)`)",
       "note": null
     },
@@ -3753,7 +3757,7 @@
         "IFeature.GetDefinition"
       ],
       "form": "`GetDefinition` on a **mate**",
-      "purpose": "`IGearMateFeatureData` on `MateGearDim`, `IDistanceMateFeatureData` on distance mates; concentric and coincident data answered `MateAlignment`; `MateCoordinate` answered none of the members tried",
+      "purpose": "`IGearMateFeatureData` on `MateGearDim`, `IDistanceMateFeatureData` on distance mates; concentric and coincident data answered `MateAlignment`; a concentric also answers `LockRotation` (GOTCHAS §117); `MateCoordinate` answered none of the members tried",
       "on": null,
       "status": "verified",
       "note": "Verified, SW 2024 SP5 (32.5.0), 2026-10-28",
@@ -6739,6 +6743,28 @@
       "languages": [],
       "majors": [],
       "evidence": []
+    },
+    {
+      "section": "IConcentricMateFeatureData (from `IFeature.GetDefinition` on a `MateConcentric`)",
+      "interface": "IConcentricMateFeatureData",
+      "members": [
+        "IConcentricMateFeatureData.LockRotation"
+      ],
+      "form": "`LockRotation` (property get)",
+      "purpose": "Whether the concentric's Lock rotation box is set. `True` holds the part's spin about the axis, and nothing else about the mate shows it; a mate that asks for the current position is then refused as over-defined (GOTCHAS §117)",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2024 SP5 (32.5.0), 2026-11-26, pywin32 dynamic dispatch",
+      "provenance": "2026-11-26",
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        32
+      ],
+      "evidence": [
+        "2026-11-26-assemblies-06-read-every-mate-python-32"
+      ]
     },
     {
       "section": "IMateEntity2 (from `IMate2.MateEntity(i)`)",

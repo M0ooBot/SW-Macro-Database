@@ -3,13 +3,13 @@ schema: 2
 id: assemblies-06-read-every-mate
 title: Read every mate in an assembly, with its entities, gear ratio and folder
 answers: "How do I read every mate in an existing assembly — its type, the components and faces it joins, a gear mate's ratio, and which folder it is in?"
-keywords: [read mates, list mates, dump mates, mate inventory, existing mates, MateGroup, MateGearDim, MateConcentric, MateCoincident, MateCoordinate, MateDistanceDim, MateLimitDistanceDim, gear mate ratio, GearRatioNumerator, GearRatioDenominator, which gear is the numerator, swMateType_e, swSelectType_e, ReferenceType2, EntityParams, mate folder, FtrFolder, ___EndTag___, limit mate range, MaximumVariation, suppressed mates, mechanism from mates]
-api: [IFeatureManager.InsertFeatureTreeFolder2, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IFeature.GetTypeName2, IFeature.GetSpecificFeature2, IFeature.GetDefinition, IFeature.IsSuppressed, IFeature.GetErrorCode2, IMate2.Type, IMate2.Alignment, IMate2.Flipped, IMate2.MaximumVariation, IMate2.MinimumVariation, IMate2.GetMateEntityCount, IMate2.MateEntity, IMateEntity2.ReferenceComponent, IMateEntity2.ReferenceType2, IMateEntity2.EntityParams, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IGearMateFeatureData.Reverse, IDistanceMateFeatureData.Distance, IDistanceMateFeatureData.MateAlignment]
+keywords: [read mates, list mates, dump mates, mate inventory, existing mates, MateGroup, MateGearDim, MateConcentric, MateCoincident, MateCoordinate, MateDistanceDim, MateLimitDistanceDim, gear mate ratio, GearRatioNumerator, GearRatioDenominator, which gear is the numerator, swMateType_e, swSelectType_e, ReferenceType2, EntityParams, mate folder, FtrFolder, ___EndTag___, limit mate range, MaximumVariation, suppressed mates, mechanism from mates, LockRotation, lock rotation, concentric lock rotation, part will not rotate, over-defined mate at current position]
+api: [IFeatureManager.InsertFeatureTreeFolder2, IFeature.GetFirstSubFeature, IFeature.GetNextSubFeature, IFeature.GetTypeName2, IFeature.GetSpecificFeature2, IFeature.GetDefinition, IFeature.IsSuppressed, IFeature.GetErrorCode2, IMate2.Type, IMate2.Alignment, IMate2.Flipped, IMate2.MaximumVariation, IMate2.MinimumVariation, IMate2.GetMateEntityCount, IMate2.MateEntity, IMateEntity2.ReferenceComponent, IMateEntity2.ReferenceType2, IMateEntity2.EntityParams, IGearMateFeatureData.GearRatioNumerator, IGearMateFeatureData.GearRatioDenominator, IGearMateFeatureData.Reverse, IDistanceMateFeatureData.Distance, IDistanceMateFeatureData.MateAlignment, IConcentricMateFeatureData.LockRotation]
 language: [python]
 status: verified
 verified_on: SolidWorks 2024 SP5 (32.5.0); the MateEntity order of code-made mates and code-made mate folders also SolidWorks 2026 (34.1.1)
 majors: [32]
-evidence: []
+evidence: [2026-11-26-assemblies-06-read-every-mate-python-32]
 recipe_status: null
 recipe_evidence: []
 superseded_by: null
@@ -145,7 +145,7 @@ Type names, `IMate2.Type`, and what the definition answered, on 2024 SP5.
 
 | `GetTypeName2` | `IMate2.Type` | Definition answered |
 |---|---|---|
-| `MateConcentric` | 1 `swMateCONCENTRIC` | `MateAlignment` |
+| `MateConcentric` | 1 `swMateCONCENTRIC` | `MateAlignment` (and `LockRotation`, which the walk does not try: [below](#a-concentrics-lock-rotation)) |
 | `MateCoincident` | 0 `swMateCOINCIDENT` | `MateAlignment` |
 | `MateGearDim` | 10 `swMateGEAR` | `GearRatioNumerator`, `GearRatioDenominator`, `Reverse` |
 | `MateCoordinate` | 20 `swMateCOORDINATE` | nothing |
@@ -319,6 +319,33 @@ under its own name, closed and reopened; and the outer folder suppressed.
 - **Not probed:** unsuppressing a mate on its own while its folder is
   suppressed, and a folder made in the user interface.
 
+## A concentric's Lock rotation
+
+`DEFINITION_FIELDS` does not include `LockRotation`. The walk therefore reports
+every concentric as answering only `MateAlignment`, whether or not its rotation
+is locked. A concentric with **Lock rotation** set holds the part's spin about
+the axis, but in the dump it looks like a free concentric
+([GOTCHAS §117](../../gotchas/117-a-concentric-mate-with-lock-rotation-set.md)).
+Read it on its own. This ran on 2024 SP5 (32.5.0), pywin32, `call` from
+`swcom`, on an open assembly:
+
+```python
+for n in names:                          # names of the MateConcentric features
+    f = call(asm, "FeatureByName", n)
+    d = call(f, "GetDefinition")
+    res[n] = {"LockRotation": getattr(d, "LockRotation", "?"), "Type": call(f, "GetTypeName2")}
+```
+
+Four concentrics: one read `True` and three read `False`. One of the `False`
+ones had just been unticked in the UI, after it had been holding a shaft
+against a mate that needed the shaft to turn. `LockRotation` is a property, so
+dynamic dispatch reads it with `getattr` and no call.
+`IConcentricMateFeatureData` is the interface the member sits on in the 2024
+`SolidWorks.Interop.sldworks.dll` (both names are in its metadata). This walk
+reached it late-bound and never named it. Adding `"LockRotation"` to
+`DEFINITION_FIELDS` should carry it into the dump. That has not been run inside
+the program.
+
 ## What it does not do
 
 - **Reads only the active configuration.** `IsSuppressed` is this
@@ -350,6 +377,9 @@ order, not live.
   `Folder1___EndTag___`, the same after a reopen; `FeatureByName` found both
   mates; suppressing `Folder A` suppressed both and unsuppressing it brought
   them back.
+- `LockRotation` on concentric mates, 2026-11-26, SolidWorks 2024 SP5 (32.5.0),
+  record `2026-11-26-assemblies-06-read-every-mate-python-32`: the read above, on four concentrics
+  (one `True`, three `False`). It was not run as part of the full walk.
 
 ## See also
 
@@ -359,7 +389,7 @@ order, not live.
 - [curves/11 — Feature tree folders](../curves/11-feature-tree-folders.md) — folder markers and end tags in a part
 - [connect/05 — Choosing among versions](../connect/05-choosing-among-versions.md) — attaching to 2024 or 2025
 - [connect/10 — Driving from outside Windows](../connect/10-driving-from-outside-windows.md)
-- [GOTCHAS §19, §74, §75, §76](../../GOTCHAS.md)
+- [GOTCHAS §19, §74, §75, §76, §117](../../GOTCHAS.md)
 - [assemblies/07 — Configurations that hold different positions](07-configurations-that-hold-different-positions.md) — `IsSuppressed2` across configurations, and `EntityParams` as a position check
 - [assemblies/10 — Mate a gear train that turns](10-mate-a-gear-train-that-turns.md) — making gear and lock mates; which way the ratio goes in and comes back
 - [assemblies/13 — Assembly configurations from code](13-assembly-configurations-from-code.md) — the walk and `IsSuppressed2` with mates suppressed in some configurations
