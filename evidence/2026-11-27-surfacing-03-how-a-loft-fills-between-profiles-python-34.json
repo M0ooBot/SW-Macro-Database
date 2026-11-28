@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-27-surfacing-03-how-a-loft-fills-between-profiles-python-34",
+  "subject": "surfacing-03-how-a-loft-fills-between-profiles",
+  "language": "python",
+  "swRevision": "34.1.1",
+  "major": 34,
+  "date": "2026-11-27",
+  "method": "contribution",
+  "result": "pass",
+  "scope": "partial",
+  "observed": "One solid loft of a half wing and its winglet as one law (about 630 mm along the wing and winglet, the winglet bending up out of the wing) through 71 profiles, each a section curve joined to its 0.4 mm trailing-edge line, and 35 guides that each pass through a written point of every section: built solid on the first attempt in 9.49 s. Its STEP read in OpenCascade: 1 valid solid, 4 faces (2 planar ends, 2 skin). Intended surface to STEP: 0.0072 mm worst at the 71 sections, 0.0103 mm worst at a quarter, half and three quarters between them. STEP to intended surface: 0.0107 mm worst over 180,420 samples. A numerical zebra across the old wing-to-winglet station: phase gap 2.5e-10 cycles. The root and tip end-cap edges lay within 3.4e-13 mm of a natural cubic, chord-length curve through each section's written points."
+}

@@ -9,7 +9,7 @@ language: [python]
 status: partly-verified
 verified_on: SolidWorks 2026 for the solid loft and its settings; the surface fallback's arguments were not examined
 majors: [34]
-evidence: []
+evidence: [2026-11-27-features-12-guided-loft-python-34]
 recipe_status: null
 recipe_evidence: []
 superseded_by: null
@@ -335,6 +335,16 @@ profile at its nose, ...").
   Loft page's rebuild error text above, read off a screenshot of the page
   with three six-decimal profiles picked by hand; `GetDefinition` returning
   `Nothing` on `BlendRefSurface`; a Boss-Loft surviving seven reload rounds.
+- 2026-11-27, SolidWorks 2026 (revision 34.1.1), the Airfoil Converter at
+  `2f86dcd`: a solid loft through **71** profiles, each a composite of a
+  section curve and its trailing-edge line, and **35** guides. It was built by
+  `insert_loft` with keep tangency on and guide influence 0, on the first
+  attempt and in 9.49 s. Afterwards the feature's `GetErrorCode2` read 0,
+  What's Wrong was empty, and there was 1 solid body and 0 sheet bodies. The
+  177 `InsertCurveFile` calls before it averaged 0.32 s each and the 71
+  `InsertCompositeCurve` joins 0.51 s. How close its surface came is in
+  [surfacing/03](../surfacing/03-how-a-loft-fills-between-profiles.md). The
+  surface fallback was not exercised, so the status stays partly verified.
 
 ## See also
 

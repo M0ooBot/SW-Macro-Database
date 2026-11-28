@@ -3173,7 +3173,9 @@
       "majors": [
         34
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-27-features-12-guided-loft-python-34"
+      ],
       "recipe": null,
       "superseded_by": null
     },
@@ -4422,7 +4424,10 @@
         "zero curvature at spline end",
         "wedge nose",
         "six decimals",
-        "not planar"
+        "not planar",
+        "winglet",
+        "one loft through a bend",
+        "71 sections"
       ],
       "api": [],
       "language": [],
@@ -4431,7 +4436,9 @@
       "majors": [
         34
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-27-surfacing-03-how-a-loft-fills-between-profiles-python-34"
+      ],
       "recipe": null,
       "superseded_by": null
     },
