@@ -1,11 +1,11 @@
 {
   "schema": 2,
   "description": "SolidWorks automation entries. Each answers one question. Check 'status' before trusting an entry: verified means it ran against the named version ('verified_on' says what was run; 'majors' are the SolidWorks revision majors it ran on, 32 = 2024, 34 = 2026); unverified means it is well-formed against the documented API but was never executed. 'recipe' is the entry's C# recipe, the code SW-Agent runs, with a status of its own.",
-  "count": 98,
+  "count": 99,
   "by_status": {
     "partly-verified": 11,
     "unverified": 4,
-    "verified": 83
+    "verified": 84
   },
   "entries": [
     {
@@ -4021,6 +4021,86 @@
         34
       ],
       "evidence": [],
+      "recipe": null,
+      "superseded_by": null
+    },
+    {
+      "id": "reading-17-read-exact-b-spline-geometry",
+      "title": "Read a face's exact B-spline surface and an edge's B-spline curve back over COM",
+      "path": "entries/reading/17-read-exact-b-spline-geometry.md",
+      "category": "reading",
+      "answers": "How do I read a face's exact B-spline surface and an edge's B-spline curve (degrees, knots, control points, weights) back from SolidWorks over COM?",
+      "keywords": [
+        "GetBSurfParams3",
+        "Parameterization2",
+        "VP0",
+        "IBSurfParamData",
+        "GetControlPoints",
+        "ControlPointRowCount",
+        "ControlPointColumnCount",
+        "UKnots",
+        "VKnots",
+        "GetBCurveParams5",
+        "ISplineParamData",
+        "GetKnotPoints",
+        "GetCurveParams3",
+        "ICurveParamData",
+        "B-spline",
+        "NURBS",
+        "poles",
+        "control points",
+        "knots",
+        "exact geometry",
+        "read surface back",
+        "read curve back",
+        "compare with STEP",
+        "Open CASCADE",
+        "0x800706BE",
+        "remote procedure call failed",
+        "empty array",
+        "1-based"
+      ],
+      "api": [
+        "ISurface.Parameterization2",
+        "ISurface.GetBSurfParams3",
+        "IBSurfParamData.UOrder",
+        "IBSurfParamData.VOrder",
+        "IBSurfParamData.ControlPointRowCount",
+        "IBSurfParamData.ControlPointColumnCount",
+        "IBSurfParamData.ControlPointDimension",
+        "IBSurfParamData.UPeriodicity",
+        "IBSurfParamData.VPeriodicity",
+        "IBSurfParamData.UKnots",
+        "IBSurfParamData.VKnots",
+        "IBSurfParamData.GetControlPoints",
+        "ICurve.GetEndParams",
+        "ICurve.GetBCurveParams5",
+        "ISplineParamData.Dimension",
+        "ISplineParamData.Order",
+        "ISplineParamData.Periodic",
+        "ISplineParamData.ControlPointsCount",
+        "ISplineParamData.KnotPointsCount",
+        "ISplineParamData.GetControlPoints",
+        "ISplineParamData.GetKnotPoints",
+        "IEdge.GetCurveParams3",
+        "ICurveParamData.UMinValue",
+        "ICurveParamData.UMaxValue",
+        "ICurveParamData.Sense",
+        "ICurveParamData.StartPoint",
+        "ICurveParamData.EndPoint",
+        "ISurface.Evaluate"
+      ],
+      "language": [
+        "python"
+      ],
+      "status": "verified",
+      "verified_on": "SolidWorks 2026 (34.1.1), Python over pywin32, late-bound",
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ],
       "recipe": null,
       "superseded_by": null
     },

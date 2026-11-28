@@ -378,3 +378,4 @@ fixed before the numbers above.
 - [files/04 — Export a body to STEP](../files/04-export-a-body-to-step.md) — how the lofts were got out to be measured
 - [reading/13 — Measure a wall between two bodies](../reading/13-measure-a-wall-between-two-bodies.md) — the same wall measured without leaving SolidWorks
 - [GOTCHAS §50, §52, §63, §64, §65](../../GOTCHAS.md)
+- [reading/17 — Read exact B-spline geometry](../reading/17-read-exact-b-spline-geometry.md) — a loft's surfaces read back exactly from SolidWorks, without a STEP

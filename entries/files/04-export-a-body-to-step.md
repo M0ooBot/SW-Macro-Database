@@ -233,3 +233,4 @@ where it had taken 296.3 s. The STEP file it wrote was 1.5 MB and held
 - [surfacing/04 — Cap a refused loft into a solid](../surfacing/04-cap-a-refused-loft-into-a-solid.md) — the knit that carries a capped loft's body
 - [curves/08 — Rebuild once, at the end](../curves/08-rebuild-once-at-the-end.md) — restore in a `finally`
 - [GOTCHAS §62](../../GOTCHAS.md)
+- [reading/17 — Read exact B-spline geometry](../reading/17-read-exact-b-spline-geometry.md) — the same surfaces read over COM, identical to this STEP's

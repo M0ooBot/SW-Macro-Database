@@ -1520,3 +1520,57 @@ lock = getattr(d, "LockRotation", "?")
 
 See [assemblies/06](entries/assemblies/06-read-every-mate.md#a-concentrics-lock-rotation)
 for the run.
+
+## 118. `ISurface.GetBSurfParams3` needs its `VP0` from `ISurface.Parameterization2`; with Nothing, SolidWorks ended inside the call
+
+`GetBSurfParams3(WantCubic, WantNonRational, VP0, Tolerance, out Sense)` types
+`VP0` as a plain `IDispatch` in the type library, so Nothing goes through. The
+SolidWorks API help, as quoted by its search index, says: "Before calling this
+method, call ISurface:Parameterization2 to populate VP0", and its C# example
+passes the result of `Parameterization2` with a `Tolerance` of 0.01 (metres).
+
+What happened without it, on SolidWorks 2026 (34.1.1), from Python over pywin32:
+`GetBSurfParams3(False, False, VARIANT(VT_DISPATCH, None), 1e-10, sense)` on a
+lofted B-spline face ran for 19.2 s and then failed with `0x800706BE`, "The
+remote procedure call failed": SolidWorks had ended. **One observation, with
+confounds**: `Tolerance` was also 1e-10 rather than 0.01, the machine was short of
+memory at that moment (another SolidWorks session and parallel builds were
+running, about 2.3 GB of commit free), and an access violation in
+`slduiu.dll` was logged. So Nothing is not proven to be the cause on its own. The
+documented requirement is the fact; the crash is why it is worth obeying.
+
+With `VP0 = surface.Parameterization2` (a zero-argument member, reached by
+attribute access) and `Tolerance` 0.01, the same call on the same face returned
+an `IBSurfParamData` in about 0.01 s in each of the three later runs, and the surface it
+described was exact. Never pass Nothing; if `Parameterization2` returns nothing,
+stop rather than call `GetBSurfParams3`. Code and evidence:
+[entries/reading/17](entries/reading/17-read-exact-b-spline-geometry.md).
+
+## 119. `IBSurfParamData.GetControlPoints` is 1-based, answers an empty array out of range, and on 2026 `Row` runs to `ControlPointColumnCount`
+
+`IBSurfParamData.GetControlPoints(Row, Column)` (from
+`ISurface.GetBSurfParams3`) gives one control point per call. Two things about its
+indices fail silently, seen on SolidWorks 2026 (34.1.1) from Python over pywin32:
+
+- **It is 1-based, and out of range it returns an empty array, not an error.**
+  `GetControlPoints(0, 0)` came back empty.
+- **The bounds are swapped against the counts' names.** The SolidWorks API help, as
+  quoted by its search index, says "1 <= index of row <= ControlPointRowCount",
+  likewise for columns, and that "The U direction of surface is in the row
+  direction". What SolidWorks 2026 did: `ControlPointColumnCount` held the u pole
+  count (`len(UKnots) - UOrder`) and `ControlPointRowCount` the v pole count, and a
+  point came back only for `Row <= ControlPointColumnCount` and
+  `Column <= ControlPointRowCount`. Looping as the help words it gave 16 points from
+  a surface of 4 × 98 poles (counts: 98 rows, 4 columns) and 9,604 from one of
+  179 × 98 (98 rows, 179 columns); every other call returned an empty array.
+  `Row` did index u: a surface rebuilt with `Row` as u matched SolidWorks' own
+  `ISurface.Evaluate` to 2.4e-13 mm, with `Column` as u it was hundreds of
+  millimetres off.
+
+What to do: take the pole counts from the knots, `n_u = len(UKnots) - UOrder` and
+`n_v = len(VKnots) - VOrder`; check that they are the same pair as the two counts;
+loop `Row` 1..`n_u` and `Column` 1..`n_v`; and **fail on any call that does not
+return exactly `ControlPointDimension` numbers**. A reader that appends whatever
+comes back loses most of the surface without a word. Only 2026 was tried; whether
+2024 or 2025 swap the counts too is not known, and other bindings were not tried.
+Code and evidence: [entries/reading/17](entries/reading/17-read-exact-b-spline-geometry.md).

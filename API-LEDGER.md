@@ -770,6 +770,38 @@ The interface name was not recorded in the source; see [curves/06](entries/curve
 | `IFace2.GetBox` | The face's box, metres; **a property get** (`f.GetBox()` raised `'tuple' object is not callable`) | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
 | `ISurface.PlaneParams` | Normal (0–2), a point (3–5), metres; an axis-aligned face's offset is item `3 + axis` ([reading/15](entries/reading/15-measure-a-part-that-has-no-dimensions.md)) | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
 | `ISurface.Identity` | 4004 and 4005 on fillet corner blends | Verified, SW 2024 SP5 (32.5.0), 2026-10-30 |
+| `IBody2.GetFaces` | The body's faces: 4 on a one-solid loft (two planar ends, two lofted skin faces), through `call` ([connect/02](entries/connect/02-attach-from-python.md)) | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `IFace2.GetEdges` | The face's edges: 2 on a planar loft end bounded by a section curve and a trailing-edge line, through `call` | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `IFace2.GetUVBounds` | Four numbers: `[0, 1, 0, 1]` on two lofted skin faces whose knots also ran 0 to 1, so which number is which was not settled | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `IFace2.FaceInSurfaceSense` | `True` on a planar loft end, `False` on both lofted skin faces | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `IFace2.IsSame(other)` | Whether two face objects are the same face: picked the planar end out of each `IEdge.GetTwoAdjacentFaces2` pair, and matched each skin face to one of the body's `GetFaces` | Verified, SW 2026 (34.1.1), 2026-11-28 |
+
+## Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)
+
+| Member | Purpose | Status |
+|---|---|---|
+| `IEdge.GetTwoAdjacentFaces2` | The edge's two faces: on each edge of a planar loft end, that end and one skin face | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `IEdge.EdgeInFaceSense(face)` | `False` against the planar end and `True` against the skin face, on both edges read | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `IEdge.GetCurveParams3` | The edge on its curve, as an `ICurveParamData`; zero-argument, reached through `call` ([reading/17](entries/reading/17-read-exact-b-spline-geometry.md)) | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ICurveParamData.UMinValue` / `UMaxValue` | The edge's range on its curve's parameter: 0 to 1 on two spline edges, as `ICurve.GetEndParams` read | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ICurveParamData.StartPoint` / `EndPoint` | The edge's ends, three numbers each, **metres**; `StartPoint` was the curve's `Evaluate2` point at `UMinValue` | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ICurveParamData.Sense` | `True` on both edges read, each of whose `StartPoint` was its curve at `UMinValue` | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ICurveParamData.CurveType` / `CurveTag` | `CurveType` 3005 on two spline edges, as `ICurve.Identity`; `CurveTag` an integer, not interpreted | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ICurve.IsBcurve` / `IsLine` / `IsTrimmedCurve` | **A straight two-pole trailing edge read `IsLine` `False`** and `IsBcurve` `True`, as did a cubic edge; `IsTrimmedCurve` `True` on both | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ICurve.GetEndParams(out start, out end, out isClosed, out isPeriodic)` | Returned `True`, start 0, end 1, `isClosed` and `isPeriodic` `False`, on two open spline edges; the outs as by-reference `VARIANT`s | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ICurve.GetBCurveParams5(False, False, False, isClosed)` | The curve's B-spline as SolidWorks holds it, as an `ISplineParamData`, `isClosed` from `GetEndParams`: a degree-1 curve of 2 poles and a cubic of 505, both identical to SolidWorks' own STEP of the part (knots, poles 0.0 mm) ([reading/17](entries/reading/17-read-exact-b-spline-geometry.md)) | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ISplineParamData.Dimension` / `Order` / `Periodic` / `ControlPointsCount` / `KnotPointsCount` | `Dimension` 3 (non-rational); `Order` degree + 1 (2 and 4); `Periodic` an integer, 0; `ControlPointsCount` 2 and 505; `KnotPointsCount` 4 and 509, count + order | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ISplineParamData.GetControlPoints(out points)` / `GetKnotPoints(out knots)` | Returned `True` and filled the out: the control points flat, `Dimension` numbers a point, **metres**; the full knot vector, end knots repeated | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ISurface.Parameterization2` | An `ISurfaceParameterizationData` for `GetBSurfParams3`'s `VP0`, which the help says must come from here (GOTCHAS §118); zero-argument, reached through `call`, returned an object on both lofted faces | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ISurface.GetBSurfParams3(False, False, vp0, 0.01, out sense)` | The surface's B-spline as SolidWorks holds it, as an `IBSurfParamData`; `vp0` from `Parameterization2`, `Tolerance` in metres. Two bicubic non-rational faces came back identical to SolidWorks' own STEP of the part (knots, poles 0.0 mm), about 0.012 s each; `sense` read `True`, not interpreted ([reading/17](entries/reading/17-read-exact-b-spline-geometry.md)) | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ISurface.GetBSurfParams3(False, False, Nothing, 1e-10, out sense)` | **SolidWorks ended inside the call** after 19.2 s: `0x800706BE`, "The remote procedure call failed". Confounded: `Tolerance` was also 1e-10 and the machine was short of memory. Take `VP0` from `Parameterization2` (GOTCHAS §118) | Observed once, SW 2026 (34.1.1), 2026-11-28 |
+| `IBSurfParamData.UOrder` / `VOrder` | Orders, degree + 1: 4 and 4 on two bicubic faces | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `IBSurfParamData.UKnots` / `VKnots` | The full knot vectors, end knots repeated (8 and 102, 183 and 102 values on two faces). The pole counts are `len(UKnots) - UOrder` and `len(VKnots) - VOrder` | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `IBSurfParamData.ControlPointRowCount` / `ControlPointColumnCount` | **`ControlPointColumnCount` held the u pole count and `ControlPointRowCount` the v count** (4 and 98; 179 and 98), the reverse of how the help bounds `GetControlPoints` (GOTCHAS §119) | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `IBSurfParamData.ControlPointDimension` | 3 on two non-rational faces; the help gives 4, with a weight, when rational (not seen) | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `IBSurfParamData.UPeriodicity` / `VPeriodicity` | `False` on two open faces; a periodic surface was not tried | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `IBSurfParamData.GetControlPoints(row, column)` | **One control point a call, 1-based**, three numbers, **metres**: `row` the u pole 1..n_u, `column` the v pole 1..n_v, counted from the knots. **Out of range, `(0, 0)` included, an empty array and no error** (GOTCHAS §119). 17,542 calls took 28 s | Verified, SW 2026 (34.1.1), 2026-11-28 |
+| `ISurface.Evaluate(u, v, 0, 0)` | Six numbers; the first three the point at `(u, v)`, **metres**: a surface rebuilt from `GetBSurfParams3` matched it to 2.4e-13 mm. The other three were not identified | Verified, SW 2026 (34.1.1), 2026-11-28 |
 
 ## Constants used
 

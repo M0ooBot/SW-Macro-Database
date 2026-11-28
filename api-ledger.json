@@ -187,6 +187,10 @@
       "note": null
     },
     {
+      "title": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "note": null
+    },
+    {
       "title": "Constants used",
       "note": "Relations, passed to `AddConstraint` as strings:\n`sgCOINCIDENT`, `sgMIDPOINT`, `sgHORIZONTAL2D`, `sgVERTICAL2D`, `sgPARALLEL`,\n`sgPERPENDICULAR`, `sgTANGENT`, `sgEQUAL`, `sgCONCENTRIC`, `sgCOLINEAR`,\n`sgSYMMETRIC`, `sgFIXED`. Verified by geometry on SW 2026 (34.0.0) through\n`IModelDoc2.SketchAddConstraints`: `sgCOINCIDENT`, `sgHORIZONTAL2D`,\n`sgTANGENT`, `sgSYMMETRIC`, `sgFIXED`, `sgVERTICAL2D`, and `sgSAMELENGTH`, which made two\ncircles' radii equal where **`sgEQUAL` did nothing**. See\n[sketches/03](entries/sketches/03-relation-constants.md).\n\nDimension types (`swDimensionType_e`):\n`swDistanceDim`, `swRadiusDim`, `swDiameterDim`, `swAngularDim`.\n\nSelection type strings for `SelectByID2`: `REFERENCECURVES` for a reference\ncurve; `PLANE` for a reference plane by its tree name; `AXIS` for a reference\naxis; `EXTSKETCHSEGMENT` for a closed sketch's line as `LineN@Sketch`;\n`EXTSKETCHPOINT` for a sketch point by location, or a component's origin as\n`Point1@Origin@<component>@<assembly>`; `SURFACEBODY` for a body by its own `IBody2.Name`,\nwhich is how a knit's inputs are picked (Airfoil Converter 2026-09-22).\n\nSelection marks that decided a feature, SW 2026: loft profiles 1 and loft\nguides 2 (Airfoil Converter 2026-09-16); and on 34.0.0: revolve axis line\n16; `InsertRefPlane` references 0 and 1 in order; loft sections all 1;\nmates 1; circular pattern axis 1 and seed 4; sweep profile 1 and path 4;\nmirror body 256 and plane 2 (body at mark 1 mirrored nothing).\n\nFeature type names from `GetTypeName2`: `CurveInFile`, `CompositeCurve`,\n`FtrFolder`, `RefPlane`. From the 2026-09-22 work: `SewRefSurface` (a knit),\n`PlanarSurface` (a planar cap), `FillRefSurface` (a filled surface), and, on\nthe real part walked there, `Split`, `CombineBodies`, `NetBlend` and `ICE`.\nAlso seen on SW 2026 (34.0.0): `RefAxis`,\n`ProfileFeature` (a sketch), `OriginProfileFeature`, `Extrusion`, `ICE` (a cut),\n`CirPattern`, `EqnFolder`, `MaterialFolder`, `MateGroup`, `MateCoincident`,\n`MateDistanceDim`, `MatePlanarAngleDim`, and from the dev runs of 2026-09-15\n`Revolution`, `BlendCut`, `MoveCopyBody`, and from the helical runs `Sweep`,\n`SweepCut`, `MirrorSolid`. Mates on SW 2024 SP5 (32.5.0): `MateConcentric`,\n`MateCoincident`, **`MateGearDim`** (a gear mate), `MateCoordinate`,\n`MateLimitDistanceDim`, and `FtrFolder` for folder markers under `MateGroup`.\n\nMates from tier 7/8 2026-11-13/14: `MateLock` (a lock mate) and `MateGearDim` on SW 2026 too.\n`swMateType_e` from `swconst.tlb`: `16` lock, `1` concentric, `10` gear;\n`swMateAlign_e` `0` aligned, `1` anti-aligned, `2` closest; `swAddMateError_e`\n`0` `swAddMateError_ErrorUknown`, `1` no error, `5` over-defined assembly (also\n`2` incorrect mate type, `3` incorrect alignment, `4` incorrect selections, `6`\nincorrect gear ratios, never seen); `swFeatureError_e` `46`\n`swFeatureErrorMateOverdefined`, `47` `swFeatureErrorMateIlldefined`;\n`swFeatureSuppressionAction_e` `0` suppress, `1` unsuppress;\n`swInConfigurationOpts_e` `1` this configuration; `swOpenDocOptions_e` `1`\nsilent; `swComponentFullyResolved` `2`, what `IComponent2.GetSuppression2`\nread on every component after a reopen. File warnings and errors seen: `128`\n`swFileLoadWarning_AlreadyOpen`, `65536` `swFileWithSameTitleAlreadyOpen`.\n`IMateEntity2.ReferenceType2` also read `4` (a plane), `5` (an axis) and `0`\n(a whole component, on a lock).\n\n`swMateType_e` (read from `swconst.dll`): `0` coincident, `1` concentric,\n`5` distance, `10` gear, `20` coordinate. `swSelectType_e`: `1` edges, `2`\nfaces, `11` sketch points, `25` external sketch points.\n\n`swGuideCurveInfluence_e`: `0` to next guide (run, and the hand-made loft's\nvalue), `1` to next sharp, `2` to next edge, `3` global (read only).\n`swFeatureSuppressionAction_e`: `0` suppress, `1` unsuppress.\n`swMoveRollbackBarTo_e`, read off this machine's `swconst.tlb` on 2026-09-22:\n`1` End, `2` PreviousPosition (answers `True` and moves nothing on SW 2026),\n`3` BeforeFeature, `4` AfterFeature. `swBodyType_e`: `0` solid, `1` sheet.\n`swInConfigurationOpts_e`: `1` this configuration. `swSaveAsOptions_e`: `1`\nsilent, `2` copy. All read from `swconst.tlb` on SW 2026 by the Airfoil\nConverter; only the influence `0` and the save-as options are behind a\nrecorded run.\n\nLoft type names the Airfoil Converter uses to find its lofts: `Blend` (solid)\nand `BlendRefSurface` (surface). They are the tool's constants; no recorded run\nprinted them.\n\n`swTwistControlType_e`: `8` constant twist along path. `swRefPlaneReferenceConstraints_e`:\n`8` distance, `256` its flip option, `2` perpendicular, `4` coincident. All read from\n`swconst.tlb` and used in calls that ran on SW 2026 (34.0.0).\n\n`swFeatureTreeFolderType_e` for `InsertFeatureTreeFolder2`, by observed\nbehaviour rather than by header: `2` wraps the selection in a new folder, `1`\nmakes a folder that does not contain it, `3` hands back the existing\n`Surface Bodies` folder, `0` does nothing. See\n[curves/11](entries/curves/11-feature-tree-folders.md).\n\nA folder in the feature walk is two features: the folder, and a closing\nsentinel after everything it holds. The sentinel is usually named\n`FolderN___EndTag___` after the folder's first automatic name, but after a part\nis reopened it can be `FolderN___EndTag___0`; do not match it by name\n([curves/11](entries/curves/11-feature-tree-folders.md)).\n\nSelection type numbers seen from `GetSelectedObjectType3`: 1 edge, 2 face,\n3 vertex, 4 plane, 5 axis, 6 reference point, 9 sketch, 24 sketch segment,\n25 sketch point.\n\nNeutral-format errors seen on a `.step`: `2097152` `swFileRequiresRepairError`\nfrom `OpenDoc6`, `1024` `swInvalidFileTypeError` from `GetOpenDocSpec`. See\n[files/01](entries/files/01-batch-convert-step.md).\n\n`swDocumentTypes_e` from `IModelDoc2.GetType`: `1` part and `2` assembly, both\nobserved. The enum also defines a drawing value; it was not seen here.\n\nFile versions, from `VersionHistory` and `GetLatestSupportedFileVersion`:\n`11000` is 2018, `14000` is 2021, `19000` is 2026. These are **not** the\n`RevisionNumber` majors above, where 34 is 2026. Two schemes for one release;\ndo not compare across them.\n\nNumbers read from `swconst.tlb` on SW 2026 with makepy and used in calls that\nran (the behaviour is verified, the member names are the type library's):\n`swDocumentTypes_e` 1 part, 2 assembly; `swUserPreferenceIntegerValue_e`\n47 `swUnitsLinear`, 263 `swUnitSystem`; `swLengthUnit_e` 0 mm, 3 inches;\n`swUnitSystem_e` 5 MMGS; `swUserPreferenceToggle_e` 10 `swInputDimValOnCreate`;\n`swEndConditions_e` 0 blind, 1 through all, 9 through all both;\n`swSaveAsVersion_e` 0 current; `swSaveAsOptions_e` 1 silent;\n`swMateType_e` 0 coincident, 5 distance, 6 angle; `swMateAlign_e` 2 closest;\n`swConstrainedStatus_e` 2 under, 3 fully, 4 over (4 not observed);\n`swRefPlaneReferenceConstraints_e` 2 perpendicular, 4 coincident.\n\nRead from `swconst.chm` installed with SW 2024 ([connect/12](entries/connect/12-read-the-api-help-offline.md))\nand used in calls that ran: `swDisplayStateOpts_e` 1 `swThisDisplayState`\n(2 all, 3 specified, not used); `swViewDisplayMode_e` 5\n`swViewDisplayMode_ShadedWithEdges`, observed (the enum runs 2 to 13)."
     }
@@ -8546,6 +8550,612 @@
         32
       ],
       "evidence": []
+    },
+    {
+      "section": "Body faces (from `IPartDoc.GetBodies2` and `IBody2.GetFaces`)",
+      "interface": null,
+      "members": [
+        "IBody2.GetFaces"
+      ],
+      "form": "`IBody2.GetFaces`",
+      "purpose": "The body's faces: 4 on a one-solid loft (two planar ends, two lofted skin faces), through `call` ([connect/02](entries/connect/02-attach-from-python.md))",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Body faces (from `IPartDoc.GetBodies2` and `IBody2.GetFaces`)",
+      "interface": null,
+      "members": [
+        "IFace2.GetEdges"
+      ],
+      "form": "`IFace2.GetEdges`",
+      "purpose": "The face's edges: 2 on a planar loft end bounded by a section curve and a trailing-edge line, through `call`",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Body faces (from `IPartDoc.GetBodies2` and `IBody2.GetFaces`)",
+      "interface": null,
+      "members": [
+        "IFace2.GetUVBounds"
+      ],
+      "form": "`IFace2.GetUVBounds`",
+      "purpose": "Four numbers: `[0, 1, 0, 1]` on two lofted skin faces whose knots also ran 0 to 1, so which number is which was not settled",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Body faces (from `IPartDoc.GetBodies2` and `IBody2.GetFaces`)",
+      "interface": null,
+      "members": [
+        "IFace2.FaceInSurfaceSense"
+      ],
+      "form": "`IFace2.FaceInSurfaceSense`",
+      "purpose": "`True` on a planar loft end, `False` on both lofted skin faces",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Body faces (from `IPartDoc.GetBodies2` and `IBody2.GetFaces`)",
+      "interface": null,
+      "members": [
+        "IFace2.IsSame"
+      ],
+      "form": "`IFace2.IsSame(other)`",
+      "purpose": "Whether two face objects are the same face: picked the planar end out of each `IEdge.GetTwoAdjacentFaces2` pair, and matched each skin face to one of the body's `GetFaces`",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "IEdge.GetTwoAdjacentFaces2"
+      ],
+      "form": "`IEdge.GetTwoAdjacentFaces2`",
+      "purpose": "The edge's two faces: on each edge of a planar loft end, that end and one skin face",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "IEdge.EdgeInFaceSense"
+      ],
+      "form": "`IEdge.EdgeInFaceSense(face)`",
+      "purpose": "`False` against the planar end and `True` against the skin face, on both edges read",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "IEdge.GetCurveParams3"
+      ],
+      "form": "`IEdge.GetCurveParams3`",
+      "purpose": "The edge on its curve, as an `ICurveParamData`; zero-argument, reached through `call` ([reading/17](entries/reading/17-read-exact-b-spline-geometry.md))",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ICurveParamData.UMinValue",
+        "ICurveParamData.UMaxValue"
+      ],
+      "form": "`ICurveParamData.UMinValue` / `UMaxValue`",
+      "purpose": "The edge's range on its curve's parameter: 0 to 1 on two spline edges, as `ICurve.GetEndParams` read",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ICurveParamData.StartPoint",
+        "ICurveParamData.EndPoint"
+      ],
+      "form": "`ICurveParamData.StartPoint` / `EndPoint`",
+      "purpose": "The edge's ends, three numbers each, **metres**; `StartPoint` was the curve's `Evaluate2` point at `UMinValue`",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ICurveParamData.Sense"
+      ],
+      "form": "`ICurveParamData.Sense`",
+      "purpose": "`True` on both edges read, each of whose `StartPoint` was its curve at `UMinValue`",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ICurveParamData.CurveType",
+        "ICurveParamData.CurveTag"
+      ],
+      "form": "`ICurveParamData.CurveType` / `CurveTag`",
+      "purpose": "`CurveType` 3005 on two spline edges, as `ICurve.Identity`; `CurveTag` an integer, not interpreted",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ICurve.IsBcurve",
+        "ICurve.IsLine",
+        "ICurve.IsTrimmedCurve"
+      ],
+      "form": "`ICurve.IsBcurve` / `IsLine` / `IsTrimmedCurve`",
+      "purpose": "**A straight two-pole trailing edge read `IsLine` `False`** and `IsBcurve` `True`, as did a cubic edge; `IsTrimmedCurve` `True` on both",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ICurve.GetEndParams"
+      ],
+      "form": "`ICurve.GetEndParams(out start, out end, out isClosed, out isPeriodic)`",
+      "purpose": "Returned `True`, start 0, end 1, `isClosed` and `isPeriodic` `False`, on two open spline edges; the outs as by-reference `VARIANT`s",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ICurve.GetBCurveParams5"
+      ],
+      "form": "`ICurve.GetBCurveParams5(False, False, False, isClosed)`",
+      "purpose": "The curve's B-spline as SolidWorks holds it, as an `ISplineParamData`, `isClosed` from `GetEndParams`: a degree-1 curve of 2 poles and a cubic of 505, both identical to SolidWorks' own STEP of the part (knots, poles 0.0 mm) ([reading/17](entries/reading/17-read-exact-b-spline-geometry.md))",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ISplineParamData.Dimension",
+        "ISplineParamData.Order",
+        "ISplineParamData.Periodic",
+        "ISplineParamData.ControlPointsCount",
+        "ISplineParamData.KnotPointsCount"
+      ],
+      "form": "`ISplineParamData.Dimension` / `Order` / `Periodic` / `ControlPointsCount` / `KnotPointsCount`",
+      "purpose": "`Dimension` 3 (non-rational); `Order` degree + 1 (2 and 4); `Periodic` an integer, 0; `ControlPointsCount` 2 and 505; `KnotPointsCount` 4 and 509, count + order",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ISplineParamData.GetControlPoints",
+        "ISplineParamData.GetKnotPoints"
+      ],
+      "form": "`ISplineParamData.GetControlPoints(out points)` / `GetKnotPoints(out knots)`",
+      "purpose": "Returned `True` and filled the out: the control points flat, `Dimension` numbers a point, **metres**; the full knot vector, end knots repeated",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ISurface.Parameterization2"
+      ],
+      "form": "`ISurface.Parameterization2`",
+      "purpose": "An `ISurfaceParameterizationData` for `GetBSurfParams3`'s `VP0`, which the help says must come from here (GOTCHAS §118); zero-argument, reached through `call`, returned an object on both lofted faces",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ISurface.GetBSurfParams3"
+      ],
+      "form": "`ISurface.GetBSurfParams3(False, False, vp0, 0.01, out sense)`",
+      "purpose": "The surface's B-spline as SolidWorks holds it, as an `IBSurfParamData`; `vp0` from `Parameterization2`, `Tolerance` in metres. Two bicubic non-rational faces came back identical to SolidWorks' own STEP of the part (knots, poles 0.0 mm), about 0.012 s each; `sense` read `True`, not interpreted ([reading/17](entries/reading/17-read-exact-b-spline-geometry.md))",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ISurface.GetBSurfParams3"
+      ],
+      "form": "`ISurface.GetBSurfParams3(False, False, Nothing, 1e-10, out sense)`",
+      "purpose": "**SolidWorks ended inside the call** after 19.2 s: `0x800706BE`, \"The remote procedure call failed\". Confounded: `Tolerance` was also 1e-10 and the machine was short of memory. Take `VP0` from `Parameterization2` (GOTCHAS §118)",
+      "on": null,
+      "status": "fails",
+      "note": "Observed once, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": []
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "IBSurfParamData.UOrder",
+        "IBSurfParamData.VOrder"
+      ],
+      "form": "`IBSurfParamData.UOrder` / `VOrder`",
+      "purpose": "Orders, degree + 1: 4 and 4 on two bicubic faces",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "IBSurfParamData.UKnots",
+        "IBSurfParamData.VKnots"
+      ],
+      "form": "`IBSurfParamData.UKnots` / `VKnots`",
+      "purpose": "The full knot vectors, end knots repeated (8 and 102, 183 and 102 values on two faces). The pole counts are `len(UKnots) - UOrder` and `len(VKnots) - VOrder`",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "IBSurfParamData.ControlPointRowCount",
+        "IBSurfParamData.ControlPointColumnCount"
+      ],
+      "form": "`IBSurfParamData.ControlPointRowCount` / `ControlPointColumnCount`",
+      "purpose": "**`ControlPointColumnCount` held the u pole count and `ControlPointRowCount` the v count** (4 and 98; 179 and 98), the reverse of how the help bounds `GetControlPoints` (GOTCHAS §119)",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "IBSurfParamData.ControlPointDimension"
+      ],
+      "form": "`IBSurfParamData.ControlPointDimension`",
+      "purpose": "3 on two non-rational faces; the help gives 4, with a weight, when rational (not seen)",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "IBSurfParamData.UPeriodicity",
+        "IBSurfParamData.VPeriodicity"
+      ],
+      "form": "`IBSurfParamData.UPeriodicity` / `VPeriodicity`",
+      "purpose": "`False` on two open faces; a periodic surface was not tried",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "IBSurfParamData.GetControlPoints"
+      ],
+      "form": "`IBSurfParamData.GetControlPoints(row, column)`",
+      "purpose": "**One control point a call, 1-based**, three numbers, **metres**: `row` the u pole 1..n_u, `column` the v pole 1..n_v, counted from the knots. **Out of range, `(0, 0)` included, an empty array and no error** (GOTCHAS §119). 17,542 calls took 28 s",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
+    },
+    {
+      "section": "Edges, curves and B-spline surfaces (from `IFace2.GetEdges` and `IFace2.GetSurface`)",
+      "interface": null,
+      "members": [
+        "ISurface.Evaluate"
+      ],
+      "form": "`ISurface.Evaluate(u, v, 0, 0)`",
+      "purpose": "Six numbers; the first three the point at `(u, v)`, **metres**: a surface rebuilt from `GetBSurfParams3` matched it to 2.4e-13 mm. The other three were not identified",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
     }
   ]
 }
