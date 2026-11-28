@@ -106,7 +106,7 @@ def read_surface_spline(com, surface, tolerance_m=SURFACE_TOLERANCE_M):
 - `ISurface.GetBSurfParams3(WantCubic, WantNonRational, VP0, Tolerance, out
   Sense)` returns an `IBSurfParamData`. `False, False` asks for the surface as
   it is, with no conversion. `Tolerance` is in **metres** (the help: the allowed
-  deviation of an approximated B-spline, default 0.01).
+  deviation, in metres; default 0.01).
 - On `IBSurfParamData`: `UOrder` / `VOrder` are orders (degree + 1); `UKnots` /
   `VKnots` are the full knot vectors, end knots repeated (`n + order` values);
   `ControlPointDimension` is 3, or 4 with a weight when the surface is rational
@@ -245,9 +245,12 @@ are the point in metres (the other three were not identified), and
 ## Evidence
 
 SolidWorks 2026 (revision 34.1.1), 2026-11-28, Windows Python 3.13 with pywin32,
-late-bound through `call`. Each run read the same saved part, a solid loft of a
-wing tip (one solid, four faces: two planar ends and two lofted skin faces), and
-opened it read-only (in the first run it was already open). The reader read the
+late-bound through `call`. Each run read the same part, a solid loft of a wing
+tip (one solid, four faces: two planar ends and two lofted skin faces). Runs 2 to
+4 opened the saved file read-only themselves. Run 1 instead read a copy already
+open in SolidWorks with unsaved changes (it had been opened read-only for viewing
+and its view changed): `IsOpenedReadOnly` `True`, `GetSaveFlag` `True` before the
+read. The reader read the
 two edges of the planar tip face and the skin face beside each.
 
 | Run | Surface read | What happened |
@@ -291,8 +294,7 @@ Row, [in] long Column)` → `VARIANT`). The SolidWorks API help, whose pages ren
 by JavaScript, was not read directly: what this entry says it says is SolidWorks
 API help as quoted by its search index. That quotes, for `GetBSurfParams3`,
 "Before calling this method, call ISurface:Parameterization2 to populate VP0",
-`Tolerance` as the allowed deviation of an approximated B-spline in metres with a
-default of 0.01, and a C# example calling `GetBSurfParams3(false, false,
+`Tolerance` as "the allowed deviation, in metres; default 0.01", and a C# example calling `GetBSurfParams3(false, false,
 swSurfParam, 0.01, out sense)`; for `IBSurfParamData.GetControlPoints(Row,
 Column)`, "1 <= index of row <= ControlPointRowCount" and likewise for columns,
 one control point per call, dimension 3 (4 with a weight when rational), and

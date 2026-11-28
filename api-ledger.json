@@ -4878,14 +4878,18 @@
         "IsLine"
       ],
       "form": "`IsLine`",
-      "purpose": "Whether it is straight",
+      "purpose": "Whether the curve is a line curve. Recorded before as \"whether it is straight\": **a straight two-pole edge held as a degree-1 B-spline read `False`** ([reading/17](entries/reading/17-read-exact-b-spline-geometry.md)), so `False` does not mean curved",
       "on": "ICurve",
-      "status": "verified",
-      "note": "no version recorded",
+      "status": "partly-verified",
+      "note": "Read `False` on a straight B-spline edge, SW 2026 (34.1.1), 2026-11-28; the earlier claim had no version recorded",
       "provenance": null,
       "languages": [],
-      "majors": [],
-      "evidence": []
+      "majors": [
+        34
+      ],
+      "evidence": [
+        "2026-11-28-reading-17-read-exact-b-spline-geometry-python-34"
+      ]
     },
     {
       "section": "Geometry interrogation",
@@ -8823,11 +8827,10 @@
       "interface": null,
       "members": [
         "ICurve.IsBcurve",
-        "ICurve.IsLine",
         "ICurve.IsTrimmedCurve"
       ],
-      "form": "`ICurve.IsBcurve` / `IsLine` / `IsTrimmedCurve`",
-      "purpose": "**A straight two-pole trailing edge read `IsLine` `False`** and `IsBcurve` `True`, as did a cubic edge; `IsTrimmedCurve` `True` on both",
+      "form": "`ICurve.IsBcurve` / `IsTrimmedCurve`",
+      "purpose": "`IsBcurve` `True` on both edges read, a straight two-pole (degree-1) one and a cubic; `IsTrimmedCurve` `True` on both. The straight one read `IsLine` `False` (see `IsLine` under Geometry interrogation)",
       "on": null,
       "status": "verified",
       "note": "Verified, SW 2026 (34.1.1), 2026-11-28",
@@ -8986,7 +8989,7 @@
         "ISurface.GetBSurfParams3"
       ],
       "form": "`ISurface.GetBSurfParams3(False, False, Nothing, 1e-10, out sense)`",
-      "purpose": "**SolidWorks ended inside the call** after 19.2 s: `0x800706BE`, \"The remote procedure call failed\". Confounded: `Tolerance` was also 1e-10 and the machine was short of memory. Take `VP0` from `Parameterization2` (GOTCHAS §118)",
+      "purpose": "**SolidWorks ended inside the call** after 19.2 s: `0x800706BE`, \"The remote procedure call failed\". Confounded: `Tolerance` was also 1e-10, the part was a copy already open with unsaved changes, and the machine was reported short of memory. Take `VP0` from `Parameterization2` (GOTCHAS §118)",
       "on": null,
       "status": "fails",
       "note": "Observed once, SW 2026 (34.1.1), 2026-11-28",
