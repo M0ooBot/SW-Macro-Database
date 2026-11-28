@@ -132,3 +132,4 @@ called ([GOTCHAS §5](../../GOTCHAS.md)); `call(f, "GetBox")` worked.
 - [drawings/05 — Read and tidy dimensions](../drawings/05-read-and-tidy-dimensions.md)
 - [GOTCHAS §2, §5, §10](../../GOTCHAS.md)
 - [reading/16 — Measure between two selections](16-measure-between-two-selections.md) — measuring between two selected entities
+- [reading/17 — Read exact B-spline geometry](17-read-exact-b-spline-geometry.md) — a face's B-spline surface and an edge's curve, knots and control points

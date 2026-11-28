@@ -1582,6 +1582,35 @@
         "all"
       ],
       "path": "gotchas/117-a-concentric-mate-with-lock-rotation-set.md"
+    },
+    {
+      "number": 118,
+      "id": "G118",
+      "title": "`ISurface.GetBSurfParams3` needs its `VP0` from `ISurface.Parameterization2`; with Nothing, SolidWorks ended inside the call",
+      "always": false,
+      "members": [
+        "ISurface.GetBSurfParams3",
+        "ISurface.Parameterization2"
+      ],
+      "languages": [
+        "all"
+      ],
+      "path": "gotchas/118-getbsurfparams3-needs-vp0-from-parameterization2.md"
+    },
+    {
+      "number": 119,
+      "id": "G119",
+      "title": "`IBSurfParamData.GetControlPoints` is 1-based, answers an empty array out of range, and on 2026 `Row` runs to `ControlPointColumnCount`",
+      "always": false,
+      "members": [
+        "IBSurfParamData.GetControlPoints",
+        "IBSurfParamData.ControlPointRowCount",
+        "IBSurfParamData.ControlPointColumnCount"
+      ],
+      "languages": [
+        "pywin32"
+      ],
+      "path": "gotchas/119-ibsurfparamdata-getcontrolpoints-is-1-based-and-its-bounds-are-swapped.md"
     }
   ]
 }

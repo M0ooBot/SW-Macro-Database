@@ -168,6 +168,7 @@ this file in a release), or read [manifest.json](manifest.json) for the whole se
 | Find out afterwards what a program did to a part, when it kept no log | [reading/14 — The journal records API calls](entries/reading/14-the-journal-records-api-calls.md) |
 | Get the real sizes of a derived or imported part that has no dimensions | [reading/15 — Measure a part that has no dimensions](entries/reading/15-measure-a-part-that-has-no-dimensions.md) |
 | Measure the distance between two selected entities, as the Measure tool does | [reading/16 — Measure between two selections](entries/reading/16-measure-between-two-selections.md) |
+| Read a face's exact B-spline surface or an edge's B-spline curve (knots, control points) back from SolidWorks | [reading/17 — Read exact B-spline geometry](entries/reading/17-read-exact-b-spline-geometry.md) |
 | Read a pick without crashing SolidWorks | [reading/04 — Read the selection](entries/reading/04-read-the-selection.md) |
 
 ## Change how a part looks

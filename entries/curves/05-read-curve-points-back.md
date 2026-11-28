@@ -80,3 +80,4 @@ which is well below anything that matters and well above the noise.
 
 - [curves/01 — The .sldcrv format](01-sldcrv-file-format.md)
 - [curves/10 — Persistent references](10-persistent-references.md)
+- [reading/17 — Read exact B-spline geometry](../reading/17-read-exact-b-spline-geometry.md) — an edge's B-spline curve, knots and poles, rather than a curve feature's points
