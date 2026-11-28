@@ -438,14 +438,18 @@
       "members": [
         "ISldWorks.GetUserPreferenceIntegerValue"
       ],
-      "form": "`GetUserPreferenceIntegerValue`",
-      "purpose": "Read an integer option before changing it, so it can be restored. Used by the `convert-step` script",
+      "form": "`GetUserPreferenceIntegerValue(pref)`",
+      "purpose": "Read an integer option before changing it, so it can be restored. Used by the `convert-step` script. Read `75` `swStepAP` as **203** (AP203) and `142` `swStepExportPreference` as **0** on the installation tested",
       "on": null,
-      "status": "unverified",
-      "note": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-27",
       "provenance": null,
-      "languages": [],
-      "majors": [],
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
       "evidence": []
     },
     {
@@ -718,6 +722,26 @@
       "languages": [],
       "majors": [
         32,
+        34
+      ],
+      "evidence": []
+    },
+    {
+      "section": "ISldWorks (the application)",
+      "interface": "ISldWorks",
+      "members": [
+        "ISldWorks.OpenDoc6"
+      ],
+      "form": "`OpenDoc6(path, 1, 1 + 2, \"\", out errors, out warnings)` on a closed part",
+      "purpose": "`2` = `swOpenDocOptions_ReadOnly`, with `1` silent: returned the document, and `IsOpenedReadOnly` then read `True`; its error and warning outs were not read. For a part someone is to look at without changing it",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-27",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
         34
       ],
       "evidence": []
@@ -1669,6 +1693,47 @@
       "languages": [],
       "majors": [
         32,
+        34
+      ],
+      "evidence": []
+    },
+    {
+      "section": "IModelDoc2 (a part, assembly or drawing)",
+      "interface": "IModelDoc2",
+      "members": [
+        "IModelDoc2.IsOpenedReadOnly"
+      ],
+      "form": "`IsOpenedReadOnly`",
+      "purpose": "Whether the document was opened read-only; `True` after `OpenDoc6` with option `2`. Read through a helper that calls the member only if it is callable, so whether late binding exposes it as a property get was not checked (GOTCHAS §5 predicts one)",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-27",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
+        34
+      ],
+      "evidence": []
+    },
+    {
+      "section": "IModelDoc2 (a part, assembly or drawing)",
+      "interface": "IModelDoc2",
+      "members": [
+        "IModelDoc2.ShowNamedView2",
+        "IModelDoc2.ViewZoomtofit2"
+      ],
+      "form": "`ShowNamedView2(\"*Isometric\", 7)` then `ViewZoomtofit2()`",
+      "purpose": "Turn the active part's window to the isometric view and fit the model to it; `7` = `swIsometricView`. Neither raised; the view was not read back",
+      "on": null,
+      "status": "verified",
+      "note": "Verified, SW 2026 (34.1.1), 2026-11-27",
+      "provenance": null,
+      "languages": [
+        "pywin32"
+      ],
+      "majors": [
         34
       ],
       "evidence": []

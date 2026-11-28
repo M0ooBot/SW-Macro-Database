@@ -1,0 +1,12 @@
+{
+  "id": "2026-11-27-features-12-guided-loft-python-34",
+  "subject": "features-12-guided-loft",
+  "language": "python",
+  "swRevision": "34.1.1",
+  "major": 34,
+  "date": "2026-11-27",
+  "method": "contribution",
+  "result": "pass",
+  "scope": "partial",
+  "observed": "Python over pywin32, SolidWorks 2026 (34.1.1), a new part in millimetres: 177 InsertCurveFile calls (mean 0.32 s), 71 InsertCompositeCurve joins of a section curve and its trailing-edge line (mean 0.51 s), then InsertProtrusionBlend2 with keep tangency on and guide influence 0 through the 71 composite profiles at mark 1 and 35 guides at mark 2: a solid loft on the first attempt, no fallback, in 9.49 s. Afterwards IFeature.GetErrorCode2 0, What's Wrong empty, 1 solid body and 0 sheet bodies. The surface fallback was not exercised."
+}

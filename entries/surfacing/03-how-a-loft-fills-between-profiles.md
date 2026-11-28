@@ -3,13 +3,13 @@ schema: 2
 id: surfacing-03-how-a-loft-fills-between-profiles
 title: How SolidWorks shapes a loft between two profiles, and how its accuracy scaled with the number of guides
 answers: "If I loft two profiles along guide curves, how far does SolidWorks' surface stray from the shape I meant, and how does that change as I add guides?"
-keywords: [loft accuracy, loft deviation, guide curves, number of guides, accuracy versus guides, guide spacing, sag between guides, linear blend, chordwise stretch, section scaling, taper, sharp corner, guide near corner, loft fails, dome, STEP measurement, 0.05 mm, sliver face, extra face, one guide too many, solid loft refused, drop a guide, 2% guide, tip loop, end loop edge count, many profiles, loft through sections, sections and guides, guide zigzag, nearest point, guide meets every section, point number guide, inserted guide point, nose cut into two curves, zero curvature at spline end, wedge nose, six decimals, not planar]
+keywords: [loft accuracy, loft deviation, guide curves, number of guides, accuracy versus guides, guide spacing, sag between guides, linear blend, chordwise stretch, section scaling, taper, sharp corner, guide near corner, loft fails, dome, STEP measurement, 0.05 mm, sliver face, extra face, one guide too many, solid loft refused, drop a guide, 2% guide, tip loop, end loop edge count, many profiles, loft through sections, sections and guides, guide zigzag, nearest point, guide meets every section, point number guide, inserted guide point, nose cut into two curves, zero curvature at spline end, wedge nose, six decimals, not planar, winglet, one loft through a bend, 71 sections]
 api: []
 language: []
 status: verified
 verified_on: SolidWorks 2026
 majors: [34]
-evidence: []
+evidence: [2026-11-27-surfacing-03-how-a-loft-fills-between-profiles-python-34]
 recipe_status: null
 recipe_evidence: []
 superseded_by: null
@@ -245,6 +245,29 @@ tight at the nose, and it measured within 0.005 mm cut.
 blunt-edged section as one curve plus its edge line, joined; every section
 alike.
 
+**A larger case: a wing and its winglet as one loft, 71 sections.** On
+2026-11-27 (SolidWorks 2026, revision 34.1.1) a half wing and the winglet that
+bends up out of its tip were lofted as **one** solid, so the wing-to-winglet
+join lies inside the surface rather than on a seam. There were 71 sections, 30
+cosine-spaced along the wing and 41 at an even 2.45 mm round the bend. Each was
+written as one curve round the nose and joined to its 0.4 mm trailing-edge
+line. There were 35 guides, each through a written point of every section (the
+point-number construction above). With `InsertProtrusionBlend2` and the
+settings in [features/12](../features/12-guided-loft.md) the solid built on the
+first attempt, in 9.5 s. Its STEP, measured the same way as above:
+
+| Measured on the STEP | Worst |
+|---|---|
+| intended surface to STEP, at the 71 sections | 0.0072 mm |
+| intended surface to STEP, at ¼, ½ and ¾ between sections | 0.0103 mm |
+| STEP to intended surface, 180,420 samples | 0.0107 mm |
+
+A numerical zebra across the old wing-to-winglet station showed no break
+(phase gap 2.5e-10 cycles). The sections were written at 241 chord stations a
+side, which kept the curve SolidWorks draws through each file within 1e-4 mm of
+the section the points came from, away from the trailing-edge corners. At 121 stations it strayed 1.1e-3 mm near the
+root's nose.
+
 
 ## Guide order
 
@@ -331,6 +354,19 @@ in the table, each by its own code: the Airfoil Converter's v1.5 at
 (outer sections cut at the nose: wall min 0.0015 mm, outer p99 0.364 mm)
 and `e87` (the last row, built and lofted by the Airfoil Converter's own code,
 commit `ef16606`).
+
+The wing-and-winglet loft: SolidWorks 2026 (revision 34.1.1), 2026-11-27, a
+new part made and lofted by the Airfoil Converter's `swcom` and `swloft` code
+(commit `2f86dcd`) under a runner that recorded every step. Afterwards the loft
+feature's error code was 0, What's Wrong was empty, and there was 1 solid body
+and 0 sheet bodies. The STEP was measured with OpenCascade: 1 valid solid with 4
+faces (2 planar ends, 2 skin), and the deviations in the table. The worst
+between sections and the worst from the STEP back to the surface sat at the same
+span station, where the wing's twist law has a curvature joint. An earlier
+measurement read 0.183 mm from the STEP back to the
+surface. A brute-force search found 0.0016 mm at that point: the measuring
+script's search had missed the nearest triangle near the nose, and that was
+fixed before the numbers above.
 
 ## See also
 
